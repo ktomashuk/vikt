@@ -1,34 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import axiosServer from '../../axios/axiosServer';
+import React, { useEffect, useCallback } from 'react';
 import InvoiceTable from '../../components/InvoiceTable/InvoiceTable';
 import InvoiceTableRow from '../../components/InvoiceTable/InvoiceTableRow/InvoiceTableRow';
+import Spinner from '../../components/UI/Spinner/Spinner';
+import InvoiceAddForm from '../../components/InvoiceAddForm/InvoiceAddForm';
 import { Col, Row, Container } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import { showError } from '../../store/actions/errors';
+import { getInvoices } from '../../store/actions/invoices';
 
 const InvoiceContainer = (props) => {
     
-    const [invoices, setInvoices] = useState();
-    const [loaded, setLoaded] = useState(false);
-    const [showError, setError] = useState({showError : false, errorMessage: ''});
+    //const [invoices, setInvoices] = useState();
+    //const [loaded, setLoaded] = useState(false);
     let invoicesDisplay = null;
-    const loadingMessage = <h1>Data is loading...</h1>;
+    const loadingMessage = <Spinner />;
+
+    const protectedInvoices = useCallback(props.getInvoices, [props.data]);
 
     useEffect(() => {
-        axiosServer.get('/invoices/').then(
-            response => {setInvoices(response.data)}).catch(
-            error => {
-                setError({showError: true, errorMessage: error.message});
-            }
-        );
-    }, [invoices]);
+        protectedInvoices();
+    }, []);
 
-    useEffect(() => {
-        if (invoices) {
-            setLoaded(true);
-        }
-    }, [invoices]);
-
-    if (loaded) {
-    invoicesDisplay = invoices.map(invoice => {
+    if (props.isLoaded) {
+    invoicesDisplay = props.data.map(invoice => {
             return(
     <InvoiceTableRow
     key={invoice.id} 
@@ -46,11 +40,10 @@ const InvoiceContainer = (props) => {
                         <InvoiceTable header1="number" header2="contractor" header3="date">
                         {invoicesDisplay}
                         </InvoiceTable>
-                        {!loaded && loadingMessage}
+                        {!props.isLoaded && loadingMessage}
                     </Col>
                     <Col md={6}>
-                        <InvoiceTable header1="number" header2="contractor" header3="date">
-                        </InvoiceTable>
+                    <InvoiceAddForm />
                     </Col>
                 </Row>
             </Container>
@@ -59,4 +52,11 @@ const InvoiceContainer = (props) => {
     );
 }
 
-export default InvoiceContainer;
+const mapStateToProps = state => {
+    return {
+        isLoaded: state.inv.isLoaded,
+        data: state.inv.data,
+    };
+};
+
+export default connect(mapStateToProps, { getInvoices, showError })(InvoiceContainer);

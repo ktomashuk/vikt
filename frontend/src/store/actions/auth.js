@@ -14,12 +14,8 @@ export const loginUser = (username, password) => async dispatch => {
         // Setting new headers
         axiosInstance.defaults.headers['Authorization'] =
         'JWT ' + localStorage.getItem('access_token');
-        // Decoding token
-        const decodedToken = jwt_decode(res.data.access);
-        const userName = decodedToken.username;
         dispatch({
             type: actionTypes.LOGIN_SUCCESS,
-            username: userName,
         });
     } catch(err) {
         dispatch({
@@ -32,29 +28,79 @@ export const loginUser = (username, password) => async dispatch => {
     }
 };
 
-export const checkAuthentication = () => async dispatch => {
+export const checkAuthentication = () => dispatch => {
     const refreshToken = localStorage.getItem('refresh_token');
     if (refreshToken) {
     // Decoding token
     const decodedToken = jwt_decode(refreshToken);
     const userName = decodedToken.username;
+    const firstName = decodedToken.first_name;
+    const lastName = decodedToken.last_name;
     const expirationDate = decodedToken.exp * 1000;
     const currentDate = Date.now()
     if (expirationDate > currentDate) {
         dispatch({
             type: actionTypes.AUTH_SUCCESS,
-            username: userName
+            username: userName,
+            firstName: firstName,
+            lastName: lastName,
         });
     } else {
         dispatch({
             type: actionTypes.AUTH_FAIL
         });
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Истек срок авторизации. Войдите в систему заново!'
+        });
     }}    
 };
 
-export const logoutUser = () => async dispatch => {
+export const logoutUser = () => dispatch => {
     localStorage.clear();
     dispatch({
         type: actionTypes.LOGOUT_SUCCESS
     });
+};
+
+export const getUserProfile = (id) => async dispatch => {
+    try {
+    const res = await axiosInstance.get(`/users/${id}/`);
+    const firstName = res.data.first_name;
+    const lastName = res.data.last_name;
+    const email = res.data.email;
+    dispatch({
+        type: actionTypes.PROFILE_LOAD_SUCCESS,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+    });
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно загрузить данные!'
+        });
+    };
+};
+
+export const updateUserProfile = (id, firstName, lastName, email) => async dispatch => {
+    try {
+    const body = {
+        "first_name": firstName,
+        "last_name": lastName,
+        "email": email,
+    };
+    await axiosInstance.put(`/update/${id}/`, body);
+    dispatch({
+        type: actionTypes.PROFILE_CHANGE_SUCCESS,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+    });
+    } catch (err) {
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно обновить данные!'
+        });
+    }
 };

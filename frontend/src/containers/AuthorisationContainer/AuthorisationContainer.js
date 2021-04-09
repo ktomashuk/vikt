@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, Container, Col, Row, Form, Button} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { loginUser } from '../../store/actions/auth';
+import { Redirect } from 'react-router-dom';
 
 const AuthorisationContainer = props => {
 
@@ -19,8 +20,12 @@ const AuthorisationContainer = props => {
     const submitLoginHandler = (event) => {
         event.preventDefault();
         props.loginUser(login, password);
-
     };
+
+    let redirectToMain = null;
+    if (props.isAuthenticated) {
+        redirectToMain = <Redirect to="/" />;
+    }
 
     return (
         <div>
@@ -33,11 +38,11 @@ const AuthorisationContainer = props => {
                             <Form>
                                 <Form.Group controlId="authLogin">
                                     <Form.Label>Логин</Form.Label>
-                                    <Form.Control type="text" placeholder="Enter your login" onChange={loginChangeHandler} value={login}/>
+                                    <Form.Control type="text" placeholder="Введите логин" onChange={loginChangeHandler} value={login}/>
                                 </Form.Group>
                                 <Form.Group controlId="authPassword">
                                     <Form.Label>Пароль</Form.Label>
-                                    <Form.Control type="password" placeholder="Enter your password" onChange={passwordChangeHandler} value={password}/>
+                                    <Form.Control type="password" placeholder="Введите пароль" onChange={passwordChangeHandler} value={password}/>
                                     <Button className="mt-3" variant="primary" type="submit" onClick={submitLoginHandler}>Войти</Button>
                                 </Form.Group>
                             </Form>
@@ -46,6 +51,7 @@ const AuthorisationContainer = props => {
                     </Col>
                 </Row>
             </Container>
+            {redirectToMain}
         </div>
     );
 };

@@ -1,9 +1,9 @@
 import React from 'react';
-import { BarLoader } from 'react-spinners';
+import './Spinner.css';
 
 const Spinner = props => {
     return(
-        <BarLoader height={4} width={100} />
+    <div className="loader">Loading...</div>   
     );
 }
 

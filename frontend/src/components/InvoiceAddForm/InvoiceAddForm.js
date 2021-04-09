@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Container, Col, Row, Form, Button } from 'react-bootstrap';
 import axiosInstance from '../../axios/axiosServer';
+import { getInvoices } from '../../store/actions/invoices';
+import { connect } from 'react-redux';
 
 const InvoiceAddForm = props => {
 
@@ -14,7 +16,9 @@ const InvoiceAddForm = props => {
             "number": invNumber,
             "contractor": invContractor,
             "inv_date": invDate,
-        }).then(response => {console.log(response)}).catch(error => {console.log(error)});  
+        }).then(response => {
+            props.getInvoices();
+        }).catch(error => {console.log(error)});  
     };
 
     return(
@@ -44,4 +48,4 @@ const InvoiceAddForm = props => {
     );
 }
 
-export default InvoiceAddForm;
+export default connect(null, { getInvoices })(InvoiceAddForm);

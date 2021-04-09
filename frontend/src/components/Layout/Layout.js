@@ -7,9 +7,10 @@ import { showError, hideError } from '../../store/actions/errors';
 
 const Layout = props => {
 
+    const { isAuthenticated, username} = props;
     useEffect(() => {
         props.checkAuthentication();
-      }, [props]);
+      }, [isAuthenticated, username]);
     
       return (
         <React.Fragment>

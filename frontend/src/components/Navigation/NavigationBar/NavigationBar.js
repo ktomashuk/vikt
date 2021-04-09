@@ -10,6 +10,7 @@ let loginNav = '';
 if (props.isAuthenticated) {
   loginNav = (
     <React.Fragment>
+      <Nav.Link href="/user-dashboard">Профиль</Nav.Link>
       <Nav.Link href="/login" onClick={props.logoutUser}>Выйти</Nav.Link>
     </React.Fragment>
   );

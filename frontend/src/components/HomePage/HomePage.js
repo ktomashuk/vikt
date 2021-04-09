@@ -1,15 +1,29 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Jumbotron, Container, Button } from 'react-bootstrap';
 
 const HomePage = props => {
     
     let dashboard = '';
     if (props.isAuthenticated) {
         dashboard = (
-            <h1>Hello, {props.username}!</h1>
+            <Jumbotron fluid>
+            <Container>
+                <h1>Здравствуйте, {props.firstName} {props.lastName}!</h1>
+                <p>Это тестовая версия портала.</p>
+            </Container>
+            </Jumbotron>
         );
     } else {
-        dashboard = <h1>Please log in</h1>
+        dashboard = (
+            <Jumbotron>
+                <h1>Здравствуйте!</h1>
+                <p>Чтобы получить доступ к функционалу портала, войдите в систему.</p>
+                <p>
+                    <Button variant="primary" href="/login">Войти</Button>
+                </p>
+            </Jumbotron>
+        );
     }
 
     return(
@@ -23,6 +37,8 @@ const mapStateToProps = state => {
     return {
         isAuthenticated: state.auth.isAuthenticated,
         username: state.auth.username,
+        firstName: state.auth.firstName,
+        lastName: state.auth.lastName,
     };
 };
 

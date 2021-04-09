@@ -23,10 +23,3 @@ class Contractor(models.Model):
         return self.name
 
 
-class Profile(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    position = models.CharField(max_length=150)
-    email = models.EmailField(max_length=100)
-    phone = models.CharField(max_length=20)
