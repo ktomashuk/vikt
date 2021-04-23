@@ -16,3 +16,7 @@ export const ERROR_HIDE = 'ERROR_HIDE';
 // Invoice handling
 export const INVOICES_LOAD_SUCCESS = 'INVOICES_LOAD_SUCCESS';
 export const INVOICES_LOAD_FAIL = 'INVOICES_LOAD_FAIL';
+// Info handling
+export const INFO_PAGE_NAME_LOAD = 'INFO_PAGE_NAME_LOAD';
+export const INFO_MESSAGE_SHOW = 'INFO_MESSAGE_SHOW';
+export const INFO_MESSAGE_HIDE = 'INFO_MESSAGE_HIDE';

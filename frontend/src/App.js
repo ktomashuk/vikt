@@ -1,29 +1,28 @@
 import './App.css';
-import AuthorisationContainer from './containers/AuthorisationContainer/AuthorisationContainer';
-import InvoiceContainer from './containers/InvoiceContainer/InvoiceContainer';
+import React from 'react';
+import LoginPage from './components/LoginPage/LoginPage';
 import HomePage from './components/HomePage/HomePage';
 import Layout from './components/Layout/Layout';
-import InvoiceAddForm from './components/InvoiceAddForm/InvoiceAddForm';
 import UserDashboard from './components/UserDashboard/UserDashboard';
-import { BrowserRouter, Route } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import store from './store/store';
+import { Route } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-function App() {
+const App = props => {
 
   return (
-    <Provider store={store}>
-    <BrowserRouter>
-      <Layout>
-        <Route exact path="/" component={HomePage} />
-        <Route path="/login" component={AuthorisationContainer} />
-        <Route path="/invoices" component={InvoiceContainer} />
-        <Route path="/invoice-add" component={InvoiceAddForm} />
-        <Route path="/user-dashboard" component={UserDashboard} />
-      </Layout>
-    </BrowserRouter>
-    </Provider>
+      <React.Fragment>
+      <Layout />
+      <Route exact path="/login" component={LoginPage} />
+      <Route exact path="/" component={HomePage} />
+      <Route exact path="/user-dashboard" component={UserDashboard} />
+      </React.Fragment>
   );
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+      isAuthenticated: state.auth.isAuthenticated,
+  };
+};
+
+export default connect(mapStateToProps)(App);

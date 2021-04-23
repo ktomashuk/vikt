@@ -1,6 +1,7 @@
 import authReducer from './reducers/auth';
 import errorReducer from './reducers/errors';
 import invoiceReducer from './reducers/invoices';
+import infoReducer from './reducers/info';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
     auth: authReducer,
     err: errorReducer,
     inv: invoiceReducer,
+    info: infoReducer,
 });
 
 const store = createStore(

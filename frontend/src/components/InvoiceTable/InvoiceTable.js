@@ -2,8 +2,9 @@ import React from 'react';
 import { Table } from 'react-bootstrap';
 
 const InvoiceTable = props => {
+    
     return(
-        <Table striped bordered hover>
+        <Table id="example" striped bordered hover>
             <thead>
             <tr>
             <th>{props.header1}</th>

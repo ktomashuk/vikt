@@ -6,6 +6,7 @@ const initialState = {
     firstName: '',
     lastName: '',
     email: '',
+    dataLoaded: false,
 };
 
 const reducer = (state = initialState, action) => {
@@ -30,12 +31,14 @@ const reducer = (state = initialState, action) => {
                 firstName: action.firstName,
                 lastName: action.lastName,
                 email: action.email,
+                dataLoaded: true,
             };
         case actionTypes.PROFILE_CHANGE_SUCCESS:
             return {...state, 
                 firstName: action.firstName,
                 lastName: action.lastName,
                 email: action.email,
+                dataLoaded: true,
             };
         default:
             return state;

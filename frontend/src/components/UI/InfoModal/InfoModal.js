@@ -6,7 +6,17 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-const ErrorModal = props => {
+const InfoModal = props => {
+
+    let cancelButton = null;
+
+    if (props.clickedCancel) {
+        cancelButton = (
+        <Button onClick={props.clickedCancel} color="secondary" autoFocus>
+            ОТМЕНА
+        </Button>
+        );
+    }
 
     return(
 <div>
@@ -16,20 +26,21 @@ const ErrorModal = props => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Ошибка!"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"Внимание!"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             {props.message}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.clicked} color="primary" autoFocus>
-            Закрыть
-          </Button>
+        {cancelButton}
+        <Button onClick={props.clickedOk} color="primary" autoFocus>
+            ОК
+        </Button>
         </DialogActions>
       </Dialog>
     </div>
     );
 }
 
-export default ErrorModal;
+export default InfoModal;

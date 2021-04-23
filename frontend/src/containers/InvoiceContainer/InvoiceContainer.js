@@ -1,9 +1,6 @@
-import React, { useEffect, useCallback } from 'react';
-import InvoiceTable from '../../components/InvoiceTable/InvoiceTable';
+import React, { useEffect } from 'react';
 import InvoiceTableRow from '../../components/InvoiceTable/InvoiceTableRow/InvoiceTableRow';
 import Spinner from '../../components/UI/Spinner/Spinner';
-import InvoiceAddForm from '../../components/InvoiceAddForm/InvoiceAddForm';
-import { Col, Row, Container } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { showError } from '../../store/actions/errors';
 import { getInvoices } from '../../store/actions/invoices';
@@ -15,11 +12,9 @@ const InvoiceContainer = (props) => {
     let invoicesDisplay = null;
     const loadingMessage = <Spinner />;
 
-    const protectedInvoices = useCallback(props.getInvoices, [props.data]);
-
     useEffect(() => {
-        protectedInvoices();
-    }, []);
+        props.getInvoices();
+    }, [props]);
 
     if (props.isLoaded) {
     invoicesDisplay = props.data.map(invoice => {
@@ -34,20 +29,7 @@ const InvoiceContainer = (props) => {
 
     return(
         <React.Fragment>
-            <Container fluid>
-                <Row>
-                    <Col md={6}>
-                        <InvoiceTable header1="number" header2="contractor" header3="date">
-                        {invoicesDisplay}
-                        </InvoiceTable>
-                        {!props.isLoaded && loadingMessage}
-                    </Col>
-                    <Col md={6}>
-                    <InvoiceAddForm />
-                    </Col>
-                </Row>
-            </Container>
-            
+
         </React.Fragment>
     );
 }
@@ -59,4 +41,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, { getInvoices, showError })(InvoiceContainer);
+export default connect(mapStateToProps, { getInvoices, showError })(InvoiceContainer);        

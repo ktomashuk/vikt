@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Container, Col, Row, Form, Button} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { loginUser } from '../../store/actions/auth';
-import { Redirect } from 'react-router-dom';
+import { loadPageName } from '../../store/actions/info';
+import { Redirect, withRouter } from 'react-router-dom';
 
-const AuthorisationContainer = props => {
+const LoginPage = props => {
 
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
@@ -26,6 +27,11 @@ const AuthorisationContainer = props => {
     if (props.isAuthenticated) {
         redirectToMain = <Redirect to="/" />;
     }
+
+    useEffect(() => {
+    props.loadPageName('Войти');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <div>
@@ -65,4 +71,4 @@ const mapStateToProps = state => {
 };
 
 
-export default connect(mapStateToProps,{loginUser})(AuthorisationContainer);
+export default connect(mapStateToProps,{ loginUser, loadPageName })(withRouter(LoginPage));

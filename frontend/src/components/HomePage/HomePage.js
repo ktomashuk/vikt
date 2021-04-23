@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
+import { loadPageName } from '../../store/actions/info';
 import { Jumbotron, Container, Button } from 'react-bootstrap';
 
 const HomePage = props => {
-    
+
+    useEffect(() => {
+        props.loadPageName('Главная');
+       // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     let dashboard = '';
     if (props.isAuthenticated) {
         dashboard = (
@@ -42,4 +48,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps)(HomePage);
+export default connect(mapStateToProps, { loadPageName })(HomePage);

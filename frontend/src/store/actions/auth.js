@@ -74,6 +74,7 @@ export const getUserProfile = (id) => async dispatch => {
         firstName: firstName,
         lastName: lastName,
         email: email,
+        dataLoaded: true,
     });
     } catch(err) {
         dispatch({
