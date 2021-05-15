@@ -5,6 +5,7 @@ import { Jumbotron, Container, Button } from 'react-bootstrap';
 
 const HomePage = props => {
 
+    // Setting page name
     useEffect(() => {
         props.loadPageName('Главная');
        // eslint-disable-next-line react-hooks/exhaustive-deps

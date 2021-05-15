@@ -16,7 +16,8 @@ const useStyles = makeStyles((theme) => ({
       flexGrow: 1,
     },
     paper: {
-      padding: theme.spacing(2),
+      marginTop: 10,
+      padding: theme.spacing(4),
       textAlign: 'center',
       color: theme.palette.text.secondary,
     },
@@ -69,11 +70,14 @@ const UserDashboard = props => {
             <Paper className={classes.paper}>
             <FormGroup m={4} pt={4}>
             <TextField id="firstName" label="Имя" variant="filled" 
-            defaultValue={props.firstName} onChange={e => {setFirstName(e.target.value)}} />
+            defaultValue={props.firstName} onChange={e => {setFirstName(e.target.value)}} 
+            style={{marginBottom: 10}}/>
             <TextField id="lastName" label="Фамилия" variant="filled" 
-            defaultValue={props.lastName} onChange={e => {setLastName(e.target.value)}} />
+            defaultValue={props.lastName} onChange={e => {setLastName(e.target.value)}} 
+            style={{marginBottom: 10}}/>
             <TextField id="email" label="Email" variant="filled" 
-            defaultValue={props.email} onChange={e => {setEmail(e.target.value)}} />
+            defaultValue={props.email} onChange={e => {setEmail(e.target.value)}}
+            style={{marginBottom: 10}}/>
             <Button variant="contained" color="primary" onClick={updateProfileHandler}>
             Сохранить
             </Button>

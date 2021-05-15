@@ -4,6 +4,8 @@ import LoginPage from './components/LoginPage/LoginPage';
 import HomePage from './components/HomePage/HomePage';
 import Layout from './components/Layout/Layout';
 import UserDashboard from './components/UserDashboard/UserDashboard';
+import EstimatesContainer from './containers/EstimatesContainer/EstimatesContainer';
+import Placeholder from './components/Placeholder/Placeholder';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -15,6 +17,8 @@ const App = props => {
       <Route exact path="/login" component={LoginPage} />
       <Route exact path="/" component={HomePage} />
       <Route exact path="/user-dashboard" component={UserDashboard} />
+      <Route exact path="/estimates" component={EstimatesContainer} />
+      <Route exact path="/placeholder" component={Placeholder} />
       </React.Fragment>
   );
 }

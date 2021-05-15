@@ -53,6 +53,7 @@ export const checkAuthentication = () => dispatch => {
             type: actionTypes.ERROR_SHOW,
             errorMessage: 'Истек срок авторизации. Войдите в систему заново!'
         });
+        localStorage.clear();
     }}    
 };
 

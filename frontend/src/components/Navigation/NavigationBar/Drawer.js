@@ -12,7 +12,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import HomeIcon from '@material-ui/icons/Home';
 import DescriptionIcon from '@material-ui/icons/Description';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
-import ReceiptIcon from '@material-ui/icons/Receipt';
+import AssignmentIcon from '@material-ui/icons/Assignment';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
@@ -23,6 +23,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logoutUser } from '../../../store/actions/auth';
 import { loadPageName } from '../../../store/actions/info';
+import { unloadEstimates } from '../../../store/actions/estimates';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,28 +39,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MainDrawer = props => {
+const MainDrawer = React.memo(props => {
     
     const classes = useStyles();
-    // Drawer opening
-    const [state, setState] = useState({ open: false });
     // Drawer sub menus opening
     const [openInv, setOpenInv] = useState(false);
     const [openReq, setOpenReq] = useState(false);
+    const [openEst, setOpenEst] = useState(false);
     const [openProfile, setOpenProfile] = useState(false);
-
+    // Drawer toggle
+    const [state, setState] = useState({ open: false });
     const toggleDrawer = (open) => (event) => {
       if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
         return;
       }
       setState({ ...state, open: open });
       };
-
-    const drawerClick = (adress, pageName) => {
+    // Clicking a drawer item
+    const drawerClick = (adress) => {
+      if (adress === 'estimates') {
+      setState({ ...state, open: false });
+      props.history.push(`/${adress}`); 
+      } else {
       setState({ ...state, open: false });
       props.history.push(`/${adress}`);
+      if (props.estimatesLoaded) {
+      props.unloadEstimates(); }
+      }
     };
-    
+    // Drawer menu contents
     const drawerItems = [
         {
           text: 'Главная',
@@ -76,7 +84,7 @@ const MainDrawer = props => {
           nestedItems: [
             {
               text: 'Создать заявку',
-              click: () => drawerClick(''),
+              click: () => drawerClick('placeholder'),
             }
           ],
         },
@@ -89,18 +97,31 @@ const MainDrawer = props => {
           nestedItems: [
             {
               text: 'Добавить платежку',
-              click: () => drawerClick('invoices'),
+              click: () => drawerClick('placeholder'),
             }
           ],
         },
         {
-          text: 'Receipts',
-          icon: <ReceiptIcon />,
-          collapsable: false,
-          click: () => drawerClick(''),
+          text: 'Сметы',
+          icon: <AssignmentIcon />,
+          collapsable: true,
+          click: () => {setOpenEst(!openEst)},
+          condition: openEst,
+          nestedItems: [
+            {
+              text: 'Просмотр смет',
+              click: () => drawerClick('estimates'),
+            },
+            {
+              text: 'Добавить смету',
+              click: () => {window.open('http://127.0.0.1:8000/admin/estimates/estimate/import/', '_blank');
+              setState({ ...state, open: false })
+            },
+            },
+          ],
         },
       ];
-
+    // Profile menu if user is not authenticated
     let profileItems = (
       <React.Fragment key="login" >
       <ListItem button onClick={() => drawerClick('login')}>
@@ -109,13 +130,14 @@ const MainDrawer = props => {
       </ListItem>
       </React.Fragment>
     );
-    
+    // Profile menu if user is authenticated
     if (props.isAuthenticated) {
       profileItems = (
       <React.Fragment key="profile-full" >
             <ListItem button onClick={() => setOpenProfile(!openProfile)}>
             <ListItemIcon ><AccountBoxIcon /></ListItemIcon>
-            <ListItemText >{props.firstName} {props.lastName} {openProfile ? <ExpandLess /> : <ExpandMore />} </ListItemText>
+            <ListItemText >{props.firstName} {props.lastName} </ListItemText>
+            {openProfile ? <ExpandLess /> : <ExpandMore />} 
             </ListItem>
                   <Collapse in={openProfile} timeout="auto" unmountOnExit>
                       <ListItem key="dashboard" button onClick={() => drawerClick('user-dashboard')} className={classes.nested}>
@@ -123,7 +145,7 @@ const MainDrawer = props => {
                       </ListItem>
                       <ListItem key="logout" button onClick={() => {
                         props.logoutUser();
-                        drawerClick('');}} className={classes.nested}>
+                        drawerClick('login');}} className={classes.nested}>
                       <ListItemText >Выйти</ListItemText>
                       </ListItem>
                 </Collapse>
@@ -145,7 +167,9 @@ const MainDrawer = props => {
     </Toolbar>
     </AppBar>
     <Drawer anchor={'left'} open={state['open']} onClose={toggleDrawer(false)}>
-      <List>
+      <List component="nav"
+      aria-labelledby="nested-list-subheader"
+      className={classes.root}>
       {profileItems}
       <Divider />
       {props.isAuthenticated && drawerItems.map((item) => {
@@ -154,7 +178,8 @@ const MainDrawer = props => {
             <React.Fragment key={item.text} >
             <ListItem button onClick={item.click}>
             <ListItemIcon >{item.icon}</ListItemIcon>
-            <ListItemText >{item.text} {item.condition ? <ExpandLess /> : <ExpandMore />} </ListItemText>
+            <ListItemText >{item.text} </ListItemText>
+            {item.condition ? <ExpandLess /> : <ExpandMore />} 
             </ListItem>
                   <Collapse in={item.condition} timeout="auto" unmountOnExit>
                     {item.nestedItems.map((item) => {
@@ -182,7 +207,7 @@ const MainDrawer = props => {
       </React.Fragment>
     </div>
   );
-}
+});
 
 
 const mapStateToProps = state => {
@@ -190,7 +215,9 @@ const mapStateToProps = state => {
       isAuthenticated: state.auth.isAuthenticated,
       firstName: state.auth.firstName,
       lastName: state.auth.lastName,
+      estimatesLoaded: state.est.estimatesLoaded,
+
   };
 };
 
-export default connect(mapStateToProps, { logoutUser, loadPageName })(withRouter(MainDrawer));
+export default connect(mapStateToProps, { logoutUser, loadPageName, unloadEstimates })(withRouter(MainDrawer));

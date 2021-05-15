@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import psycopg2
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -42,7 +43,10 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'invoices.apps.InvoicesConfig',
     'core.apps.CoreConfig',
+    'estimates.apps.EstimatesConfig',
     'corsheaders',
+    'import_export',
+    'django_filters',
     # Simple JWT
     'rest_framework_simplejwt.token_blacklist',
 ]
@@ -84,8 +88,19 @@ WSGI_APPLICATION = 'main.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+
+        'NAME': 'Django',
+
+        'USER': 'postgres',
+
+        'PASSWORD': '7WEWX9Q6SA',
+
+        'HOST': 'localhost',
+
+        'PORT': '5432',
+
     }
 }
 
@@ -168,3 +183,4 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=1),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
+
