@@ -3,6 +3,7 @@ from .serializers import InvoiceSerializer, InvoiceDetailsSerializer
 from .models import Invoice, InvoiceDetails
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import generics
 
 
 class InvoiceViewSet(viewsets.ModelViewSet):
@@ -17,10 +18,7 @@ class InvoiceDetailsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class InvoiceAllView(APIView):
-
-    def get(self, request, format=None):
-        invoice_list = [invoice.number for invoice in Invoice.objects.all()]
-
-        return Response(invoice_list)
-
+class InvoiceAllView(generics.ListAPIView):
+    queryset = InvoiceDetails.objects.all()
+    serializer_class = InvoiceDetailsSerializer
+    permission_classes = [permissions.IsAuthenticated]

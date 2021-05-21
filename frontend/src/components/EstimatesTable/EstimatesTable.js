@@ -42,6 +42,7 @@ const useStyles = makeStyles({
 
 const EstimatesTable = props => {
     const classes = useStyles();
+    const { size } = props;
     // Default table
     let rows = <TableRow><TableCell>Выберите объект</TableCell></TableRow>
     // Loaded table
@@ -56,7 +57,7 @@ const EstimatesTable = props => {
     return(
         <Paper key="papertable" className={classes.root}>
             <TableContainer key="tablecontainer" className={classes.container}>
-                <Table key="tablemain" stickyHeader aria-label="table1">
+                <Table key="tablemain" stickyHeader aria-label="table1" size="small">
                     <TableHead key="tablehead">
                         <TableRow key="header">
                             {columns.map((column) => {

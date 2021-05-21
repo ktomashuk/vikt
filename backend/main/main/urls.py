@@ -31,5 +31,7 @@ urlpatterns = [
          estimate_views.SearchEstimatesByObjectView.as_view(), name='search-est-obj'),
     path('search-est-obj-sys/<int:id>/<str:system>',
          estimate_views.SearchEstimatesByObjectBySystemView.as_view(), name='search-est-obj-sys'),
-    path('est-update/<int:id>/', estimate_views.EstimateUpdateView.as_view(), name='est-update'),
+    path('est-update/<int:id>/',
+         estimate_views.EstimateUpdateView.as_view(), name='est-update'),
+    path('inv-view/', invoice_views.InvoiceAllView.as_view(), name='inv-view'),
 ]

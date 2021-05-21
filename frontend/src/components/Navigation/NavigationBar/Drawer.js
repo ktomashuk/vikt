@@ -97,7 +97,7 @@ const MainDrawer = React.memo(props => {
           nestedItems: [
             {
               text: 'Добавить платежку',
-              click: () => drawerClick('placeholder'),
+              click: () => drawerClick('invoices'),
             }
           ],
         },

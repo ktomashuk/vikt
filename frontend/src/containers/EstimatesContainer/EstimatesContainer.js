@@ -21,6 +21,9 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -63,6 +66,7 @@ const EstimatesContainer = React.memo(props => {
     const [objectId, setObjectId] = useState('');
     const [system, setSystem] = useState('');
     const [openModal, setOpenModal] = useState(false);
+
     // Loading data for a chosen object
     const objChange = event => {
         setObject(event.target.value);
@@ -148,7 +152,7 @@ const EstimatesContainer = React.memo(props => {
                             <SearchBar type="estimates"/>
                             </Box>
                             <Tooltip
-                                title={<span style={{fontSize: '20px'}}>Добавить позицию</span>} arrow>
+                                title={<h6>Добавить позицию</h6>} arrow>
                                 <AddIcon className={classes.icon}
                                 onClick={() => {
                                 setOpenModal(true);

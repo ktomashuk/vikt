@@ -10,6 +10,7 @@ import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CheckIcon from '@material-ui/icons/Check';
@@ -18,7 +19,6 @@ import { connect } from 'react-redux';
 import { deleteEstimateRow, addEstimateRow, editEstimateRow, 
     getEstimatesByObject, getEstimatesByObjectBySystem, 
     searchEstimatesByObject, searchEstimatesByObjectBySystem } from '../../store/actions/estimates';
-
 import { undoDataSave } from '../../store/actions/undo';
 
 const _ = require('lodash');
@@ -203,7 +203,7 @@ const EstimatesRow = (props) => {
         mainRow = (
             <React.Fragment key={`fragmentrow${row.id}`}>
             <TableRow key={`r${row.id}`} hover >
-                <TableCell key={`number${row.id}`}>
+                <TableCell padding="default" key={`number${row.id}`}>
                 {row.system_number}.{row.ware_number}
                 </TableCell>
                 <TableCell key={`ware${row.id}`}>
@@ -227,22 +227,30 @@ const EstimatesRow = (props) => {
                 <TableCell key={`buttons${row.id}`}>
                     {collapseOpen ? 
                     <React.Fragment key={`frag1${row.id}`}>
+                        <Tooltip title={<h6>Подтвердить</h6>} arrow>
                         <CheckIcon key={`check${row.id}`} className={classes.icon} 
                         style={{ color: 'green' }}
                         onClick={() => confirmClickHandler()} />
+                        </Tooltip>
+                        <Tooltip title={<h6>Отменить</h6>} arrow>
                         <ClearIcon key={`clear${row.id}`} className={classes.icon} 
                         color="secondary"
                         onClick={() => cancelClickHandler()}/>
+                        </Tooltip>
                     </React.Fragment> : 
                     <React.Fragment key={`frag2${row.id}`}>
+                        <Tooltip title={<h6>Редактировать</h6>} arrow>
                         <EditIcon className={classes.icon}
                         key={`edit${row.id}`}
                         color={!editing.enabled ? "primary" : "disabled"}
                         onClick={!editing.enabled ? (() => startEditingRow(row.id)) : undefined}/>
+                        </Tooltip>
+                        <Tooltip title={<h6>Удалить</h6>} arrow>
                         <DeleteIcon className={classes.icon}
                         key={`delete${row.id}`}
                         color={!editing.enabled ? "action" : "disabled"}
                         onClick={!deleting.enabled ? (() => startDeletingRow(row.id)) : undefined} />
+                        </Tooltip>
                     </React.Fragment> }
                 </TableCell>
             </TableRow>

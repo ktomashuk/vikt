@@ -21,57 +21,47 @@ const UndoButton = props => {
     
     const classes = useStyles();
     const { undoActive, undoType, undoData, undoId, estimatesObject, estimatesSystem, searchActive, searchResult } = props;
+    // Refreshing the data after the undo
+    const refreshData = () => {
+    // Checking what data to load after row was restored
+    setTimeout(() => {
+        if (estimatesSystem === 'Все' && !searchActive ) {
+            props.getEstimatesByObject(estimatesObject);
+        };
+        if (estimatesSystem !== 'Все' && !searchActive) {
+            props.getEstimatesByObjectBySystem(estimatesObject, estimatesSystem);
+        };
+        if (estimatesSystem === 'Все' && searchActive) {
+            props.searchEstimatesByObject(searchResult, estimatesObject);
+        };
+        if (estimatesSystem !== 'Все' && searchActive) {
+            props.searchEstimatesByObjectBySystem(searchResult, estimatesObject, estimatesSystem)  ;
+        };
+    }, 500);
+    };
     // Clicking the undo button
     const undoClickHandler = (type, data) => {
         switch (type) { 
             // Undoing the deleting of an estimates row
             case 'estimate_row_delete':
                 props.undoEstimateRowDelete(data);
-                // Checking what data to load after row was restored
-                setTimeout(() => {
-                    if (estimatesSystem === 'Все' && !searchActive ) {
-                        props.getEstimatesByObject(estimatesObject);
-                    };
-                    if (estimatesSystem !== 'Все' && !searchActive) {
-                        props.getEstimatesByObjectBySystem(estimatesObject, estimatesSystem);
-                    };
-                    if (estimatesSystem === 'Все' && searchActive) {
-                        props.searchEstimatesByObject(searchResult, estimatesObject);
-                    };
-                    if (estimatesSystem !== 'Все' && searchActive) {
-                        props.searchEstimatesByObjectBySystem(searchResult, estimatesObject, estimatesSystem)  ;
-                    };
-                }, 500);
+                refreshData();
                 break;
             case 'estimate_row_edit':
                 props.undoEstimateRowEdit(undoId, data)
-                // Checking what data to load after row was restored
-                setTimeout(() => {
-                    if (estimatesSystem === 'Все' && !searchActive ) {
-                        props.getEstimatesByObject(estimatesObject);
-                    };
-                    if (estimatesSystem !== 'Все' && !searchActive) {
-                        props.getEstimatesByObjectBySystem(estimatesObject, estimatesSystem);
-                    };
-                    if (estimatesSystem === 'Все' && searchActive) {
-                        props.searchEstimatesByObject(searchResult, estimatesObject);
-                    };
-                    if (estimatesSystem !== 'Все' && searchActive) {
-                        props.searchEstimatesByObjectBySystem(searchResult, estimatesObject, estimatesSystem)  ;
-                    };
-                }, 500);
+                refreshData();
                 break;
             default:
                 break;
         }
     }
     // Tooltip text
-    let tooltipTitle = <span style={{fontSize: '20px'}}>Отмена недоступна</span>;
+    let tooltipTitle = <h6>Отмена недоступна</h6>;
     if (undoActive && undoType === 'estimate_row_delete') {
-        tooltipTitle = <span style={{fontSize: '20px'}}>Отменить удаление</span>
+        tooltipTitle = <h6>Отменить удаление</h6>
     }
     if (undoActive && undoType === 'estimate_row_edit') {
-        tooltipTitle = <span style={{fontSize: '20px'}}>Отменить редактирование</span>
+        tooltipTitle = <h6>Отменить редактирование</h6>
     }
         return(
             <Box className={classes.root}>
