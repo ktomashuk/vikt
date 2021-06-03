@@ -7,10 +7,11 @@ import UserDashboard from './components/UserDashboard/UserDashboard';
 import EstimatesContainer from './containers/EstimatesContainer/EstimatesContainer';
 import InvoiceContainer from './containers/InvoiceContainer/InvoiceContainer';
 import Placeholder from './components/Placeholder/Placeholder';
+import ContractorsContainer from './containers/ContractorsContainer/ContractorsContainer';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-const App = props => {
+const App = (props) => {
 
   return (
       <React.Fragment>
@@ -21,6 +22,7 @@ const App = props => {
       <Route exact path="/estimates" component={EstimatesContainer} />
       <Route exact path="/placeholder" component={Placeholder} />
       <Route exact path="/invoices" component={InvoiceContainer} />
+      <Route exact path="/contractors" component={ContractorsContainer} />
       </React.Fragment>
   );
 }

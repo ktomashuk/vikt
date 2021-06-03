@@ -38,7 +38,7 @@ export const undoEstimateRowDelete = (undoData) => async dispatch => {
 export const undoEstimateRowEdit = (rowId, undoData) => async dispatch => {
     try {
         const body = JSON.stringify(undoData);
-        const res = await axiosInstance.put(`/est-update/${rowId}/`, body);
+        const res = await axiosInstance.put(`est/est-update/${rowId}/`, body);
         const data = res.data
         dispatch({
             type: actionTypes.UNDO_ESTIMATE_ROW_EDIT,
@@ -52,7 +52,7 @@ export const undoEstimateRowEdit = (rowId, undoData) => async dispatch => {
     } catch(err) {
         dispatch({
             type: actionTypes.ERROR_SHOW,
-            errorMessage: 'Невозможно отменить удаление!'
+            errorMessage: 'Невозможно отменить редактирование!'
         });
     }
 }

@@ -21,9 +21,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Tooltip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-
+import Fab from '@material-ui/core/Fab';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -54,8 +52,6 @@ const useStyles = makeStyles((theme) => ({
     },
     icon: {
         cursor: 'pointer',
-        marginLeft: 10,
-        color: 'green'
     },
 }));
 
@@ -66,6 +62,7 @@ const EstimatesContainer = React.memo(props => {
     const [objectId, setObjectId] = useState('');
     const [system, setSystem] = useState('');
     const [openModal, setOpenModal] = useState(false);
+    const [addingEnabled, setAddingEnabled] = useState(false);
 
     // Loading data for a chosen object
     const objChange = event => {
@@ -76,6 +73,7 @@ const EstimatesContainer = React.memo(props => {
         setSystem('');
         props.getEstimatesByObject(objFound.id);
         props.getSystemsByObject(objFound.id);
+        setAddingEnabled(true);
     };
     // Loading data for a chosen system
     const systemChange = event => {
@@ -152,11 +150,15 @@ const EstimatesContainer = React.memo(props => {
                             <SearchBar type="estimates"/>
                             </Box>
                             <Tooltip
-                                title={<h6>Добавить позицию</h6>} arrow>
+                                title={addingEnabled ? <h6>Добавить позицию</h6> : <h6>Выберите объект</h6>} arrow>
+                                <Fab color="primary" aria-label="add" className={classes.button}
+                                size="medium">
                                 <AddIcon className={classes.icon}
-                                onClick={() => {
+                                style={addingEnabled ? {color: 'white'} : {color: 'grey'}}
+                                onClick={addingEnabled ? () => {
                                 setOpenModal(true);
-                                setTimeout(() => setOpenModal(false), 500)}} />
+                                setTimeout(() => setOpenModal(false), 500)} : undefined } />
+                                </Fab>
                             </Tooltip>
                             <UndoButton />
                         </Paper>

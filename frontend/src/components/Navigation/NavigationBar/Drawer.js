@@ -98,6 +98,10 @@ const MainDrawer = React.memo(props => {
             {
               text: 'Добавить платежку',
               click: () => drawerClick('invoices'),
+            },
+            {
+              text: 'Реестр поставщиков',
+              click: () => drawerClick('contractors'),
             }
           ],
         },

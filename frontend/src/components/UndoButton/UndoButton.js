@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import ReplayIcon from '@material-ui/icons/Replay';
 import Box from '@material-ui/core/Box';
+import Fab from '@material-ui/core/Fab';
 import Tooltip from '@material-ui/core/Tooltip';
 import { undoEstimateRowDelete, undoEstimateRowEdit } from '../../store/actions/undo';
 import { getEstimatesByObject, 
@@ -13,7 +14,6 @@ import { getEstimatesByObject,
 const useStyles = makeStyles(() => ({
     root: {
         cursor: 'pointer',
-        marginLeft: 10,
     },
 }));
 
@@ -67,9 +67,11 @@ const UndoButton = props => {
             <Box className={classes.root}>
                 <Tooltip
                 title={tooltipTitle} arrow>
+               <Fab color="primary" aria-label="add" size="medium">
                <ReplayIcon 
-               style={props.undoActive ? {color: 'green'} : {color: 'grey'}}
+               style={props.undoActive ? {color: 'white'} : {color: 'grey'}}
                onClick={undoActive ? () => undoClickHandler(undoType, undoData) : undefined}/>
+               </Fab>
                </Tooltip>
             </Box>
         );

@@ -12,3 +12,9 @@ class SystemPerObjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Estimate
         fields = ('system', )
+
+
+class WareSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Estimate
+        fields = ('ware', )

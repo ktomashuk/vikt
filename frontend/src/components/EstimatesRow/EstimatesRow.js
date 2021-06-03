@@ -308,7 +308,11 @@ const EstimatesRow = (props) => {
                             </TableRow>
                             </TableBody>
                         </Table> : null }
-                        {deleting.enabled ? <p>Подтвердите удаление</p> : null}
+                        {deleting.enabled ? 
+                        <Box style={{position: 'relative', left: '45%'}}>
+                        <p>Подтвердите удаление</p>
+                        </Box>
+                        : null}
                     </Box>  
              </Collapse>
             </TableCell>

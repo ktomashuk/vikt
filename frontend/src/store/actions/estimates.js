@@ -25,7 +25,7 @@ export const getEstimates = () => async dispatch => {
 export const getEstimatesByObject = (object) => async dispatch => {
 
     try {
-        const res = await axiosInstance.get(`/est-obj/${object}?ordering=system_number,ware_number`);
+        const res = await axiosInstance.get(`est/est-obj/${object}?ordering=system_number,ware_number`);
         const data = res.data
         dispatch({
             type: actionTypes.ESTIMATES_LOAD_SUCCESS,
@@ -48,7 +48,7 @@ export const getEstimatesByObject = (object) => async dispatch => {
 export const getEstimatesByObjectBySystem = (object, system) => async dispatch => {
 
     try {
-        const res = await axiosInstance.get(`/est-obj-sys/${object}/${system}?ordering=system_number,ware_number`);
+        const res = await axiosInstance.get(`est/est-obj-sys/${object}/${system}?ordering=system_number,ware_number`);
         const data = res.data
         dispatch({
             type: actionTypes.ESTIMATES_LOAD_SUCCESS,
@@ -70,7 +70,7 @@ export const getEstimatesByObjectBySystem = (object, system) => async dispatch =
 export const getSystemsByObject = (object) => async dispatch => {
 
     try {
-        const res = await axiosInstance.get(`/systems-per-object/${object}`);
+        const res = await axiosInstance.get(`est/systems-per-object/${object}`);
         const data = res.data
         const uniqueSystems = [...new Set(data.map(item => item.system))];
         uniqueSystems.unshift('Все');
@@ -135,7 +135,7 @@ export const addEstimateRow = (data) => async dispatch => {
 export const editEstimateRow = (rowId, data) => async dispatch => {
 
     try {
-        await axiosInstance.put(`/est-update/${rowId}/`, data);
+        await axiosInstance.put(`est/est-update/${rowId}/`, data);
         dispatch({
             type: actionTypes.ESTIMATE_ROW_EDIT_SUCCESS,
         });
@@ -158,7 +158,7 @@ export const editEstimateRow = (rowId, data) => async dispatch => {
 export const searchEstimatesByObject = (ware, objId) => async dispatch => {
 
     try {
-        const res = await axiosInstance.get(`/search-est-obj/${objId}/?search=${ware}&ordering=system_number,ware_number`);
+        const res = await axiosInstance.get(`est/search-est-obj/${objId}/?search=${ware}&ordering=system_number,ware_number`);
         const data = res.data
         dispatch({
             type: actionTypes.SEARCH_ESTIMATES,
@@ -178,7 +178,7 @@ export const searchEstimatesByObject = (ware, objId) => async dispatch => {
 export const searchEstimatesByObjectBySystem = (ware, objId, system) => async dispatch => {
 
     try {
-        const res = await axiosInstance.get(`/search-est-obj-sys/${objId}/${system}?search=${ware}&ordering=system_number,ware_number`);
+        const res = await axiosInstance.get(`est/search-est-obj-sys/${objId}/${system}?search=${ware}&ordering=system_number,ware_number`);
         const data = res.data
         dispatch({
             type: actionTypes.SEARCH_ESTIMATES,

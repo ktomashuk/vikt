@@ -18,10 +18,10 @@ class Estimate(models.Model):
     system_number = models.IntegerField(default=1)
     ware_number = models.IntegerField(default=1)
     ware = models.CharField(max_length=250)
-    quantity = models.IntegerField(default=0)
+    quantity = models.FloatField(default=0)
     units = models.CharField(choices=UNITS_OF_MEASURE, max_length=15, default='шт', blank=False)
     system = models.CharField(max_length=150)
-    price = models.IntegerField(default=0)
+    price = models.FloatField(default=0)
     note = models.CharField(max_length=150, default='', blank=True)
 
     def __str__(self):

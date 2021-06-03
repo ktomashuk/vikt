@@ -7,6 +7,7 @@ import coreReducer from './reducers/core';
 import undoReducer from './reducers/undo';
 import snackReduer from './reducers/snack';
 import searchReducer from './reducers/search';
+import contractorReducer from './reducers/contractors';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
     undo: undoReducer,
     snack: snackReduer,
     srch: searchReducer,
+    contr: contractorReducer,
 });
 
 const store = createStore(

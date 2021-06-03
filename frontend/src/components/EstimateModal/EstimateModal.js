@@ -44,10 +44,11 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const EstimateModal = (props) => {
   const classes = useStyles();
   // Variables to control opening/closing
-  const { show } = props;
+  const { show, estimatesObject } = props;
   const [open, setOpen] = React.useState(false);
   // Setting a row to be added
   const [newRow, setNewRow] = useState({
+      object: 1,
       system_number: 0,
       ware_number: 0,
       ware: '',
@@ -59,6 +60,11 @@ const EstimateModal = (props) => {
   });
   // Units of measure
   const units = ["шт.", "м.", "км.", "кг.", "г.", "компл.", "упак.", "набор"];
+  // Setting object id
+  useEffect(() => {
+    setNewRow({...newRow, object: estimatesObject})
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [estimatesObject]);
   // Closing the modal
   const handleClose = () => {
     setNewRow({
@@ -163,10 +169,18 @@ const EstimateModal = (props) => {
                         onClick={() => addRowAndContinue()}>Сохранить и добавить ещё</Button>
                         <Button variant="contained" color="primary" 
                         onClick={() => addRowAndClose()}>Сохранить и выйти</Button>
+                        <Button variant="contained" color="primary"
+                        onClick={() => console.log(estimatesObject)}>Click me</Button>
                         </div>
       </Dialog>
     </div>
   );
 }
 
-export default connect(null, { addEstimateRow })(EstimateModal);
+const mapStateToProps = state => {
+  return {
+      estimatesObject: state.est.estimatesObject,
+  };
+};
+
+export default connect(mapStateToProps, { addEstimateRow })(EstimateModal);

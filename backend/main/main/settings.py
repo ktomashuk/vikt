@@ -44,14 +44,17 @@ INSTALLED_APPS = [
     'invoices.apps.InvoicesConfig',
     'core.apps.CoreConfig',
     'estimates.apps.EstimatesConfig',
+    'purchases.apps.PurchasesConfig',
     'corsheaders',
     'import_export',
     'django_filters',
+    'debug_toolbar',
     # Simple JWT
     'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -142,6 +145,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [

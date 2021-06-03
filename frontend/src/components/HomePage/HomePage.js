@@ -18,6 +18,9 @@ const HomePage = props => {
             <Container>
                 <h1>Здравствуйте, {props.firstName} {props.lastName}!</h1>
                 <p>Это тестовая версия портала.</p>
+                <Button onClick={
+                    () => console.log(localStorage.getItem('access_token'))}>
+                    JWT</Button>
             </Container>
             </Jumbotron>
         );

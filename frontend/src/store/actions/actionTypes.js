@@ -14,6 +14,7 @@ export const PROFILE_LOAD_SUCCESS = 'PROFILE_LOAD_SUCCESS';
 export const ERROR_SHOW = 'ERROR_SHOW';
 export const ERROR_HIDE = 'ERROR_HIDE';
 // Invoice handling
+export const INVOICE_NEW_CREATE = 'INVOICE_NEW_CREATE';
 export const INVOICES_LOAD_SUCCESS = 'INVOICES_LOAD_SUCCESS';
 export const INVOICES_LOAD_FAIL = 'INVOICES_LOAD_FAIL';
 // Estimates loading handling
@@ -51,3 +52,6 @@ export const UNDO_ESTIMATE_ROW_ADD = 'UNDO_ESTIMATE_ROW_ADD';
 export const SEARCH_ESTIMATES = 'SEARCH_ESTIMATES';
 export const SEARCH_START = 'SEARCH_START';
 export const SEARCH_STOP = 'SEARCH_STOP';
+// Contractors handling
+export const CONTRACTOR_LIST_LOAD = 'CONTRACTOR_LIST_LOAD';
+export const CONTRACTOR_DETAILS_LOAD = 'CONTRACTOR_DETAILS_LOAD';

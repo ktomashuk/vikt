@@ -40,7 +40,6 @@ const useStyles = makeStyles({
 
 const InvoiceTable = props => {
     const classes = useStyles();
-    const { size } = props;
     // Default table
     let rows = <TableRow><TableCell>Выберите объект</TableCell></TableRow>
     // Loaded table

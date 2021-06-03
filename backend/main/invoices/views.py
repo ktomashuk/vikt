@@ -1,8 +1,6 @@
 from rest_framework import viewsets, permissions
 from .serializers import InvoiceSerializer, InvoiceDetailsSerializer
 from .models import Invoice, InvoiceDetails
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import generics
 
 

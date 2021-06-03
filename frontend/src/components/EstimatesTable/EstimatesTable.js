@@ -38,11 +38,14 @@ const useStyles = makeStyles({
         maxWidth: 1500,
         fontSize: 30,
     },
+    loading: {
+        position: 'absolute',
+        left: '50%',
+    },
 });
 
 const EstimatesTable = props => {
     const classes = useStyles();
-    const { size } = props;
     // Default table
     let rows = <TableRow><TableCell>Выберите объект</TableCell></TableRow>
     // Loaded table

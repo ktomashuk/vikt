@@ -6,6 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import FormGroup from '@material-ui/core/FormGroup';
 import Button from '@material-ui/core/Button';
 import Spinner from '../UI/Spinner/Spinner';
+import SaveIcon from '@material-ui/icons/Save';
 import { getUserProfile, updateUserProfile } from '../../store/actions/auth';
 import { showInfo, loadPageName } from '../../store/actions/info';
 import { connect } from 'react-redux';
@@ -78,7 +79,8 @@ const UserDashboard = props => {
             <TextField id="email" label="Email" variant="filled" 
             defaultValue={props.email} onChange={e => {setEmail(e.target.value)}}
             style={{marginBottom: 10}}/>
-            <Button variant="contained" color="primary" onClick={updateProfileHandler}>
+            <Button variant="contained" color="primary" 
+            startIcon={<SaveIcon />} onClick={updateProfileHandler}>
             Сохранить
             </Button>
             </FormGroup>

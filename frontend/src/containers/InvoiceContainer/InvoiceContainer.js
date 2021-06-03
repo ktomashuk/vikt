@@ -8,8 +8,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { loadPageName } from '../../store/actions/info';
 // Custom components
 import InvoiceTable from '../../components/InvoiceTable/InvoiceTable';
-import UndoButton from '../../components/UndoButton/UndoButton';
 import SearchBar from '../../components/SearchBar/SearchBar';
+import InvoiceAddForm from '../../components/InvoiceAddForm/InvoiceAddForm';
 // Material UI
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -123,6 +123,13 @@ const EstimatesContainer = React.memo(props => {
                     <Grid item xs={6} className={classes.bottomGrid}>
                     <Paper>
                     <Box style={{marginBottom: 10, display: 'flex', alignItems: 'center'}}>
+                    <InvoiceAddForm />
+                    </Box>
+                    </Paper>
+                    </Grid>
+                    <Grid item xs={6} className={classes.bottomGrid}>
+                    <Paper>
+                    <Box style={{marginBottom: 10, display: 'flex', alignItems: 'center'}}>
                     <FormControl className={classes.formControl}>
                             <InputLabel id="object-select-label">Выбор объекта</InputLabel>
                             <Select
@@ -137,8 +144,7 @@ const EstimatesContainer = React.memo(props => {
                     </Box>
                     <InvoiceTable />
                     </Paper>
-                    </Grid>
-                    <Grid item xs={6} className={classes.bottomGrid}>
+                    
                     </Grid>
                 </Grid>
                 </div>
