@@ -24,6 +24,7 @@ import { connect } from 'react-redux';
 import { logoutUser } from '../../../store/actions/auth';
 import { loadPageName } from '../../../store/actions/info';
 import { unloadEstimates } from '../../../store/actions/estimates';
+import { unloadContractors } from '../../../store/actions/contractors';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,15 +58,24 @@ const MainDrawer = React.memo(props => {
       };
     // Clicking a drawer item
     const drawerClick = (adress) => {
-      if (adress === 'estimates') {
-      setState({ ...state, open: false });
-      props.history.push(`/${adress}`); 
-      } else {
-      setState({ ...state, open: false });
-      props.history.push(`/${adress}`);
-      if (props.estimatesLoaded) {
-      props.unloadEstimates(); }
-      }
+      switch(adress){
+      case 'estimates':
+        setState({ ...state, open: false });
+        props.history.push(`/${adress}`);
+        props.unloadContractors();
+        break;
+      case 'contractors':
+        setState({ ...state, open: false });
+        props.history.push(`/${adress}`);
+        props.unloadEstimates();
+        break;
+      default:
+        setState({ ...state, open: false });
+        props.history.push(`/${adress}`);
+        props.unloadEstimates();
+        props.unloadContractors();
+        break;
+      };
     };
     // Drawer menu contents
     const drawerItems = [
@@ -100,7 +110,7 @@ const MainDrawer = React.memo(props => {
               click: () => drawerClick('invoices'),
             },
             {
-              text: 'Реестр поставщиков',
+              text: 'Реестр контрагентов',
               click: () => drawerClick('contractors'),
             }
           ],
@@ -224,4 +234,5 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { logoutUser, loadPageName, unloadEstimates })(withRouter(MainDrawer));
+export default connect(mapStateToProps, 
+  { logoutUser, loadPageName, unloadEstimates, unloadContractors })(withRouter(MainDrawer));

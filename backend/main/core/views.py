@@ -20,3 +20,10 @@ class ContractorViewSet(viewsets.ModelViewSet):
     queryset = Contractor.objects.all()
     serializer_class = ContractorSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class ContractorUpdateView(generics.UpdateAPIView):
+    queryset = Contractor.objects.all()
+    serializer_class = ContractorSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'

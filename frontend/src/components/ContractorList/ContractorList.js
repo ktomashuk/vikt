@@ -57,7 +57,7 @@ const ContractorList = (props) => {
                         <TableRow key="header">
                             <TableCell key="head"
                             style={{ maxWidth: 1500}}>
-                            <h6>Поставщики</h6>
+                            <h6>Контрагенты</h6>
                             </TableCell>
                         </TableRow>
                     </TableHead>

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { loadPageName } from '../../store/actions/info';
+import { loadPageName, showSpinner } from '../../store/actions/info';
 import { Jumbotron, Container, Button } from 'react-bootstrap';
 
 const HomePage = props => {
@@ -19,7 +19,7 @@ const HomePage = props => {
                 <h1>Здравствуйте, {props.firstName} {props.lastName}!</h1>
                 <p>Это тестовая версия портала.</p>
                 <Button onClick={
-                    () => console.log(localStorage.getItem('access_token'))}>
+                    () => {console.log(localStorage.getItem('access_token'))}}>
                     JWT</Button>
             </Container>
             </Jumbotron>
@@ -52,4 +52,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, { loadPageName })(HomePage);
+export default connect(mapStateToProps, { loadPageName, showSpinner })(HomePage);

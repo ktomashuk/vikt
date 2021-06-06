@@ -7,7 +7,7 @@ import Loading from '../Loading/Loading';
 import { connect } from 'react-redux';
 import { checkAuthentication } from '../../store/actions/auth';
 import { hideError } from '../../store/actions/errors';
-import { hideInfo } from '../../store/actions/info';
+import { hideInfo, hideSpinner } from '../../store/actions/info';
 import { hideSnack } from '../../store/actions/snack';
 
 const Layout = React.memo(props => {
@@ -33,7 +33,8 @@ const Layout = React.memo(props => {
             message={props.snackMessage}
             severity={props.snackSeverity}
             clicked={() => {props.hideSnack()}}/>
-            <Loading active={false}/>
+            <Loading active={props.loadingSpinner}
+            clicked={() => hideSpinner()}/>
         </React.Fragment>
     );
 });
@@ -47,6 +48,7 @@ const mapStateToProps = state => {
         pageName: state.info.pageName,
         showInfo: state.info.showInfo,
         infoMessage: state.info.infoMessage,
+        loadingSpinner: state.info.loadingSpinner,
         snackSeverity: state.snack.snackSeverity,
         snackMessage: state.snack.snackMessage,
         showSnack: state.snack.showSnack,

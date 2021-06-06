@@ -15,10 +15,17 @@ const reducer = (state = initialState, action) => {
                 contractorsList: action.data,
             };
         case actionTypes.CONTRACTOR_DETAILS_LOAD:
+        case actionTypes.CONTRACTOR_DETAILS_UPDATE:
             return {...state, 
                 contractorData: action.data,
                 contractorDataLoaded: true,
             };
+        case actionTypes.CONTRACTOR_DETAILS_UNLOAD:
+            return {...state,
+                contractorsLoaded: false,
+                contractorsList: null,
+                contractorData: [],
+                contractorDataLoaded: false,}
         default:
             return state;
     }

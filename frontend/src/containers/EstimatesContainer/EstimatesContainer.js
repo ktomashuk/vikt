@@ -25,7 +25,7 @@ import Fab from '@material-ui/core/Fab';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        flexGrow: 1,
+        
     },
     paper: {
         display: 'flex',
@@ -48,7 +48,8 @@ const useStyles = makeStyles((theme) => ({
         height: '20%',
     },
     bottomGrid: {
-        height: '75%',
+        display: 'flex',
+        height: '50%',
     },
     icon: {
         cursor: 'pointer',

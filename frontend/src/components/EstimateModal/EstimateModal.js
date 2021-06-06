@@ -169,8 +169,6 @@ const EstimateModal = (props) => {
                         onClick={() => addRowAndContinue()}>Сохранить и добавить ещё</Button>
                         <Button variant="contained" color="primary" 
                         onClick={() => addRowAndClose()}>Сохранить и выйти</Button>
-                        <Button variant="contained" color="primary"
-                        onClick={() => console.log(estimatesObject)}>Click me</Button>
                         </div>
       </Dialog>
     </div>

@@ -23,12 +23,20 @@ const columns = [
 ]
 
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
     },
     container: {
-        maxHeight: 500,
+        [theme.breakpoints.down('lg')]:{
+        height: 540,
+        },
+        [theme.breakpoints.up('lg')]:{
+        height: 750,
+        },
+        [theme.breakpoints.up('xl')]:{
+        height: 1100,
+        },
     },
     icon: {
         cursor: 'pointer',
@@ -42,7 +50,7 @@ const useStyles = makeStyles({
         position: 'absolute',
         left: '50%',
     },
-});
+}));
 
 const EstimatesTable = props => {
     const classes = useStyles();

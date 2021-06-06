@@ -19,3 +19,16 @@ export const loadPageName = (name) => dispatch => {
         pageName: name,
     });
 };
+
+export const showSpinner = () => dispatch => {
+    dispatch({
+        type: actionTypes.INFO_LOADING_SPINNER_SHOW,
+    });
+}
+
+
+export const hideSpinner = () => dispatch => {
+    dispatch({
+        type: actionTypes.INFO_LOADING_SPINNER_HIDE,
+    });
+}
