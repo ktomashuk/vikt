@@ -5,7 +5,7 @@ import * as actionTypes from '../actions/actionTypes';
 export const getObjects = () => async dispatch => {
 
     try {
-        const res = await axiosInstance.get('/objects/');
+        const res = await axiosInstance.get('router/objects/');
         const data = res.data
         dispatch({
             type: actionTypes.OBJECTS_LOAD_SUCCESS,

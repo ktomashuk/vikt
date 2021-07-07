@@ -26,23 +26,10 @@ const useStyles = makeStyles((theme) => ({
 
 const SearchBar = (props) => {
   const classes = useStyles();
-  const { type, estimatesObject, estimatesSystem } = props;
+  const { type, estimatesSystem, filter } = props;
   // Text in a search bar
   const [searchValue, setSearchValue] = useState('');
-  // Searching estimates
-  const searchEstimatesFilter = (object, system) => {
-    if (object === 0) {
-        return;
-    }
-    switch(system) {
-        case 'Все':
-            props.searchEstimatesByObject(searchValue, object);
-            break;
-        default:
-            props.searchEstimatesByObjectBySystem(searchValue, object, system)
-            break;
-    }
-  };
+  // Start searching when text in a search bar changes
   useEffect(() => {
         const search = setTimeout(() => {
             // Saving search result to redux
@@ -54,8 +41,9 @@ const SearchBar = (props) => {
             // Checking what to search
             switch(type){
                 case 'estimates':
-                    searchEstimatesFilter(estimatesObject, estimatesSystem);
-                    break;
+                    return filter(searchValue, estimatesSystem);
+                case 'contractors':
+                    return filter(searchValue);
                 default:
                     return;
             }

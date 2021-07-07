@@ -3,7 +3,7 @@ import ErrorModal from '../UI/ErrorModal/ErrorModal';
 import InfoModal from '../UI/InfoModal/InfoModal';
 import SnackBar from '../UI/SnackBar/SnackBar';
 import MainDrawer from '../Navigation/NavigationBar/Drawer';
-import Loading from '../Loading/Loading';
+import Loading from '../UI/Loading/Loading';
 import { connect } from 'react-redux';
 import { checkAuthentication } from '../../store/actions/auth';
 import { hideError } from '../../store/actions/errors';

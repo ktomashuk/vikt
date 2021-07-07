@@ -8,6 +8,8 @@ import undoReducer from './reducers/undo';
 import snackReduer from './reducers/snack';
 import searchReducer from './reducers/search';
 import contractorReducer from './reducers/contractors';
+import cableReducer from './reducers/cable';
+import deleteReducer from './reducers/delete';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
@@ -27,6 +29,8 @@ const rootReducer = combineReducers({
     snack: snackReduer,
     srch: searchReducer,
     contr: contractorReducer,
+    cable: cableReducer,
+    del: deleteReducer,
 });
 
 const store = createStore(

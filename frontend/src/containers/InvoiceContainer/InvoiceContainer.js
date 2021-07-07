@@ -7,9 +7,7 @@ import { getObjects } from '../../store/actions/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { loadPageName } from '../../store/actions/info';
 // Custom components
-import InvoiceTable from '../../components/InvoiceTable/InvoiceTable';
 import SearchBar from '../../components/SearchBar/SearchBar';
-import InvoiceAddForm from '../../components/InvoiceAddForm/InvoiceAddForm';
 // Material UI
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -18,8 +16,7 @@ import Box from '@material-ui/core/Box';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import Tooltip from '@material-ui/core/Tooltip';
-import AddIcon from '@material-ui/icons/Add';
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -59,29 +56,15 @@ const EstimatesContainer = React.memo(props => {
 
     const classes = useStyles();
     const [object, setObject] = useState('');
-    const [objectId, setObjectId] = useState('');
-    const [system, setSystem] = useState('');
-    const [openModal, setOpenModal] = useState(false);
     // Loading data for a chosen object
     const objChange = event => {
         setObject(event.target.value);
         const objName = event.target.value;
         const objFound = props.objectsData.filter(obj => obj.name === objName)[0];
-        setObjectId(objFound.id);
-        setSystem('');
         props.getEstimatesByObject(objFound.id);
         props.getSystemsByObject(objFound.id);
     };
-    // Loading data for a chosen system
-    const systemChange = event => {
-        const chosenSystem = event.target.value;
-        setSystem(chosenSystem);
-        if (chosenSystem === 'Все') {
-        props.getEstimatesByObject(objectId);
-        } else {
-        props.getEstimatesByObjectBySystem(objectId, chosenSystem);
-        }
-    };
+    
     // Setting page name
     useEffect(() => {
         props.loadPageName('Добавить платежку');
@@ -104,26 +87,13 @@ const EstimatesContainer = React.memo(props => {
             );
         });
     };
-    
-    // Systems list by default
-    let systemsList = <MenuItem>Загрузка</MenuItem>;
 
-    if (props.systemsLoaded) {
-        systemsList = props.systemsByObject.map(sys => {
-            return(
-                <MenuItem value={sys} key={sys}>
-                    {sys}
-                </MenuItem>
-            );
-        });
-    };
         return(
                 <div className={classes.root}>
                 <Grid container spacing={1}>
                     <Grid item xs={6} className={classes.bottomGrid}>
                     <Paper>
                     <Box style={{marginBottom: 10, display: 'flex', alignItems: 'center'}}>
-                    <InvoiceAddForm />
                     </Box>
                     </Paper>
                     </Grid>
@@ -142,7 +112,6 @@ const EstimatesContainer = React.memo(props => {
                     </FormControl>
                     <SearchBar type="invoices"/>
                     </Box>
-                    <InvoiceTable />
                     </Paper>
                     
                     </Grid>

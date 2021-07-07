@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { getEstimatesByObject, 
     getSystemsByObject, 
-    getEstimatesByObjectBySystem } from '../../store/actions/estimates';
+    getEstimatesByObjectBySystem, searchEstimatesByObject, searchEstimatesByObjectBySystem } from '../../store/actions/estimates';
 import { getObjects } from '../../store/actions/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { loadPageName } from '../../store/actions/info';
 // Custom components
-import EstimatesTable from '../../components/EstimatesTable/EstimatesTable';
-import UndoButton from '../../components/UndoButton/UndoButton';
+import EstimatesTable from '../../components/Estimates/EstimatesTable/EstimatesTable';
+import UndoButton from '../../components/Buttons/UndoButton/UndoButton';
 import SearchBar from '../../components/SearchBar/SearchBar';
-import EstimateModal from '../../components/EstimateModal/EstimateModal';
+import EstimateModal from '../../components/Estimates/EstimateModal/EstimateModal';
 // Material UI
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -19,14 +19,10 @@ import Box from '@material-ui/core/Box';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import Tooltip from '@material-ui/core/Tooltip';
-import AddIcon from '@material-ui/icons/Add';
-import Fab from '@material-ui/core/Fab';
+import AddButton from '../../components/Buttons/AddButton/AddButton';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        
-    },
+
     paper: {
         display: 'flex',
         flex: 1,
@@ -57,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EstimatesContainer = React.memo(props => {
-
+    const { estimatesObject, estimatesSystem } = props;
     const classes = useStyles();
     const [object, setObject] = useState('');
     const [objectId, setObjectId] = useState('');
@@ -84,6 +80,20 @@ const EstimatesContainer = React.memo(props => {
         props.getEstimatesByObject(objectId);
         } else {
         props.getEstimatesByObjectBySystem(objectId, chosenSystem);
+        }
+    };
+    // Searching estimates
+    const searchEstimatesFilter = (value, system) => {
+    if (estimatesObject === 0) {
+        return;
+    }
+    switch(system) {
+        case 'Все':
+            props.searchEstimatesByObject(value, estimatesObject);
+            break;
+        default:
+            props.searchEstimatesByObjectBySystem(value, estimatesObject, estimatesSystem)
+            break;
         }
     };
     // Setting page name
@@ -148,19 +158,15 @@ const EstimatesContainer = React.memo(props => {
                                 </Select>
                             </FormControl>
                             <Box component="span">
-                            <SearchBar type="estimates"/>
+                            <SearchBar type="estimates" filter={searchEstimatesFilter}/>
                             </Box>
-                            <Tooltip
-                                title={addingEnabled ? <h6>Добавить позицию</h6> : <h6>Выберите объект</h6>} arrow>
-                                <Fab color="primary" aria-label="add" className={classes.button}
-                                size="medium">
-                                <AddIcon className={classes.icon}
-                                style={addingEnabled ? {color: 'white'} : {color: 'grey'}}
-                                onClick={addingEnabled ? () => {
+                            <AddButton tooltipOn="Добавить позицию" tooltipOff="Выберите объект"
+                            addingEnabled={addingEnabled}
+                            clicked={
+                                () => {
                                 setOpenModal(true);
-                                setTimeout(() => setOpenModal(false), 500)} : undefined } />
-                                </Fab>
-                            </Tooltip>
+                                setTimeout(() => setOpenModal(false), 500)}}
+                            />
                             <UndoButton />
                         </Paper>
                     </Grid>
@@ -176,6 +182,8 @@ const mapStateToProps = state => {
     return {
         estimatesLoaded: state.est.estimatesLoaded,
         estimatesData: state.est.estimatesData,
+        estimatesObject: state.est.estimatesObject,
+        estimatesSystem: state.est.estimatesSystem,
         objectsLoaded: state.core.objectsLoaded,
         objectsData: state.core.objectsData,
         systemsByObject: state.est.systemsByObject,
@@ -185,4 +193,5 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, 
     { getEstimatesByObject, getObjects, 
-        getSystemsByObject, getEstimatesByObjectBySystem, loadPageName })(EstimatesContainer)
+        getSystemsByObject, getEstimatesByObjectBySystem,
+        searchEstimatesByObjectBySystem, searchEstimatesByObject, loadPageName })(EstimatesContainer)

@@ -8,6 +8,8 @@ import EstimatesContainer from './containers/EstimatesContainer/EstimatesContain
 import InvoiceContainer from './containers/InvoiceContainer/InvoiceContainer';
 import Placeholder from './components/Placeholder/Placeholder';
 import ContractorsContainer from './containers/ContractorsContainer/ContractorsContainer';
+import CableContainer from './containers/CableContainer/CableContainer';
+import IsolationContainer from './containers/IsolationContainer/IsolationContainer';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -16,13 +18,15 @@ const App = (props) => {
   return (
       <React.Fragment>
       <Layout />
-      <Route exact path="/login" component={LoginPage} />
       <Route exact path="/" component={HomePage} />
+      <Route exact path="/login" component={LoginPage} />
       <Route exact path="/user-dashboard" component={UserDashboard} />
       <Route exact path="/estimates" component={EstimatesContainer} />
       <Route exact path="/placeholder" component={Placeholder} />
       <Route exact path="/invoices" component={InvoiceContainer} />
       <Route exact path="/contractors" component={ContractorsContainer} />
+      <Route exact path="/cable-journal" component={CableContainer} />
+      <Route exact path="/isolation" component={IsolationContainer} />
       </React.Fragment>
   );
 }

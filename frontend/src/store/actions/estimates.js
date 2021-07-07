@@ -5,7 +5,7 @@ import * as actionTypes from '../actions/actionTypes';
 export const getEstimates = () => async dispatch => {
 
     try {
-        const res = await axiosInstance.get('/estimates/');
+        const res = await axiosInstance.get('router/estimates/');
         const data = res.data
         dispatch({
             type: actionTypes.ESTIMATES_LOAD_SUCCESS,
@@ -25,6 +25,9 @@ export const getEstimates = () => async dispatch => {
 export const getEstimatesByObject = (object) => async dispatch => {
 
     try {
+        dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_SHOW,
+        });
         const res = await axiosInstance.get(`est/est-obj/${object}?ordering=system_number,ware_number`);
         const data = res.data
         dispatch({
@@ -32,6 +35,9 @@ export const getEstimatesByObject = (object) => async dispatch => {
             data: data,
             objId: object,
             system: 'Все',
+        });
+        dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_HIDE,
         });
     } catch(err) {
         dispatch({
@@ -48,6 +54,9 @@ export const getEstimatesByObject = (object) => async dispatch => {
 export const getEstimatesByObjectBySystem = (object, system) => async dispatch => {
 
     try {
+        dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_SHOW,
+        });
         const res = await axiosInstance.get(`est/est-obj-sys/${object}/${system}?ordering=system_number,ware_number`);
         const data = res.data
         dispatch({
@@ -55,6 +64,9 @@ export const getEstimatesByObjectBySystem = (object, system) => async dispatch =
             data: data,
             objId: object,
             system: system,
+        });
+        dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_HIDE,
         });
     } catch(err) {
         dispatch({
@@ -92,7 +104,7 @@ export const getSystemsByObject = (object) => async dispatch => {
 export const deleteEstimateRow = (rowId) => async dispatch => {
 
     try {
-        await axiosInstance.delete(`/estimates/${rowId}`);
+        await axiosInstance.delete(`router/estimates/${rowId}`);
         dispatch({
             type: actionTypes.ESTIMATE_ROW_DELETE_SUCCESS,
         });
@@ -112,7 +124,7 @@ export const deleteEstimateRow = (rowId) => async dispatch => {
 export const addEstimateRow = (data) => async dispatch => {
 
     try {
-        await axiosInstance.post(`/estimates/`, data);
+        await axiosInstance.post(`router/estimates/`, data);
         dispatch({
             type: actionTypes.ESTIMATE_ROW_ADD_SUCCESS,
         });
@@ -158,11 +170,17 @@ export const editEstimateRow = (rowId, data) => async dispatch => {
 export const searchEstimatesByObject = (ware, objId) => async dispatch => {
 
     try {
+        dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_SHOW,
+        });
         const res = await axiosInstance.get(`est/search-est-obj/${objId}/?search=${ware}&ordering=system_number,ware_number`);
         const data = res.data
         dispatch({
             type: actionTypes.SEARCH_ESTIMATES,
             data: data,
+        });
+        dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_HIDE,
         });
     } catch(err) {
         dispatch({
@@ -178,11 +196,17 @@ export const searchEstimatesByObject = (ware, objId) => async dispatch => {
 export const searchEstimatesByObjectBySystem = (ware, objId, system) => async dispatch => {
 
     try {
+        dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_SHOW,
+        });
         const res = await axiosInstance.get(`est/search-est-obj-sys/${objId}/${system}?search=${ware}&ordering=system_number,ware_number`);
         const data = res.data
         dispatch({
             type: actionTypes.SEARCH_ESTIMATES,
             data: data,
+        });
+        dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_HIDE,
         });
     } catch(err) {
         dispatch({

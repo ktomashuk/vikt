@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import store from './store/store';
 import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import { createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 
 const theme = createMuiTheme({
@@ -22,9 +22,9 @@ const theme = createMuiTheme({
 ReactDOM.render(
     <Provider store={store}>
     <ThemeProvider theme={theme}>
-    <BrowserRouter>
+    <HashRouter>
     <App />
-    </BrowserRouter>
+    </HashRouter>
     </ThemeProvider>
     </Provider>,
   document.getElementById('root')

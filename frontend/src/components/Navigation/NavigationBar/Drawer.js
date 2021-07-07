@@ -1,24 +1,29 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+// Material UI elements
+import Collapse from '@material-ui/core/Collapse';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
+// Icons
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import MenuIcon from '@material-ui/icons/Menu';
 import HomeIcon from '@material-ui/icons/Home';
 import DescriptionIcon from '@material-ui/icons/Description';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
+import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import Collapse from '@material-ui/core/Collapse';
-import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
+// Redux
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logoutUser } from '../../../store/actions/auth';
@@ -47,6 +52,8 @@ const MainDrawer = React.memo(props => {
     const [openInv, setOpenInv] = useState(false);
     const [openReq, setOpenReq] = useState(false);
     const [openEst, setOpenEst] = useState(false);
+    const [openDoc, setOpenDoc] = useState(false);
+    const [openCont, setOpenCont] = useState(false);
     const [openProfile, setOpenProfile] = useState(false);
     // Drawer toggle
     const [state, setState] = useState({ open: false });
@@ -87,7 +94,7 @@ const MainDrawer = React.memo(props => {
         },
         {
           text: 'Заявки',
-          icon: <DescriptionIcon />,
+          icon: <LibraryBooksIcon />,
           collapsable: true,
           click: () => {setOpenReq(!openReq)},
           condition: openReq,
@@ -109,10 +116,6 @@ const MainDrawer = React.memo(props => {
               text: 'Добавить платежку',
               click: () => drawerClick('invoices'),
             },
-            {
-              text: 'Реестр контрагентов',
-              click: () => drawerClick('contractors'),
-            }
           ],
         },
         {
@@ -131,6 +134,40 @@ const MainDrawer = React.memo(props => {
               click: () => {window.open('http://127.0.0.1:8000/admin/estimates/estimate/import/', '_blank');
               setState({ ...state, open: false })
             },
+            },
+          ],
+        },
+        {
+          text: 'Документы',
+          icon: <DescriptionIcon />,
+          collapsable: true,
+          click: () => {setOpenDoc(!openDoc)},
+          condition: openDoc,
+          nestedItems: [
+            {
+              text: 'Кабельные журналы',
+              click: () => drawerClick('cable-journal'),
+            },
+            {
+              text: 'Акт измерения изоляции',
+              click: () => drawerClick('isolation'),
+            },
+          ],
+        },
+        {
+          text: 'Контрагенты',
+          icon: <MenuBookIcon />,
+          collapsable: true,
+          click: () => {setOpenCont(!openCont)},
+          condition: openCont,
+          nestedItems: [
+            {
+              text: 'Объекты',
+              click: () => drawerClick('cable-journal'),
+            },
+            {
+              text: 'Контрагенты',
+              click: () => drawerClick('contractors'),
             },
           ],
         },

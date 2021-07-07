@@ -3,7 +3,8 @@ import * as actionTypes from '../actions/actionTypes';
 const initialState = {
     undoActive: false,
     undoType: '',
-    undoData: null,
+    undoData: [],
+    undoDataTemp: [],
     undoId: 0,
 };
 
@@ -16,13 +17,27 @@ const reducer = (state = initialState, action) => {
                 undoData: action.undoData,
                 undoId: action.undoId,
             };
-        case actionTypes.UNDO_ESTIMATE_ROW_ADD:
-        case actionTypes.UNDO_ESTIMATE_ROW_DELETE:
-        case actionTypes.UNDO_ESTIMATE_ROW_EDIT:
+        case actionTypes.UNDO_CABLE_JOURNAL_ROW_ADD:
+            return {...state,
+                undoType: action.undoType,
+                undoDataTemp: [...state.undoDataTemp, action.data]
+            };
+        case actionTypes.UNDO_CABLE_JOURNAL_ROW_REMOVE:
+            return {...state,
+                undoType: action.undoType,
+                undoDataTemp: state.undoDataTemp.filter(item => item.id !== action.data),
+            };
+        case actionTypes.UNDO_CABLE_JOURNAL_DATA_SAVE:
+            return {...state,
+            undoActive: true,
+            undoData: state.undoDataTemp,
+            undoDataTemp: [], 
+            };
+        case actionTypes.UNDO_CLEAR:
             return {...state, 
                 undoActive: false,
                 undoType: '',
-                undoData: null,
+                undoData: [],
                 undoId: 0,
             };
         default:
