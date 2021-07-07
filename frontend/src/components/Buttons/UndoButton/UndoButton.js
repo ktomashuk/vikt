@@ -26,43 +26,39 @@ const UndoButton = props => {
     // Refreshing the data after the undo
     const refreshEstimateData = () => {
     // Checking what data to load after row was restored
-    setTimeout(() => {
-        if (estimatesSystem === 'Все' && !searchActive ) {
-            props.getEstimatesByObject(estimatesObject);
-        };
-        if (estimatesSystem !== 'Все' && !searchActive) {
-            props.getEstimatesByObjectBySystem(estimatesObject, estimatesSystem);
-        };
-        if (estimatesSystem === 'Все' && searchActive) {
-            props.searchEstimatesByObject(searchResult, estimatesObject);
-        };
-        if (estimatesSystem !== 'Все' && searchActive) {
-            props.searchEstimatesByObjectBySystem(searchResult, estimatesObject, estimatesSystem)  ;
-        };
-    }, 500);
+    if (estimatesSystem === 'Все' && !searchActive ) {
+        props.getEstimatesByObject(estimatesObject);
+    };
+    if (estimatesSystem !== 'Все' && !searchActive) {
+        props.getEstimatesByObjectBySystem(estimatesObject, estimatesSystem);
+    };
+    if (estimatesSystem === 'Все' && searchActive) {
+        props.searchEstimatesByObject(searchResult, estimatesObject);
+    };
+    if (estimatesSystem !== 'Все' && searchActive) {
+        props.searchEstimatesByObjectBySystem(searchResult, estimatesObject, estimatesSystem)  ;
+    };
     };
     // Clicking the undo button
-    const undoClickHandler = (type, data) => {
+    const undoClickHandler = async (type, data) => {
         switch (type) { 
             // Undoing the deleting of an estimates row
             case 'estimate_row_delete':
-                props.undoEstimateRowDelete(data);
-                refreshEstimateData();
-                break;
+                await props.undoEstimateRowDelete(data);
+                return refreshEstimateData();
             case 'estimate_row_edit':
-                props.undoEstimateRowEdit(undoId, data)
-                refreshEstimateData();
-                break;
+                await props.undoEstimateRowEdit(undoId, data)
+                return refreshEstimateData();
             case 'cable_journal_delete':
-                props.undoCableJournalDelete(data);
+                await props.undoCableJournalDelete(data);
                 break;
             case 'cable_journal_edit':
-                props.undoCableJournalRowEdit(undoId, data);
+                await props.undoCableJournalRowEdit(undoId, data);
                 break;
             default:
                 break;
         }
-    }
+    };
     // Tooltip text
     let tooltipTitle = <h6>Отмена недоступна</h6>;
     if (undoActive) {

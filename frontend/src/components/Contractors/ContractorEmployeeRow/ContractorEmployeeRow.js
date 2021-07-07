@@ -6,16 +6,16 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
+import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
+// Redux
 import { connect } from 'react-redux';
-import { deleteEstimateRow, addEstimateRow, editEstimateRow, 
-    getEstimatesByObject, getEstimatesByObjectBySystem, 
-    searchEstimatesByObject, searchEstimatesByObjectBySystem } from '../../../store/actions/estimates';
-import { undoDataSave } from '../../../store/actions/undo';
+import { addRepresentative, deleteRepresentative, 
+    editRepresentative, getRepresentativesByContractor } from '../../../store/actions/contractors';
 
 const _ = require('lodash');
 
@@ -36,28 +36,28 @@ const useStyles = makeStyles({
     },
 });
 
-const EstimatesRow = (props) => {
+const ContractorEmployeeRow = (props) => {
     const classes = useStyles();
-    const { row, estimatesSystem, estimatesObject, searchActive, searchResult } = props;
+    const { row, representatives } = props;
     // State of row being edited before editing
     const [rowOld, setRowOld] = useState({
-        system_number: '',
-        ware_number: '',
-        ware: '',
-        units: '',
-        quantity: '',
-        price: '',
-        system: '',
+        id: 0,
+        first_name: '',
+        last_name: '',
+        patron_name: '',
+        position: '',
+        phone: '',
+        email: '',
         note: '',
     });
     const [rowNew, setRowNew] = useState({
-        system_number: '',
-        ware_number : '',
-        ware: '',
-        units: '',
-        quantity: '',
-        price: '',
-        system: '',
+        id: 0,
+        first_name: '',
+        last_name: '',
+        patron_name: '',
+        position: '',
+        phone: '',
+        email: '',
         note: '',
     });
     // Collapse open
@@ -74,25 +74,27 @@ const EstimatesRow = (props) => {
     const startEditingRow =  (rowId) => {
         setCollapseOpen(true);
         setEditing({rowId: rowId, enabled: true});
-        const rowFound = props.estimatesData.find(row => row.id === rowId);
+        const rowFound = representatives.find(row => row.id === rowId);
         setRowOld({
-            system_number: rowFound.system_number,
-            ware_number: rowFound.ware_number,
-            ware: rowFound.ware,
-            units: rowFound.units,
-            quantity: rowFound.quantity,
-            price: rowFound.price,
-            system: rowFound.system,
+            id: rowFound.id,
+            first_name: rowFound.first_name,
+            last_name: rowFound.last_name,
+            patron_name: rowFound.patron_name,
+            position: rowFound.position,
+            phone: rowFound.phone,
+            email: rowFound.email,
+            company: rowFound.company,
             note: rowFound.note,
         });
         setRowNew({
-            system_number: rowFound.system_number,
-            ware_number: rowFound.ware_number,
-            ware: rowFound.ware,
-            units: rowFound.units,
-            quantity: rowFound.quantity,
-            price: rowFound.price,
-            system: rowFound.system,
+            id: rowFound.id,
+            first_name: rowFound.first_name,
+            last_name: rowFound.last_name,
+            patron_name: rowFound.patron_name,
+            position: rowFound.position,
+            phone: rowFound.phone,
+            email: rowFound.email,
+            company: rowFound.company,
             note: rowFound.note,
         });
         setRowLoaded(true);
@@ -102,56 +104,42 @@ const EstimatesRow = (props) => {
         setEditing({rowId: 0, enabled: false});
         setRowLoaded(false);
         setRowNew({
-            system_number: '',
-            ware_number: '',
-            ware: '',
-            units: '',
-            quantity: '',
-            price: '',
-            system: '',
+            id: 0,
+            first_name: '',
+            last_name: '',
+            patron_name: '',
+            position: '',
+            phone: '',
+            email: '',
+            company: 0,
             note: '',
         });
     };
     // Confirming edit
-    const confirmEdit = () => {
+    const confirmEdit = async () => {
         const equality = _.isEqual(rowOld, rowNew);
         if (!equality){
             const data = JSON.stringify(rowNew);
-            props.editEstimateRow(editing.rowId, data);
-            props.undoDataSave('estimate_row_edit', rowOld, editing.rowId);
+            await props.editRepresentative(editing.rowId, data);
+            props.getRepresentativesByContractor(row.company);
         }
         setEditing({rowId: 0, enabled: false});
         setRowLoaded(false);
-        // Checking what data to load after row was restored
-        setTimeout(() => {
-            if (estimatesSystem === 'Все' && !searchActive ) {
-                props.getEstimatesByObject(estimatesObject);
-            };
-            if (estimatesSystem !== 'Все' && !searchActive) {
-                props.getEstimatesByObjectBySystem(estimatesObject, estimatesSystem);
-            };
-            if (estimatesSystem === 'Все' && searchActive) {
-                props.searchEstimatesByObject(searchResult, estimatesObject);
-            };
-            if (estimatesSystem !== 'Все' && searchActive) {
-                props.searchEstimatesByObjectBySystem(searchResult, estimatesObject, estimatesSystem)  ;
-            };
-        }, 500)
     };
     // Clicking delete button
     const startDeletingRow = (rowId) => {
         setCollapseOpen(true);
         setDeleting({rowId: rowId, enabled: true});
-        const rowFound = props.estimatesData.find(row => row.id === rowId);
+        const rowFound = representatives.find(row => row.id === rowId);
         setRowOld({
-            id: rowId,
-            system_number: rowFound.system_number,
-            ware_number: rowFound.ware_number,
-            ware: rowFound.ware,
-            units: rowFound.units,
-            quantity: rowFound.quantity,
-            price: rowFound.price,
-            system: rowFound.system,
+            id: rowFound.id,
+            first_name: rowFound.first_name,
+            last_name: rowFound.last_name,
+            patron_name: rowFound.patron_name,
+            position: rowFound.position,
+            phone: rowFound.phone,
+            email: rowFound.email,
+            company: rowFound.company,
             note: rowFound.note,
         });
     };
@@ -161,9 +149,8 @@ const EstimatesRow = (props) => {
     };
     // Confirming delete 
     const confirmDelete = () => {
-        props.undoDataSave('estimate_row_delete', rowOld, deleting.rowId);
         setDeleting({rowId: 0, enabled: false});
-        props.deleteEstimateRow(deleting.rowId);
+        props.deleteRepresentative(deleting.rowId);
         setRowRender(false);
     };
     // Clicking confirm button
@@ -246,8 +233,37 @@ const EstimatesRow = (props) => {
                         {editing.enabled && rowLoaded ?
                         <Table size="small">
                             <TableBody>
-                            <TableRow key={`cr${row.id}`}>
-                               
+                            <TableRow key={`cr1${row.id}`}>
+                            <TableCell key={`tc1${row.id}`}>
+                                <TextField label="Фамилия"
+                                defaultValue={rowOld.last_name}
+                                onChange={(e) => setRowNew({...rowNew, last_name: e.target.value})} 
+                                style={{marginRight: 10, width: "31%"}}/>
+                                <TextField label="Имя"
+                                defaultValue={rowOld.first_name}
+                                onChange={(e) => setRowNew({...rowNew, first_name: e.target.value})} 
+                                style={{marginRight: 10, width: "31%"}}/>
+                                <TextField label="Отчество"
+                                defaultValue={rowOld.patron_name}
+                                onChange={(e) => setRowNew({...rowNew, patron_name: e.target.value})} 
+                                style={{width: "31%"}}/>
+                            </TableCell>
+                            </TableRow>
+                            <TableRow key={`cr2${row.id}`}> 
+                            <TableCell key={`tc2${row.id}`}>
+                            <TextField label="Должность"
+                                defaultValue={rowOld.position}
+                                onChange={(e) => setRowNew({...rowNew, position: e.target.value})} 
+                                style={{marginRight: 10, width: "31%"}}/>
+                            <TextField label="Телефон"
+                                defaultValue={rowOld.phone}
+                                onChange={(e) => setRowNew({...rowNew, phone: e.target.value})} 
+                                style={{marginRight: 10, width: "31%"}}/>
+                            <TextField label="Email"
+                                defaultValue={rowOld.email}
+                                onChange={(e) => setRowNew({...rowNew, email: e.target.value})} 
+                                style={{marginRight: 10, width: "31%"}}/>
+                            </TableCell>
                             </TableRow>
                             </TableBody>
                         </Table> : null }
@@ -268,17 +284,11 @@ const EstimatesRow = (props) => {
 
 const mapStateToProps = state => {
     return {
-        estimatesLoaded: state.est.estimatesLoaded,
-        estimatesData: state.est.estimatesData,
-        systemsByObject: state.est.systemsByObject,
-        estimatesObject: state.est.estimatesObject,
-        estimatesSystem: state.est.estimatesSystem,
-        searchActive: state.srch.searchActive,
-        searchResult: state.srch.searchResult,
+        representatives: state.contr.representatives,
     };
 };
 
 
-export default connect(mapStateToProps, { deleteEstimateRow, addEstimateRow, editEstimateRow, undoDataSave,
-    getEstimatesByObject, getEstimatesByObjectBySystem, 
-    searchEstimatesByObject, searchEstimatesByObjectBySystem })(EstimatesRow);
+export default connect(mapStateToProps, 
+    { addRepresentative, deleteRepresentative, 
+        editRepresentative, getRepresentativesByContractor })(ContractorEmployeeRow);

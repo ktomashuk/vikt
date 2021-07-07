@@ -17,6 +17,7 @@ router.register(r'invoice_details', invoice_views.InvoiceDetailsViewSet)
 router.register(r'estimates', estimate_views.EstimateViewSet)
 router.register(r'objects', core_views.ObjectViewSet)
 router.register(r'contractors', core_views.ContractorViewSet)
+router.register(r'representatives', core_views.RepresentativeViewSet)
 router.register(r'cables', cable_views.CableJournalViewSet)
 
 urlpatterns = [

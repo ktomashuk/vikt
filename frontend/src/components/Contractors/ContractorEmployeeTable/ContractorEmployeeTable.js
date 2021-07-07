@@ -82,7 +82,7 @@ const ContractorEmployeeTable = (props) => {
                             <TableCell key="c4">
                             Email
                             </TableCell>
-                            <TableCell key="c4">
+                            <TableCell key="c5">
                             Действия
                             </TableCell>
                         </TableRow>

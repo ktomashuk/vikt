@@ -8,9 +8,12 @@ import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Tooltip from '@material-ui/core/Tooltip'
 import CircularProgress from '@material-ui/core/CircularProgress';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
 // Custom components
 import ContractorEmployeeTable from '../ContractorEmployeeTable/ContractorEmployeeTable';
+import ContractorEmployeeModal from '../ContractorEmployeeModal/ContractorEmployeeModal';
 // Redux
 import { connect } from 'react-redux';
 import { editContractorData, deleteContractor,
@@ -47,10 +50,11 @@ const useStyles = makeStyles({
 
 const ContractorDetails = (props) => {
     const classes = useStyles();
-    const { contractorData, contractorDataLoaded, contractorDataSpinner, representatives } = props;
+    const { contractorData, contractorDataLoaded, contractorDataSpinner } = props;
     const [editing, setEditing] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [fieldsData, setFieldsData] = useState(null);
+    const [openModal, setOpenModal] = useState(false);
     // Changing tabs
     const [tab, setTab] = useState(0);
     const handleChange = (event, newValue) => {
@@ -131,6 +135,7 @@ const ContractorDetails = (props) => {
         // The left part with basic details and employees
         contractorDetails = (
             <React.Fragment>
+                <ContractorEmployeeModal show={openModal}/>
                 <Box className={classes.containerTop}>
                 <TextField label="Название" value={fieldsData.name || ''}
                 style={{width: '48%', marginRight: 20, marginTop: 10}}
@@ -148,7 +153,15 @@ const ContractorDetails = (props) => {
                 onChange={editing ? (e) => setFieldsData({...fieldsData, phone: e.target.value}) : undefined}/>
                 </Box>
                 <Divider style={{marginTop: 10}}/>
-                <p style={{display: 'flex', justifyContent: 'center', marginTop: 10}}>Сотрудники</p>
+                <div style={{display: 'flex', justifyContent: 'center', marginTop: 10, marginBottom: 10 }}>
+                Сотрудники 
+                <Tooltip title={<h6>Добавить сотрудника</h6>} arrow>
+                <PersonAddIcon style={{marginLeft: 5, cursor: 'pointer'}}
+                onClick={() => {
+                    setOpenModal(true);
+                    setTimeout(() => setOpenModal(false), 500)}}/>
+                </Tooltip>
+                </div>
                 <Divider />
                 <Box className={classes.containerTop}>
                 <ContractorEmployeeTable />

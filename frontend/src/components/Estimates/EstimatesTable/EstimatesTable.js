@@ -54,11 +54,12 @@ const useStyles = makeStyles((theme) => ({
 
 const EstimatesTable = props => {
     const classes = useStyles();
+    const { estimatesData, estimatesLoaded } = props;
     // Default table
     let rows = <TableRow><TableCell>Выберите объект</TableCell></TableRow>
     // Loaded table
-    if (props.estimatesLoaded) {
-        rows = props.data.map((row) => {
+    if (estimatesLoaded) {
+        rows = estimatesData.map((row) => {
             return(
                 <EstimatesRow row={row} key={`row${row.id}`}/>
             );

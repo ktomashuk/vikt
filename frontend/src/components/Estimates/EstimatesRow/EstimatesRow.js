@@ -119,17 +119,16 @@ const EstimatesRow = (props) => {
         });
     };
     // Confirming edit
-    const confirmEdit = () => {
+    const confirmEdit = async () => {
         const equality = _.isEqual(rowOld, rowNew);
         if (!equality){
             const data = JSON.stringify(rowNew);
-            props.editEstimateRow(editing.rowId, data);
+            await props.editEstimateRow(editing.rowId, data);
             props.undoDataSave('estimate_row_edit', rowOld, editing.rowId);
         }
         setEditing({rowId: 0, enabled: false});
         setRowLoaded(false);
         // Checking what data to load after row was restored
-        setTimeout(() => {
             if (estimatesSystem === 'Все' && !searchActive ) {
                 props.getEstimatesByObject(estimatesObject);
             };
@@ -142,7 +141,6 @@ const EstimatesRow = (props) => {
             if (estimatesSystem !== 'Все' && searchActive) {
                 props.searchEstimatesByObjectBySystem(searchResult, estimatesObject, estimatesSystem)  ;
             };
-        }, 500)
     };
     // Clicking delete button
     const startDeletingRow = (rowId) => {

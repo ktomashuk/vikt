@@ -78,3 +78,16 @@ class RepresentativesByContractorView(generics.ListAPIView):
     def get_queryset(self):
         company_id = self.kwargs['contractor']
         return Representative.objects.filter(company=company_id)
+
+
+class RepresentativeViewSet(viewsets.ModelViewSet):
+    queryset = Representative.objects.all()
+    serializer_class = RepresentativeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class RepresentativeUpdateView(generics.UpdateAPIView):
+    queryset = Representative.objects.all()
+    serializer_class = RepresentativeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'

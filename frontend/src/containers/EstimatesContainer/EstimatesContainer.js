@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EstimatesContainer = React.memo(props => {
-    const { estimatesObject, estimatesSystem } = props;
+    const { estimatesObject, estimatesSystem, objectsData } = props;
     const classes = useStyles();
     const [object, setObject] = useState('');
     const [objectId, setObjectId] = useState('');
@@ -62,10 +62,10 @@ const EstimatesContainer = React.memo(props => {
     const [addingEnabled, setAddingEnabled] = useState(false);
 
     // Loading data for a chosen object
-    const objChange = event => {
+    const objChange = (event) => {
         setObject(event.target.value);
         const objName = event.target.value;
-        const objFound = props.objectsData.filter(obj => obj.name === objName)[0];
+        const objFound = objectsData.filter(obj => obj.name === objName)[0];
         setObjectId(objFound.id);
         setSystem('');
         props.getEstimatesByObject(objFound.id);
@@ -171,7 +171,7 @@ const EstimatesContainer = React.memo(props => {
                         </Paper>
                     </Grid>
                     <Grid item xs={12} className={classes.bottomGrid}>
-                        <EstimatesTable data={props.estimatesData} key="table1"/>
+                        <EstimatesTable key="table1"/>
                     </Grid>
                 </Grid>
                 </div>

@@ -16,4 +16,6 @@ urlpatterns = [
          core_views.SearchContractorsByTypeView.as_view(), name='search-contractors-by-type'),
     path('representatives-by-contractor/<int:contractor>/',
          core_views.RepresentativesByContractorView.as_view(), name='representatives-by-contractor'),
+    path('representative-update/<int:id>/',
+         core_views.RepresentativeUpdateView.as_view(), name='representative-update'),
 ]

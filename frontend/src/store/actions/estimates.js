@@ -28,7 +28,7 @@ export const getEstimatesByObject = (object) => async dispatch => {
         dispatch({
             type: actionTypes.INFO_LOADING_SPINNER_SHOW,
         });
-        const res = await axiosInstance.get(`est/est-obj/${object}?ordering=system_number,ware_number`);
+        const res = await axiosInstance.get(`est/est-obj/${object}/?ordering=system_number,ware_number`);
         const data = res.data
         dispatch({
             type: actionTypes.ESTIMATES_LOAD_SUCCESS,
@@ -57,7 +57,7 @@ export const getEstimatesByObjectBySystem = (object, system) => async dispatch =
         dispatch({
             type: actionTypes.INFO_LOADING_SPINNER_SHOW,
         });
-        const res = await axiosInstance.get(`est/est-obj-sys/${object}/${system}?ordering=system_number,ware_number`);
+        const res = await axiosInstance.get(`est/est-obj-sys/${object}/${system}/?ordering=system_number,ware_number`);
         const data = res.data
         dispatch({
             type: actionTypes.ESTIMATES_LOAD_SUCCESS,
@@ -82,7 +82,7 @@ export const getEstimatesByObjectBySystem = (object, system) => async dispatch =
 export const getSystemsByObject = (object) => async dispatch => {
 
     try {
-        const res = await axiosInstance.get(`est/systems-per-object/${object}`);
+        const res = await axiosInstance.get(`est/systems-per-object/${object}/`);
         const data = res.data
         const uniqueSystems = [...new Set(data.map(item => item.system))];
         uniqueSystems.unshift('Все');
@@ -104,7 +104,7 @@ export const getSystemsByObject = (object) => async dispatch => {
 export const deleteEstimateRow = (rowId) => async dispatch => {
 
     try {
-        await axiosInstance.delete(`router/estimates/${rowId}`);
+        await axiosInstance.delete(`router/estimates/${rowId}/`);
         dispatch({
             type: actionTypes.ESTIMATE_ROW_DELETE_SUCCESS,
         });

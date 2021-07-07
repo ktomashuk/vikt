@@ -218,3 +218,56 @@ export const getRepresentativesByContractor = (contractorId) => async dispatch =
         });
     }
 };
+
+export const addRepresentative = (data) => async dispatch => {
+    try { 
+        await axiosInstance.post(`router/representatives/`, data);
+        dispatch({
+            type: actionTypes.SNACK_SHOW,
+            snackSeverity: 'success',
+            snackMessage: 'Сотрудник добавлен!',
+        });
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно добавить сотрудника!',
+        });   
+    }
+};
+
+export const deleteRepresentative = (rowId) => async dispatch => {
+
+    try {
+        await axiosInstance.delete(`router/representatives/${rowId}/`);
+        dispatch({
+            type: actionTypes.SNACK_SHOW,
+            snackSeverity: 'warning',
+            snackMessage: 'Сотрудник удален!',
+        });
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно удалить данные!',
+        });   
+    }
+};
+
+export const editRepresentative = (rowId, data) => async dispatch => {
+
+    try {
+        await axiosInstance.put(`/core/representative-update/${rowId}/`, data);
+        dispatch({
+            type: actionTypes.SNACK_SHOW,
+            snackSeverity: 'warning',
+            snackMessage: 'Запись изменена!',
+        });
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ESTIMATE_ROW_EDIT_FAIL,
+        });
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно изменить запись!',
+        });   
+    }
+};
