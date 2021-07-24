@@ -11,7 +11,7 @@ import Grid from '@material-ui/core/Grid';
 // Custom components
 import IsolationPanel from '../../components/Documents/Isolation/IsolationPanel/IsolationPanel';
 import IsolationTable from '../../components/Documents/Isolation/IsolationTable/IsolationTable';
-import DeleteBar from '../../components/UI/DeleteBar/DeleteBar';
+import ResistanceBar from '../../components/UI/ResistanceBar/ResistanceBar';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -57,7 +57,7 @@ const IsolationContainer = (props) => {
 
     return(
         <div className={classes.root}>
-            <DeleteBar />
+            <ResistanceBar />
             <Grid container spacing={1}>
                     <Grid item xs={12}>
                     <Paper className={classes.paper}>

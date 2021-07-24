@@ -18,16 +18,19 @@ const reducer = (state = initialState, action) => {
                 undoId: action.undoId,
             };
         case actionTypes.UNDO_CABLE_JOURNAL_ROW_ADD:
+        case actionTypes.UNDO_ESTIMATES_ROW_ADD:
             return {...state,
                 undoType: action.undoType,
                 undoDataTemp: [...state.undoDataTemp, action.data]
             };
         case actionTypes.UNDO_CABLE_JOURNAL_ROW_REMOVE:
+        case actionTypes.UNDO_ESTIMATES_ROW_REMOVE:
             return {...state,
                 undoType: action.undoType,
                 undoDataTemp: state.undoDataTemp.filter(item => item.id !== action.data),
             };
         case actionTypes.UNDO_CABLE_JOURNAL_DATA_SAVE:
+        case actionTypes.UNDO_ESTIMATES_DATA_SAVE:
             return {...state,
             undoActive: true,
             undoData: state.undoDataTemp,
@@ -37,7 +40,7 @@ const reducer = (state = initialState, action) => {
             return {...state, 
                 undoActive: false,
                 undoType: '',
-                undoData: [],
+                undoDataTemp: [],
                 undoId: 0,
             };
         default:

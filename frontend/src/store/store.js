@@ -10,6 +10,7 @@ import searchReducer from './reducers/search';
 import contractorReducer from './reducers/contractors';
 import cableReducer from './reducers/cable';
 import deleteReducer from './reducers/delete';
+import selectorsReducer from './reducers/selectors';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
     contr: contractorReducer,
     cable: cableReducer,
     del: deleteReducer,
+    sel: selectorsReducer,
 });
 
 const store = createStore(

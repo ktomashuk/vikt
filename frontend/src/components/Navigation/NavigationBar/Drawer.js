@@ -155,7 +155,7 @@ const MainDrawer = React.memo(props => {
           ],
         },
         {
-          text: 'Контрагенты',
+          text: 'База знаний',
           icon: <MenuBookIcon />,
           collapsable: true,
           click: () => {setOpenCont(!openCont)},
@@ -163,7 +163,7 @@ const MainDrawer = React.memo(props => {
           nestedItems: [
             {
               text: 'Объекты',
-              click: () => drawerClick('cable-journal'),
+              click: () => drawerClick('object'),
             },
             {
               text: 'Контрагенты',

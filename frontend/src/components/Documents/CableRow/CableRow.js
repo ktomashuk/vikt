@@ -77,13 +77,13 @@ const CableRow = (props) => {
         if (deleteItemsNumber < 1) {
             setDeletingCheck(false);
         }
-    }, [deleteItemsNumber])
+    }, [deleteItemsNumber]);
     // Checking the checkbox when 'select all' is pressed in the cable panel
     useEffect(() => {
         if (deleteAllEnabled) {
             checkboxClickHandler('cable_journal', row.id);
         };
-    }, [deleteAllEnabled])
+    }, [deleteAllEnabled]);
     // Clicking edit row button
     const startEditingRow =  (rowId) => {
         setCollapseOpen(true);
@@ -201,7 +201,7 @@ const CableRow = (props) => {
                 {row.cable_cut}
                 </TableCell>
                 <TableCell key={`length${row.id}`} onClick={() => checkboxClickHandler('cable_journal', row.id)}>
-                {row.length}
+                {row.length}    
                 </TableCell>
                 <TableCell key={`buttons${row.id}`}>
                     {collapseOpen ? 

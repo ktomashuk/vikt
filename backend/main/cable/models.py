@@ -1,10 +1,10 @@
 from django.db import models
-from core.models import Object
+from core.models import Object, System
 
 
 class CableJournal(models.Model):
     object = models.ForeignKey(Object, default=1, on_delete=models.PROTECT)
-    system = models.CharField(max_length=150)
+    system = models.ForeignKey(System, default=1, on_delete=models.PROTECT)
     index = models.IntegerField(default=1)
     name = models.CharField(max_length=150, default='')
     start = models.CharField(max_length=150)

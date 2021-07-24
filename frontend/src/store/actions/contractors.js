@@ -48,7 +48,7 @@ export const getContractorsByType = (type) => async dispatch => {
         dispatch({
             type: actionTypes.CONTRACTOR_LIST_SPINNER_SHOW,
         });
-        const res = await axiosInstance.get(`/core/contractors-by-type/${type}?ordering=name`);
+        const res = await axiosInstance.get(`/core/contractors-by-type/${type}/?ordering=name`);
         const data = res.data;
         dispatch({
             type: actionTypes.CONTRACTOR_LIST_LOAD,
@@ -118,7 +118,7 @@ export const searchContractorsByType = (searchValue, type) => async dispatch => 
         dispatch({
             type: actionTypes.CONTRACTOR_LIST_SPINNER_SHOW,
         });
-        const res = await axiosInstance.get(`core/search-contractors-by-type/${type}?search=${searchValue}&ordering=name`);
+        const res = await axiosInstance.get(`core/search-contractors-by-type/${type}/?search=${searchValue}&ordering=name`);
         const data = res.data
         dispatch({
             type: actionTypes.CONTRACTOR_LIST_LOAD,

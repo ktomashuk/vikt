@@ -1,16 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
-import { getEstimatesByObject, 
-    getSystemsByObject, 
-    getEstimatesByObjectBySystem, searchEstimatesByObject, searchEstimatesByObjectBySystem } from '../../store/actions/estimates';
-import { getObjects } from '../../store/actions/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { loadPageName } from '../../store/actions/info';
-// Custom components
-import EstimatesTable from '../../components/Estimates/EstimatesTable/EstimatesTable';
-import UndoButton from '../../components/Buttons/UndoButton/UndoButton';
-import SearchBar from '../../components/SearchBar/SearchBar';
-import EstimateModal from '../../components/Estimates/EstimateModal/EstimateModal';
 // Material UI
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -20,6 +9,19 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import AddButton from '../../components/Buttons/AddButton/AddButton';
+// Custom components
+import EstimatesTable from '../../components/Estimates/EstimatesTable/EstimatesTable';
+import UndoButton from '../../components/Buttons/UndoButton/UndoButton';
+import SearchBar from '../../components/SearchBar/SearchBar';
+import EstimateModal from '../../components/Estimates/EstimateModal/EstimateModal';
+import DeleteBar from '../../components/UI/DeleteBar/DeleteBar';
+// Redux
+import { connect } from 'react-redux';
+import { getEstimatesByObject, getEstimatesByObjectBySystem,
+     searchEstimatesByObject, searchEstimatesByObjectBySystem } from '../../store/actions/estimates';
+import { getObjects, getSystemsByObject, getObjectById, getUnits } from '../../store/actions/core';
+import { switchToDeleting } from '../../store/actions/selectors';
+import { loadPageName } from '../../store/actions/info';
 
 const useStyles = makeStyles((theme) => ({
 
@@ -53,10 +55,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EstimatesContainer = React.memo(props => {
-    const { estimatesObject, estimatesSystem, objectsData } = props;
+    const { estimatesObject, estimatesSystem, objectsData, objectsLoaded,
+    chosenObjectId, chosenObjectSystems, chosenObjectSystemsLoaded } = props;
     const classes = useStyles();
     const [object, setObject] = useState('');
-    const [objectId, setObjectId] = useState('');
     const [system, setSystem] = useState('');
     const [openModal, setOpenModal] = useState(false);
     const [addingEnabled, setAddingEnabled] = useState(false);
@@ -66,20 +68,21 @@ const EstimatesContainer = React.memo(props => {
         setObject(event.target.value);
         const objName = event.target.value;
         const objFound = objectsData.filter(obj => obj.name === objName)[0];
-        setObjectId(objFound.id);
         setSystem('');
         props.getEstimatesByObject(objFound.id);
+        props.getObjectById(objFound.id);
         props.getSystemsByObject(objFound.id);
         setAddingEnabled(true);
     };
     // Loading data for a chosen system
     const systemChange = event => {
         const chosenSystem = event.target.value;
+        const sysFound = chosenObjectSystems.filter(sys => sys.acronym === chosenSystem)[0]['id'];
         setSystem(chosenSystem);
         if (chosenSystem === 'Все') {
-        props.getEstimatesByObject(objectId);
+        props.getEstimatesByObject(chosenObjectId);
         } else {
-        props.getEstimatesByObjectBySystem(objectId, chosenSystem);
+        props.getEstimatesByObjectBySystem(chosenObjectId, sysFound);
         }
     };
     // Searching estimates
@@ -96,20 +99,18 @@ const EstimatesContainer = React.memo(props => {
             break;
         }
     };
-    // Setting page name
+    // Setting page name & fetching objects && activating delete bar
     useEffect(() => {
         props.loadPageName('Просмотр смет');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-    // Fetching objects
-    useEffect(() => {
         props.getObjects();
+        props.getUnits();
+        props.switchToDeleting();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     // Objects list by default
     let objectsList = <MenuItem>Загрузка</MenuItem>;
-
-    if (props.objectsLoaded) {
+    // Objects list after it is loaded
+    if (objectsLoaded) {
         objectsList = props.objectsData.map(item => {
             return(
                 <MenuItem value={item.name} key={item.name}>
@@ -118,15 +119,14 @@ const EstimatesContainer = React.memo(props => {
             );
         });
     };
-    
     // Systems list by default
     let systemsList = <MenuItem>Загрузка</MenuItem>;
-
-    if (props.systemsLoaded) {
-        systemsList = props.systemsByObject.map(sys => {
+    // Systems list after it is loaded
+    if (chosenObjectSystemsLoaded) {
+        systemsList = chosenObjectSystems.map(sys => {
             return(
-                <MenuItem value={sys} key={sys}>
-                    {sys}
+                <MenuItem value={sys.acronym} key={sys.acronym}>
+                    {sys.acronym}
                 </MenuItem>
             );
         });
@@ -134,6 +134,7 @@ const EstimatesContainer = React.memo(props => {
         return(
                 <div className={classes.root}>
                 <EstimateModal show={openModal}/>
+                <DeleteBar />
                 <Grid container spacing={1}>
                     <Grid item xs={12} className={classes.topGrid}>
                         <Paper className={classes.paper}>
@@ -186,12 +187,13 @@ const mapStateToProps = state => {
         estimatesSystem: state.est.estimatesSystem,
         objectsLoaded: state.core.objectsLoaded,
         objectsData: state.core.objectsData,
-        systemsByObject: state.est.systemsByObject,
-        systemsLoaded: state.est.systemsLoaded,
+        chosenObjectId: state.core.chosenObjectId,
+        chosenObjectSystems: state.core.chosenObjectSystems,
+        chosenObjectSystemsLoaded: state.core.chosenObjectSystemsLoaded,
     };
 };
 
 export default connect(mapStateToProps, 
-    { getEstimatesByObject, getObjects, 
-        getSystemsByObject, getEstimatesByObjectBySystem,
-        searchEstimatesByObjectBySystem, searchEstimatesByObject, loadPageName })(EstimatesContainer)
+    { getEstimatesByObject, getObjects, getObjectById, getUnits,
+        getSystemsByObject, getEstimatesByObjectBySystem, switchToDeleting,
+        searchEstimatesByObjectBySystem, searchEstimatesByObject, loadPageName })(EstimatesContainer);

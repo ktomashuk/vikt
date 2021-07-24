@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from .models import Object, Contractor, Representative
+from .models import Object, Contractor, Representative, System, Unit
 
 
 class ObjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Object
-        fields = ('id', 'name')
+        fields = '__all__'
 
 
 class ContractorSerializer(serializers.ModelSerializer):
@@ -23,4 +23,16 @@ class ContractorTypeSerializer(serializers.ModelSerializer):
 class RepresentativeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Representative
+        fields = '__all__'
+
+
+class SystemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = System
+        fields = '__all__'
+
+
+class UnitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Unit
         fields = '__all__'

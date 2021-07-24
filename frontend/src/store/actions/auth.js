@@ -66,7 +66,7 @@ export const logoutUser = () => dispatch => {
 
 export const getUserProfile = (id) => async dispatch => {
     try {
-    const res = await axiosInstance.get(`/users/${id}/`);
+    const res = await axiosInstance.get(`router/users/${id}/`);
     const firstName = res.data.first_name;
     const lastName = res.data.last_name;
     const email = res.data.email;

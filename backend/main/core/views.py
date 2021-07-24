@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions
-from .serializers import ObjectSerializer, ContractorSerializer, ContractorTypeSerializer, RepresentativeSerializer
-from .models import Object, Contractor, Representative
+from .serializers import ObjectSerializer, ContractorSerializer,\
+    ContractorTypeSerializer, RepresentativeSerializer, SystemSerializer, UnitSerializer
+from .models import Object, Contractor, Representative, System, Unit
 from rest_framework import generics, filters
 from rest_framework.filters import OrderingFilter
 
@@ -9,6 +10,13 @@ class ObjectViewSet(viewsets.ModelViewSet):
     queryset = Object.objects.all()
     serializer_class = ObjectSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class ObjectUpdateView(generics.UpdateAPIView):
+    queryset = Object.objects.all()
+    serializer_class = ObjectSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'
 
 
 class ContractorsView(generics.ListAPIView):
@@ -91,3 +99,31 @@ class RepresentativeUpdateView(generics.UpdateAPIView):
     serializer_class = RepresentativeSerializer
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'id'
+
+
+class SystemsByObjectView(generics.ListAPIView):
+    serializer_class = SystemSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        object_id = self.kwargs['id']
+        return System.objects.filter(object=object_id)
+
+
+class SystemsViewSet(viewsets.ModelViewSet):
+    queryset = System.objects.all()
+    serializer_class = SystemSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class SystemUpdateView(generics.UpdateAPIView):
+    queryset = System.objects.all()
+    serializer_class = SystemSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'
+
+
+class UnitViewSet(viewsets.ModelViewSet):
+    queryset = Unit.objects.all()
+    serializer_class = UnitSerializer
+    permission_classes = [permissions.IsAuthenticated]

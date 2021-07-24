@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     },
     container: {
         [theme.breakpoints.down('lg')]:{
-        height: 500,
+        height: 550,
         },
         [theme.breakpoints.up('lg')]:{
         height: 750,

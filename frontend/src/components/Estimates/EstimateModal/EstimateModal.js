@@ -41,7 +41,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const EstimateModal = (props) => {
+const EstimateModal = React.memo(props => {
   const classes = useStyles();
   // Variables to control opening/closing
   const { show, estimatesObject } = props;
@@ -173,7 +173,7 @@ const EstimateModal = (props) => {
       </Dialog>
     </div>
   );
-}
+});
 
 const mapStateToProps = state => {
   return {

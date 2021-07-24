@@ -12,6 +12,7 @@ import Grid from '@material-ui/core/Grid';
 import CablePanel from '../../components/Documents/CablePanel/CablePanel';
 import CableTable from '../../components/Documents/CableTable/CableTable';
 import DeleteBar from '../../components/UI/DeleteBar/DeleteBar';
+import CableBar from '../../components/UI/CableBar/CableBar';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -58,6 +59,7 @@ const CableContainer = (props) => {
     return(
         <div className={classes.root}>
             <DeleteBar />
+            <CableBar />
             <Grid container spacing={1}>
                     <Grid item xs={12}>
                     <Paper className={classes.paper}>

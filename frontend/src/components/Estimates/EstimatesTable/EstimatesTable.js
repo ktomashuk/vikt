@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -7,9 +7,16 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+// Custom components
 import EstimatesRow from '../EstimatesRow/EstimatesRow';
+// Redux
 import { connect } from 'react-redux';
-
+import { getUnits } from '../../../store/actions/core';
+import { deleteEstimateRow, editEstimateRow, 
+    getEstimatesByObject, getEstimatesByObjectBySystem, 
+    searchEstimatesByObject, searchEstimatesByObjectBySystem } from '../../../store/actions/estimates';
+import { estimateDeleteAddItem, estimateDeleteRemoveItem, estimateDeleteRemoveAll } from '../../../store/actions/delete';
+import { undoDataSave, undoEstimateRowAdd, undoEstimateRowRemove } from '../../../store/actions/undo';
 
 const columns = [
     { id: 'number', label: 'Номер', minWidth: 50, maxWidth: 300 },
@@ -52,19 +59,55 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const EstimatesTable = props => {
+const EstimatesTable = React.memo(props => {
     const classes = useStyles();
-    const { estimatesData, estimatesLoaded } = props;
+    const { estimatesData, estimatesLoaded, estimatesSystem, units, unitsLoaded,
+    chosenObjectSystems, chosenObjectSystemsLoaded, chosenObjectId, 
+    deleteEstimateRow, editEstimateRow, 
+    estimateDeleteAddItem, estimateDeleteRemoveItem, estimatesRefreshNeeded, 
+    searchActive, searchResult,
+    undoDataSave, undoEstimateRowAdd, undoEstimateRowRemove } = props;
+    // Refresh estimates
+    const refreshEstimates = () => {
+        props.estimateDeleteRemoveAll();
+        if (estimatesSystem === 'Все' && !searchActive ) {
+            props.getEstimatesByObject(chosenObjectId);
+        };
+        if (estimatesSystem !== 'Все' && !searchActive) {
+            props.getEstimatesByObjectBySystem(chosenObjectId, estimatesSystem);
+        };
+        if (estimatesSystem === 'Все' && searchActive) {
+            props.searchEstimatesByObject(searchResult, chosenObjectId);
+        };
+        if (estimatesSystem !== 'Все' && searchActive) {
+            props.searchEstimatesByObjectBySystem(searchResult, chosenObjectId, estimatesSystem);
+        };
+    };
+    // Auto refreshing estimates after deleting
+    useEffect(() => {
+        if (estimatesRefreshNeeded) {
+            refreshEstimates();
+        };
+    }, [estimatesRefreshNeeded])
     // Default table
     let rows = <TableRow><TableCell>Выберите объект</TableCell></TableRow>
     // Loaded table
-    if (estimatesLoaded) {
+    if (estimatesLoaded && unitsLoaded && chosenObjectSystemsLoaded) {
         rows = estimatesData.map((row) => {
             return(
-                <EstimatesRow row={row} key={`row${row.id}`}/>
+                <EstimatesRow row={row} key={`row${row.id}`}
+                deleteClick={deleteEstimateRow}
+                editClick={editEstimateRow}
+                undoClick={undoDataSave}
+                undoAdd={undoEstimateRowAdd}
+                undoRemove={undoEstimateRowRemove}
+                checkOn={estimateDeleteAddItem}
+                checkOff={estimateDeleteRemoveItem}
+                units={units}
+                systems={chosenObjectSystems}/>
             );
         });
-    }
+    };
 
     return(
         <Paper key="papertable" className={classes.root}>
@@ -88,13 +131,26 @@ const EstimatesTable = props => {
             </TableContainer>
         </Paper>
     );
-};
+});
 
 const mapStateToProps = state => {
     return {
         estimatesLoaded: state.est.estimatesLoaded,
         estimatesData: state.est.estimatesData,
+        estimatesSystem: state.est.estimatesSystem,
+        estimatesRefreshNeeded: state.est.estimatesRefreshNeeded,
+        searchActive: state.srch.searchActive,
+        searchResult: state.srch.searchResult,
+        units: state.core.units,
+        unitsLoaded: state.core.unitsLoaded,
+        chosenObjectId: state.core.chosenObjectId,
+        chosenObjectSystems: state.core.chosenObjectSystems,
+        chosenObjectSystemsLoaded: state.core.chosenObjectSystemsLoaded,
     };
 };
 
-export default connect(mapStateToProps)(EstimatesTable);
+export default connect(mapStateToProps, { getUnits, 
+    estimateDeleteAddItem, estimateDeleteRemoveItem, estimateDeleteRemoveAll,
+    deleteEstimateRow, editEstimateRow, undoDataSave, undoEstimateRowAdd, undoEstimateRowRemove, 
+    getEstimatesByObject, getEstimatesByObjectBySystem, 
+    searchEstimatesByObject, searchEstimatesByObjectBySystem })(EstimatesTable);

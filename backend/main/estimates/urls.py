@@ -14,6 +14,8 @@ urlpatterns = [
          estimate_views.SearchEstimatesByObjectBySystemView.as_view(), name='search-est-obj-sys'),
     path('est-update/<int:id>/',
          estimate_views.EstimateUpdateView.as_view(), name='est-update'),
+    path('est-delete/',
+         estimate_views.EstimatesDeleteView.as_view(), name='est-delete'),
     path('test/',
          estimate_views.EstimatesAddedView.as_view(), name='test'),
 ]

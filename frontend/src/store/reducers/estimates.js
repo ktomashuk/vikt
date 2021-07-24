@@ -7,6 +7,7 @@ const initialState = {
     systemsLoaded: false,
     estimatesObject: 0,
     estimatesSystem: '',
+    estimatesRefreshNeeded: false,
 };
 
 const reducer = (state = initialState, action) => {
@@ -17,6 +18,7 @@ const reducer = (state = initialState, action) => {
                 estimatesData: action.data,
                 estimatesObject: action.objId,
                 estimatesSystem: action.system,
+                estimatesRefreshNeeded: false,
             };
         case actionTypes.ESTIMATE_SYSTEMS_LOAD_SUCCESS:
             return {...state,
@@ -33,7 +35,7 @@ const reducer = (state = initialState, action) => {
         case actionTypes.ESTIMATE_ROW_EDIT_FAIL:
             return {...state};
         case actionTypes.ESTIMATES_LOAD_FAIL:
-            return {...state, estimatesLoaded: false};
+            return {...state, estimatesLoaded: false };
         case actionTypes.ESTIMATES_UNLOAD_SUCCESS:
             return {...state, 
                 estimatesData: null, 
@@ -45,6 +47,8 @@ const reducer = (state = initialState, action) => {
             return {...state,
                 estimatesData: action.data
             };
+        case actionTypes.ESTIMATES_REFRESH_NEEDED:
+            return {...state, estimatesRefreshNeeded: true };
         default:
             return state;
     }

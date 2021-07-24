@@ -1,8 +1,10 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from .serializers import EstimateSerializer, SystemPerObjectSerializer
 from .models import Estimate
 from rest_framework import generics, filters
 from rest_framework.filters import OrderingFilter
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from django.db.models import Sum
 
 
@@ -10,6 +12,13 @@ class EstimateViewSet(viewsets.ModelViewSet):
     queryset = Estimate.objects.all()
     serializer_class = EstimateSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list))
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class EstimateUpdateView(generics.UpdateAPIView):
@@ -80,3 +89,13 @@ class EstimatesAddedView(generics.ListAPIView):
     queryset = Estimate.objects.annotate(total=Sum('quantity')).order_by('ware')
     serializer_class = EstimateSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class EstimatesDeleteView(APIView):
+    serializer_class = EstimateSerializer
+
+    def post(self, request, *args, **kwargs):
+        est_data = request.data
+        for i in est_data:
+            Estimate.objects.filter(id=i).delete()
+        return Response(request.data)

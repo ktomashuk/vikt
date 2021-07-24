@@ -2,8 +2,17 @@ from django.contrib import admin
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
 from .models import Estimate
-from core.models import Object
+from core.models import Object, System, Unit
 from import_export.admin import ImportExportModelAdmin
+
+
+class CustomSystemForeignKeyWidget(ForeignKeyWidget):
+    def get_queryset(self, value, row, *args, **kwargs):
+        obj_name = Object.objects.filter(name=row['object'])[0]
+        return self.model.objects.filter(
+            acronym=row["system"],
+            object=obj_name,
+        )
 
 
 class EstimateResource(resources.ModelResource):
@@ -11,6 +20,16 @@ class EstimateResource(resources.ModelResource):
         column_name='object',
         attribute='object',
         widget=ForeignKeyWidget(Object, 'name'))
+
+    system = fields.Field(
+        column_name='system',
+        attribute='system',
+        widget=CustomSystemForeignKeyWidget(System, 'acronym'))
+
+    units = fields.Field(
+        column_name='units',
+        attribute='units',
+        widget=ForeignKeyWidget(Unit, 'name'))
 
     class Meta:
         model = Estimate
@@ -23,3 +42,4 @@ class ViewAdmin(ImportExportModelAdmin):
 
 
 admin.site.register(Estimate, ViewAdmin)
+admin.site.register(Unit)

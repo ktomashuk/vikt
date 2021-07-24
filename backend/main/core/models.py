@@ -1,15 +1,6 @@
 from django.db import models
 
 
-class Object(models.Model):
-    name = models.CharField(max_length=150, blank=False)
-    date_added = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-
 class Contractor(models.Model):
     TYPES = [
         ('Поставщик', 'Поставщик'),
@@ -41,6 +32,30 @@ class Contractor(models.Model):
         return self.name
 
 
+class Object(models.Model):
+    name = models.CharField(max_length=150, blank=False)
+    full_name = models.CharField(max_length=150, blank=True)
+    city = models.CharField(max_length=150, blank=True)
+    address = models.CharField(max_length=150, blank=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
+    contractors = models.ManyToManyField(Contractor, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class System(models.Model):
+    acronym = models.CharField(max_length=50)
+    full_name = models.CharField(max_length=150, blank=True)
+    project_name = models.CharField(max_length=150, blank=True)
+    object = models.ForeignKey(Object, on_delete=models.CASCADE, default=1)
+
+    def __str__(self):
+        value = str(self.acronym) + ' ' + str(self.object.name)
+        return value
+
+
 class Representative(models.Model):
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150, blank=True)
@@ -53,3 +68,10 @@ class Representative(models.Model):
 
     def __str__(self):
         return self.first_name
+
+
+class Unit(models.Model):
+    name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.name

@@ -8,11 +8,16 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import Switch from '@material-ui/core/Switch';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
+// Redux
 import { connect } from 'react-redux';
 import { addDevice } from '../../../store/actions/cable';
 
@@ -55,6 +60,7 @@ const CableModal = (props) => {
       cable: '',
       cable_cut: '',
       prefix: '',
+      noNum: false,
   });
   const handleClose = () => {
     setOpen(false); 
@@ -81,7 +87,7 @@ const CableModal = (props) => {
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose} TransitionComponent={Transition} fullWidth maxWidth="md" >
+      <Dialog open={open} onClose={handleClose} TransitionComponent={Transition} fullWidth maxWidth="lg" >
         <AppBar className={classes.appBar}>
           <Toolbar>
             <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
@@ -93,28 +99,36 @@ const CableModal = (props) => {
           </Toolbar>
         </AppBar>
         <Table size="small" style={{marginTop: 10}}>
-                            <TableBody>
-                            <TableRow key={`cr`}>
-                            <TableCell key={`tc`}>
-                            <TextField className={classes.textField} label="Устройство" style={{width: "40%"}} value={device.name}
-                            onChange={(e) => {setDevice({...device, name: e.target.value})}}/>
-                            <TextField className={classes.textField} label="Кабель" style={{width: "25%"}} value={device.cable}
-                            onChange={(e) => {setDevice({...device, cable: e.target.value})}}/>
-                            <TextField className={classes.textField} label="Сечение" style={{width: "15%"}} value={device.cable_cut}
-                            onChange={(e) => {setDevice({...device, cable_cut: e.target.value})}}/>
-                            <TextField className={classes.textField} label="Префикс" style={{width: "15%"}} value={device.prefix}
-                            onChange={(e) => {setDevice({...device, prefix: e.target.value})}}/>
-                            </TableCell>
-                            </TableRow>
-                            </TableBody>
-                        </Table>
-                        <div className={classes.root}>
-                        <Button variant="contained" color="secondary" onClick={handleClose}>Отмена</Button>
-                        <Button variant="contained" color="primary" 
-                        onClick={() => addDeviceAndContinue()}>Сохранить и добавить ещё</Button>
-                        <Button variant="contained" color="primary" 
-                        onClick={() => addDeviceAndClose()}>Сохранить и выйти</Button>
-                        </div>
+            <TableBody>
+              <TableRow key={`cr`}>
+                <TableCell key={`tc`}>
+                  <TextField className={classes.textField} label="Устройство" style={{width: "35%"}} value={device.name}
+                  onChange={(e) => {setDevice({...device, name: e.target.value})}}/>
+                  <TextField className={classes.textField} label="Кабель" style={{width: "20%"}} value={device.cable}
+                  onChange={(e) => {setDevice({...device, cable: e.target.value})}}/>
+                  <TextField className={classes.textField} label="Сечение" style={{width: "15%"}} value={device.cable_cut}
+                  onChange={(e) => {setDevice({...device, cable_cut: e.target.value})}}/>
+                  <TextField className={classes.textField} label="Префикс" style={{width: "15%"}} value={device.prefix}
+                  onChange={(e) => {setDevice({...device, prefix: e.target.value})}}/>
+                <FormControl component="fieldset" style={{marginLeft: 10}}>
+                  <FormGroup>
+                <FormControlLabel labelPlacement="top"
+                control={<Switch checked={device.noNum} color="primary"
+                onChange={() => setDevice({...device, noNum: !device.noNum})} name="nunum" />}
+                label="Без номера"/>
+                  </FormGroup>
+                </FormControl>
+                  </TableCell>
+                  </TableRow>
+                  </TableBody>
+                  </Table>
+                  <div className={classes.root}>
+                  <Button variant="contained" color="secondary" onClick={handleClose}>Отмена</Button>
+                  <Button variant="contained" color="primary" 
+                  onClick={() => addDeviceAndContinue()}>Сохранить и добавить ещё</Button>
+                  <Button variant="contained" color="primary" 
+                  onClick={() => addDeviceAndClose()}>Сохранить и выйти</Button>
+                  </div>
       </Dialog>
     </div>
   );

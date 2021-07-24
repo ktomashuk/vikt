@@ -173,7 +173,7 @@ export const searchEstimatesByObject = (ware, objId) => async dispatch => {
         dispatch({
             type: actionTypes.INFO_LOADING_SPINNER_SHOW,
         });
-        const res = await axiosInstance.get(`est/search-est-obj/${objId}/?search=${ware}&ordering=system_number,ware_number`);
+        const res = await axiosInstance.get(`est/search-est-obj/${objId}/?search=${ware}&ordering=system_number,ware_number/`);
         const data = res.data
         dispatch({
             type: actionTypes.SEARCH_ESTIMATES,
@@ -199,7 +199,7 @@ export const searchEstimatesByObjectBySystem = (ware, objId, system) => async di
         dispatch({
             type: actionTypes.INFO_LOADING_SPINNER_SHOW,
         });
-        const res = await axiosInstance.get(`est/search-est-obj-sys/${objId}/${system}?search=${ware}&ordering=system_number,ware_number`);
+        const res = await axiosInstance.get(`est/search-est-obj-sys/${objId}/${system}?search=${ware}&ordering=system_number,ware_number/`);
         const data = res.data
         dispatch({
             type: actionTypes.SEARCH_ESTIMATES,

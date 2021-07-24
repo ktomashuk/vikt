@@ -40,7 +40,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const EstimateModal = (props) => {
+const ContractorAdd = (props) => {
   const classes = useStyles();
   // Variables to control opening/closing
   const { show } = props;
@@ -126,4 +126,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { addContractor, getContractors, showInfo })(EstimateModal);
+export default connect(mapStateToProps, { addContractor, getContractors, showInfo })(ContractorAdd);

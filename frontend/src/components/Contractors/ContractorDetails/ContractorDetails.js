@@ -21,7 +21,7 @@ import { editContractorData, deleteContractor,
 
 const useStyles = makeStyles({
     root: {
-        width: "100%",
+        width: "95%",
     },
     containerTop: {
         marginLeft: 20,
@@ -33,7 +33,7 @@ const useStyles = makeStyles({
         justifyContent: 'center',
     },
     paper: {
-        height: "100%",
+        position: 'relative',
     },
     button: {
         marginTop: 20,
@@ -123,7 +123,10 @@ const ContractorDetails = (props) => {
         setFieldsData(contractorData);
     }, [contractorData]);
     // Default state of the right panel
-    let contractorDetails = <p style={{position: 'relative', left: '45%', top: '45%'}}>Выберите контрагента</p>;
+    let contractorDetails = (
+    <Paper className={classes.paper}>
+        <p style={{ marginLeft: '45%', marginTop: '15%' }}>Выберите контрагента</p> 
+    </Paper>);
     let contractorReqs = null;
     let menu = null;
     // Showing spinner while data is loading

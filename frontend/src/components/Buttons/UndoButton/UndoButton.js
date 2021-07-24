@@ -5,11 +5,10 @@ import ReplayIcon from '@material-ui/icons/Replay';
 import Box from '@material-ui/core/Box';
 import Fab from '@material-ui/core/Fab';
 import Tooltip from '@material-ui/core/Tooltip';
-import { undoEstimateRowDelete, undoEstimateRowEdit, undoCableJournalDelete, undoCableJournalRowEdit } from '../../../store/actions/undo';
-import { getEstimatesByObject, 
-    getEstimatesByObjectBySystem, 
-    searchEstimatesByObject,
-    searchEstimatesByObjectBySystem } from '../../../store/actions/estimates';
+import { undoEstimateDelete, undoEstimateRowEdit, undoClear,
+    undoCableJournalDelete, undoCableJournalRowEdit } from '../../../store/actions/undo';
+import { getEstimatesByObject, getEstimatesByObjectBySystem, 
+    searchEstimatesByObject, searchEstimatesByObjectBySystem,  } from '../../../store/actions/estimates';
 
 const useStyles = makeStyles(() => ({   
     root: {
@@ -22,38 +21,26 @@ const useStyles = makeStyles(() => ({
 const UndoButton = props => {
     
     const classes = useStyles();
-    const { undoActive, undoType, undoData, undoId, estimatesObject, estimatesSystem, searchActive, searchResult } = props;
-    // Refreshing the data after the undo
-    const refreshEstimateData = () => {
-    // Checking what data to load after row was restored
-    if (estimatesSystem === 'Все' && !searchActive ) {
-        props.getEstimatesByObject(estimatesObject);
-    };
-    if (estimatesSystem !== 'Все' && !searchActive) {
-        props.getEstimatesByObjectBySystem(estimatesObject, estimatesSystem);
-    };
-    if (estimatesSystem === 'Все' && searchActive) {
-        props.searchEstimatesByObject(searchResult, estimatesObject);
-    };
-    if (estimatesSystem !== 'Все' && searchActive) {
-        props.searchEstimatesByObjectBySystem(searchResult, estimatesObject, estimatesSystem)  ;
-    };
-    };
+    const { undoActive, undoType, undoData, undoId, } = props;
     // Clicking the undo button
     const undoClickHandler = async (type, data) => {
         switch (type) { 
             // Undoing the deleting of an estimates row
-            case 'estimate_row_delete':
-                await props.undoEstimateRowDelete(data);
-                return refreshEstimateData();
+            case 'estimate_delete':
+                await props.undoEstimateDelete(data);
+                props.undoClear();
+                break;
             case 'estimate_row_edit':
-                await props.undoEstimateRowEdit(undoId, data)
-                return refreshEstimateData();
+                await props.undoEstimateRowEdit(undoId, data);
+                props.undoClear();
+                break;
             case 'cable_journal_delete':
                 await props.undoCableJournalDelete(data);
+                props.undoClear();
                 break;
             case 'cable_journal_edit':
                 await props.undoCableJournalRowEdit(undoId, data);
+                props.undoClear();
                 break;
             default:
                 break;
@@ -104,7 +91,7 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, 
-    { undoEstimateRowDelete, undoEstimateRowEdit,
+    { undoEstimateDelete, undoEstimateRowEdit,
         getEstimatesByObject, getEstimatesByObjectBySystem,
         searchEstimatesByObject, searchEstimatesByObjectBySystem,
-        undoCableJournalDelete, undoCableJournalRowEdit })(UndoButton);
+        undoCableJournalDelete, undoCableJournalRowEdit, undoClear })(UndoButton);

@@ -185,7 +185,7 @@ const ContractorEmployeeRow = (props) => {
             <React.Fragment key={`fragmentrow${row.id}`}>
             <TableRow key={`r${row.id}`} hover >
                 <TableCell padding="default" key={`fio${row.id}`}>
-                {row.first_name} {row.patron_name} {row.last_name}
+                {row.first_name} {row.last_name} {row.patron_name}
                 </TableCell>
                 <TableCell key={`position${row.id}`}>
                 {row.position}                    

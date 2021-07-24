@@ -18,4 +18,10 @@ urlpatterns = [
          core_views.RepresentativesByContractorView.as_view(), name='representatives-by-contractor'),
     path('representative-update/<int:id>/',
          core_views.RepresentativeUpdateView.as_view(), name='representative-update'),
+    path('edit-object/<int:id>/',
+         core_views.ObjectUpdateView.as_view(), name='edit-object'),
+    path('systems-by-object/<int:id>/',
+         core_views.SystemsByObjectView.as_view(), name='systems-by-object'),
+    path('edit-system/<int:id>/',
+         core_views.SystemUpdateView.as_view(), name='edit-system'),
 ]

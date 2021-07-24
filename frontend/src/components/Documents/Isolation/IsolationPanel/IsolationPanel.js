@@ -1,26 +1,22 @@
 import React, { useState, useEffect } from 'react';
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import Switch from '@material-ui/core/Switch';
-import FormGroup from '@material-ui/core/FormGroup';
-import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
+// Custom components
+import ClearButton from '../../../Buttons/ClearButton/ClearButton';
+import ExportButton from '../../../Buttons/ExportButton/ExportButton';
+import RefreshButton from '../../../Buttons/RefreshButton/RefreshButton';
 // Redux
 import { connect } from 'react-redux';
 import { getSystemsByObject } from '../../../../store/actions/estimates';
 import { getJournalByObjectBySystem } from '../../../../store/actions/cable';
 import { getObjects } from '../../../../store/actions/core';
 import { showInfo } from '../../../../store/actions/info';
-// Custom components
+import { switchToResistance } from '../../../../store/actions/selectors';
+import { cableDeleteAddAll, cableDeleteRemoveAll } from '../../../../store/actions/delete';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -55,42 +51,15 @@ const useStyles = makeStyles((theme) => ({
 const IsolationPanel = (props) => {
     const classes = useStyles();
     const { cableJournal, cableJournalLoaded, refreshNeeded } = props;
-    const [noNumChecked, setNoNumChecked] = useState(false);
-    const [customStartChecked, setCustomStartChecked] = useState(false);
     const [object, setObject] = useState('');
     const [objectId, setObjectId] = useState('');
     const [system, setSystem] = useState('');
-    //const [openModal, setOpenModal] = useState(false);
-    const [customStartDirection, setCustomStartDirection] = useState('L');
-    const [journal, setJournal] = useState({
-        object: null,
-        system: null,
-        index: 1,
-        prefix: '',
-        start: '1',
-        end: '1',
-        quantity: '1',
-        device: null,
-        startpoint: 0,
-        length: 0,
-    });
-
     // Fetching objects
     useEffect(() => {
         props.getObjects();
+        props.switchToResistance();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    // Changing starting index when journal is loaded
-    useEffect(() => {
-        if (cableJournalLoaded && cableJournal[0]) {
-            const lastIndex = cableJournal[cableJournal.length - 1].index;
-            const newIndex = Number(lastIndex) + 1;
-            setJournal({
-                ...journal, index: newIndex}); } else {
-            setJournal({
-                ...journal, index: 1, });
-            };
-    }, [cableJournal]);
     // Refreshing the journal manually
     const refreshJournal = () => { 
         props.cableDeleteRemoveAll();
@@ -110,7 +79,6 @@ const IsolationPanel = (props) => {
         setObjectId(objFound.id);
         setSystem('');
         props.getSystemsByObject(objFound.id);
-
     };
     // Loading data for a chosen system
     const systemChange = event => {
@@ -164,45 +132,16 @@ const IsolationPanel = (props) => {
                     value={system}>
                     {systemsList}
                 </Select>
-            </FormControl>                        
-            <TextField className={classes.textField} label="№ П/П" style={{width: "4%"}} value={journal.index}
-            onChange={(e) => setJournal({...journal, index: e.target.value})}/>            
-            <TextField className={classes.textField} label="Кол-во" style={{width: "5%"}} value={journal.quantity}
-            onChange={noNumChecked ? 
-            (e) => {setJournal({...journal, quantity: e.target.value})}
-            : (e) => {setJournal({...journal, quantity: e.target.value, end: Number(journal.start) + Number(e.target.value) - 1})}}/>
-            <TextField className={classes.textField} label="Начало" style={{width: "5%"}} value={journal.start}
-            disabled={noNumChecked} onChange={(e) => {setJournal({...journal, start: e.target.value, end: Number(e.target.value) + Number(journal.quantity) - 1})}}/>
-            <TextField className={classes.textField} label="Конец" style={{width: "5%"}} disabled={noNumChecked} value={journal.end}/>
-            <FormControl style={{ width: "7%"}}>
-                <InputLabel style={{ marginLeft: 7 }}>Старт</InputLabel>
-                <Input type="text" value={journal.startpoint}
-                className={classes.textField} disabled={!customStartChecked}
-                onChange={(e) => setJournal({...journal, startpoint: e.target.value})}
-                endAdornment={
-                    <InputAdornment position="end">
-                        <IconButton onClick={customStartDirection === 'L' ? 
-                        () => setCustomStartDirection('R') :
-                        () => setCustomStartDirection('L')} >
-                            { customStartDirection === 'L' ? 
-                            <ArrowLeftIcon /> : <ArrowRightIcon/> }
-                        </IconButton>
-                    </InputAdornment>
-                }>
-                </Input>
             </FormControl>
-            <FormControl component="fieldset" style={{marginLeft: 15}}>
-                <FormGroup>
-                <FormControlLabel
-                control={<Switch checked={noNumChecked} color="primary"
-                onChange={() => setNoNumChecked(!noNumChecked)} name="nunum" />}
-                label="Без номера"/>
-                <FormControlLabel
-                control={<Switch checked={customStartChecked} color="primary"
-                onChange={() => setCustomStartChecked(!customStartChecked)} name="custom" />}
-                label="Не подряд"/>
-                </FormGroup>
-            </FormControl>
+            <ClearButton tooltipOn="Выбрать все" tooltipOff="Выбор недоступен"
+            clearEnabled={cableJournalLoaded && cableJournal[0] !== undefined} 
+            clicked={ async () => {
+                await props.cableDeleteRemoveAll();
+                props.cableDeleteAddAll();
+            }}/>
+            <RefreshButton tooltipOn="Обновить" tooltipOff="Обновление недоступно"
+            refreshType='cable_journal' clicked={() => refreshJournal()} refreshEnabled={cableJournalLoaded}/>
+            <ExportButton exportEnabled={cableJournalLoaded}/>                       
         </div>
     );
 }
@@ -221,4 +160,5 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, 
-    { getObjects, getSystemsByObject, showInfo, getJournalByObjectBySystem })(IsolationPanel);
+    { getObjects, getSystemsByObject, showInfo,
+        getJournalByObjectBySystem, switchToResistance, cableDeleteAddAll, cableDeleteRemoveAll })(IsolationPanel);

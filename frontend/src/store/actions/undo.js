@@ -18,6 +18,8 @@ export const undoClear = () => dispatch => {
     });
 };
 
+// Undoing estimates changes
+
 export const undoEstimateRowDelete = (undoData) => async dispatch => {
     try {
         dispatch({
@@ -38,9 +40,62 @@ export const undoEstimateRowDelete = (undoData) => async dispatch => {
         });
     } catch(err) {
         dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_HIDE,
+        });
+        dispatch({
             type: actionTypes.ERROR_SHOW,
             errorMessage: 'Невозможно отменить удаление!'
         });
+    }
+};
+
+export const undoEstimateRowAdd = (undoType, undoData) => dispatch => {
+    dispatch({
+        type: actionTypes.UNDO_ESTIMATES_ROW_ADD,
+        data: undoData,
+        undoType: undoType,
+    });
+};
+
+export const undoEstimateRowRemove = (undoType, undoData) => dispatch => {
+    dispatch({
+        type: actionTypes.UNDO_ESTIMATES_ROW_REMOVE,
+        data: undoData,
+        undoType: undoType,
+    });
+};
+
+export const undoEstimateDataSave = () => dispatch => {
+    dispatch({
+        type: actionTypes.UNDO_ESTIMATES_DATA_SAVE,
+    });
+};
+
+export const undoEstimateDelete = (data) => async dispatch => {
+    try {
+        dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_SHOW,
+        });
+        await axiosInstance.post(`router/estimates/`, data);
+        dispatch({
+            type: actionTypes.UNDO_CLEAR,
+        });
+        dispatch({
+            type: actionTypes.ESTIMATES_REFRESH_NEEDED,
+        });
+        dispatch({
+            type: actionTypes.SNACK_SHOW,
+            snackSeverity: 'success',
+            snackMessage: 'Записи восстановлены!',
+        });
+    } catch(err) {
+        dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_HIDE,
+        });
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно восстановить записи!',
+        });   
     }
 };
 
@@ -55,7 +110,7 @@ export const undoEstimateRowEdit = (rowId, undoData) => async dispatch => {
             type: actionTypes.UNDO_CLEAR,
         });
         dispatch({
-            type: actionTypes.INFO_LOADING_SPINNER_HIDE,
+            type: actionTypes.ESTIMATES_REFRESH_NEEDED,
         });
         dispatch({
             type: actionTypes.SNACK_SHOW,
@@ -64,12 +119,16 @@ export const undoEstimateRowEdit = (rowId, undoData) => async dispatch => {
         });
     } catch(err) {
         dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_HIDE,
+        });
+        dispatch({
             type: actionTypes.ERROR_SHOW,
             errorMessage: 'Невозможно отменить редактирование!'
         });
     }
 };
 
+// Undo cable journal changes
 export const undoCableJournalRowAdd = (undoType, undoData) => dispatch => {
     dispatch({
         type: actionTypes.UNDO_CABLE_JOURNAL_ROW_ADD,
@@ -112,6 +171,9 @@ export const undoCableJournalRowEdit = (rowId, data) => async dispatch => {
         });
     } catch(err) {
         dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_HIDE,
+        });
+        dispatch({
             type: actionTypes.ERROR_SHOW,
             errorMessage: 'Невозможно отменить изменения!',
         });   
@@ -137,6 +199,9 @@ export const undoCableJournalDelete = (data) => async dispatch => {
         });
         
     } catch(err) {
+        dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_HIDE,
+        });
         dispatch({
             type: actionTypes.ERROR_SHOW,
             errorMessage: 'Невозможно восстановить записи!',
