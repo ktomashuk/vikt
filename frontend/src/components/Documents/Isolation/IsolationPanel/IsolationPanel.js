@@ -11,9 +11,8 @@ import ExportButton from '../../../Buttons/ExportButton/ExportButton';
 import RefreshButton from '../../../Buttons/RefreshButton/RefreshButton';
 // Redux
 import { connect } from 'react-redux';
-import { getSystemsByObject } from '../../../../store/actions/estimates';
 import { getJournalByObjectBySystem } from '../../../../store/actions/cable';
-import { getObjects } from '../../../../store/actions/core';
+import { getObjects, getSystemsByObject } from '../../../../store/actions/core';
 import { showInfo } from '../../../../store/actions/info';
 import { switchToResistance } from '../../../../store/actions/selectors';
 import { cableDeleteAddAll, cableDeleteRemoveAll } from '../../../../store/actions/delete';
@@ -50,10 +49,10 @@ const useStyles = makeStyles((theme) => ({
 
 const IsolationPanel = (props) => {
     const classes = useStyles();
-    const { cableJournal, cableJournalLoaded, refreshNeeded } = props;
+    const { cableJournal, cableJournalLoaded, refreshNeeded, chosenObjectSystems, chosenObjectSystemsLoaded } = props;
     const [object, setObject] = useState('');
     const [objectId, setObjectId] = useState('');
-    const [system, setSystem] = useState('');
+    const [system, setSystem] = useState({name: '', id: 0});
     // Fetching objects
     useEffect(() => {
         props.getObjects();
@@ -64,7 +63,7 @@ const IsolationPanel = (props) => {
     const refreshJournal = () => { 
         props.cableDeleteRemoveAll();
         setTimeout(() => {
-        props.getJournalByObjectBySystem(objectId, system)}, 300) };
+        props.getJournalByObjectBySystem(objectId, system.id)}, 300) };
     // Auto refreshing the journal after add / delete was performed
     useEffect(() => {
         if (cableJournalLoaded && refreshNeeded) {
@@ -83,8 +82,12 @@ const IsolationPanel = (props) => {
     // Loading data for a chosen system
     const systemChange = event => {
         const chosenSystem = event.target.value;
-        setSystem(chosenSystem);
-        props.getJournalByObjectBySystem(objectId, chosenSystem);
+        const sysFound = chosenObjectSystems.filter(sys => sys.acronym === chosenSystem)[0];
+        const sysName = sysFound.acronym;
+        const sysId = sysFound.id;
+        setSystem({...system, name: sysName, id: sysId});
+        props.getJournalByObjectBySystem(objectId, sysId);
+        props.cableDeleteRemoveAll();
     };
     // Objects list by default
     let objectsList = <MenuItem>Загрузка</MenuItem>;
@@ -101,11 +104,11 @@ const IsolationPanel = (props) => {
     // Systems list by default
     let systemsList = <MenuItem>Загрузка</MenuItem>;
     // Systems after loading
-    if (props.systemsLoaded) {
-        systemsList = props.systemsByObject.map(sys => {
+    if (chosenObjectSystemsLoaded) {
+        systemsList = chosenObjectSystems.map(sys => {
             return(
-                <MenuItem value={sys} key={sys}>
-                    {sys}
+                <MenuItem value={sys.acronym} key={sys.id}>
+                    {sys.acronym}
                 </MenuItem>
             );
         });
@@ -129,7 +132,7 @@ const IsolationPanel = (props) => {
                     labelId="system-select-label"
                     id="system-select"
                     onChange={systemChange}
-                    value={system}>
+                    value={system.name}>
                     {systemsList}
                 </Select>
             </FormControl>
@@ -150,8 +153,8 @@ const mapStateToProps = state => {
     return {
         objectsLoaded: state.core.objectsLoaded,
         objectsData: state.core.objectsData,
-        systemsByObject: state.est.systemsByObject,
-        systemsLoaded: state.est.systemsLoaded,
+        chosenObjectSystems: state.core.chosenObjectSystems,
+        chosenObjectSystemsLoaded: state.core.chosenObjectSystemsLoaded,
         deviceList: state.cable.deviceList,
         cableJournal: state.cable.cableJournal,
         cableJournalLoaded: state.cable.cableJournalLoaded,

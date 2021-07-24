@@ -35,7 +35,27 @@ export const cableDeleteSelected = (data) => async dispatch => {
         dispatch({
             type: actionTypes.INFO_LOADING_SPINNER_SHOW,
         });
-        await axiosInstance.post(`/cable/cable-delete/`, data);
+        // Check if data type is an array
+        if (Array.isArray(data))
+        {
+        // Splitting cable data into chunks of 20
+        let allRows=[];
+        const dataLength = data.length;
+        for (let i = 0; i < dataLength; i += 20) {
+        const chunk = data.slice(i, i + 20);
+        allRows.push(chunk);
+        };
+        // Running a loop to add each chunk with a separate request
+        const allRowsLength = allRows.length;
+        for (let i = 0; i < allRowsLength; i++ ) {
+            const chunkData = allRows[i];
+            await axiosInstance.post(`/cable/cable-delete/`, chunkData);
+        };
+        } else 
+        // If data is not an array
+        {
+            await axiosInstance.post(`/cable/cable-delete/`, data);
+        };
         dispatch({
             type: actionTypes.CABLE_JOURNAL_ROWS_UPDATE,
         });
@@ -89,7 +109,27 @@ export const estimateDeleteSelected = (data) => async dispatch => {
         dispatch({
             type: actionTypes.INFO_LOADING_SPINNER_SHOW,
         });
-        await axiosInstance.post(`/est/est-delete/`, data);
+        // Check if data type is an array
+        if (Array.isArray(data))
+        {
+        // Splitting cable data into chunks of 20
+        let allRows=[];
+        const dataLength = data.length;
+        for (let i = 0; i < dataLength; i += 20) {
+        const chunk = data.slice(i, i + 20);
+        allRows.push(chunk);
+        };
+        // Running a loop to add each chunk with a separate request
+        const allRowsLength = allRows.length;
+        for (let i = 0; i < allRowsLength; i++ ) {
+            const chunkData = allRows[i];
+            await axiosInstance.post(`/est/est-delete/`, chunkData);
+        };
+        } else 
+        // If data is not an array
+        {
+            await axiosInstance.post(`/est/est-delete/`, data);
+        };
         dispatch({
             type: actionTypes.SNACK_SHOW,
             snackSeverity: 'warning',

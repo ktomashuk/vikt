@@ -148,19 +148,35 @@ export const exportJournalByObjectBySystem = (object, system) => async dispatch 
 };
 
 export const setCableLength = (data) => async dispatch => {
-    // Splitting cable data into chunks of 20
-    let allRows=[];
-    const dataLength = data.cables.length;
-    for (let i = 0; i < dataLength; i += 20) {
-    const chunk = data.cables.slice(i, i + 20);
-    allRows.push(chunk);
-    };
-    console.log(allRows);
     try {
         dispatch({
             type: actionTypes.INFO_LOADING_SPINNER_SHOW,
         });
-        // await axiosInstance.post(`cable/change-length/`, data);
+        // Splitting cable data into chunks
+        const cableLength = data.length;
+        const dataLength = data.cables.length;
+        const varianceType = data.variance;
+        const oneCableLength = Number(cableLength) / Number(dataLength);
+        let allRows=[];
+        let chunkLengths = [];
+        for (let i = 0; i < dataLength; i += 20) {
+        const chunk = data.cables.slice(i, i + 20);
+        const chunkLength = chunk.length;
+        allRows.push(chunk);
+        chunkLengths.push(chunkLength);
+        };
+        // Adding cable lengths to the database in chunks
+        for (let i = 0; i < allRows.length; i++) {
+            // Calculate the total length of all cables in a chunk
+            const totalLength = (oneCableLength * Number(chunkLengths[i])).toFixed(0);
+            // Construct a new object to add
+            const chunkData = {
+                length: totalLength,
+                variance: varianceType,
+                cables: allRows[i],
+            };
+            await axiosInstance.post(`cable/change-length/`, chunkData);
+        };
         dispatch({
             type: actionTypes.CABLE_JOURNAL_ROWS_UPDATE,
         });
@@ -185,7 +201,25 @@ export const setCableResistance = (data) => async dispatch => {
         dispatch({
             type: actionTypes.INFO_LOADING_SPINNER_SHOW,
         });
-        await axiosInstance.post(`cable/isolation-set/`, data);
+        let allRows=[];
+        const low = data.low;
+        const high = data.high;
+        const dataLength = data.cables.length;
+        // Splitting cable data into chunks
+        for (let i = 0; i < dataLength; i += 20) {
+        const chunk = data.cables.slice(i, i + 20);
+        allRows.push(chunk);
+        };
+        // Adding cable lengths to the database in chunks
+        for (let i = 0; i < allRows.length; i++) {
+            // Construct a new object to add
+            const chunkData = {
+                low: low,
+                high: high,
+                cables: allRows[i],
+            };
+            await axiosInstance.post(`cable/isolation-set/`, chunkData);
+        };
         dispatch({
             type: actionTypes.CABLE_JOURNAL_ROWS_UPDATE,
         });
