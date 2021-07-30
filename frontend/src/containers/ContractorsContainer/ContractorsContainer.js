@@ -19,22 +19,6 @@ import { loadPageName } from '../../store/actions/info';
 import { getContractors, getContractorTypes, getContractorsByType } from '../../store/actions/contractors';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-    },
-    paper: {
-        display: 'flex',
-        flex: 1,
-        padding: theme.spacing(1),
-        textAlign: 'left',
-        color: theme.palette.text.secondary,
-        alignItems: 'center',
-    },
-    button: {
-        marginTop: 5,
-        marginBottom: 5,
-        width: '100%',
-    },
     formControl: {
         margin: theme.spacing(1),
         mindWidth: 300,
@@ -49,28 +33,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ContractorsContainer = (props) => {
-    const { contractorTypes } = props;
+    const { contractorTypes, loadPageName, getContractors, getContractorTypes, getContractorsByType } = props;
     const classes = useStyles();
     const [openModal, setOpenModal] = useState(false);
     const [type, setType] = useState('');
     // Setting page name
     useEffect(() => {
-        props.loadPageName('Реестр контрагентов');
-        props.getContractorTypes();
+        loadPageName('Реестр контрагентов');
+        getContractorTypes();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    // Getting a list of contractor types:
-    useEffect(() => {
-
-    }, [contractorTypes]);
     // Choosing the contractor type:
     const contractorClickHanlder = (type) => {
         setType(type);
         switch(type) {
             case 'Все':
-                return props.getContractors();
+                return getContractors();
             default:
-                return props.getContractorsByType(type);
+                return getContractorsByType(type);
         }
     };
     // Opening the modal
@@ -84,13 +64,13 @@ const ContractorsContainer = (props) => {
         if (type !== '') {
             switch(type) {
                 case 'Все':
-                    return props.getContractors();
+                    return getContractors();
                 default:
-                    return props.getContractorsByType(type);
+                    return getContractorsByType(type);
             }
         };
         // Refreshing the types
-        props.getContractorTypes();
+        getContractorTypes();
     };
     // Contractor types list
     let contractorTypesList = <MenuItem>Загрузка</MenuItem>;

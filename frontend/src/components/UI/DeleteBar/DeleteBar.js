@@ -7,7 +7,6 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { makeStyles } from '@material-ui/core/styles';
 // Redux
 import { connect } from 'react-redux';
-import { getJournalByObjectBySystem } from '../../../store/actions/cable';
 import { cableDeleteRemoveAll, cableDeleteSelected, 
   estimateDeleteRemoveAll, estimateDeleteSelected } from '../../../store/actions/delete';
 import { undoClear, undoCableJournalDataSave, undoEstimateDataSave } from '../../../store/actions/undo';
@@ -27,18 +26,21 @@ const useStyles = makeStyles((theme) => ({
 
 const DeleteBar = (props) => {
   const classes = useStyles();
-  const { deleteEnabled, deleteItemsNumber, deleteData, deleteType, deleteSelectorEnabled } = props;
+  const { deleteEnabled, deleteItemsNumber, deleteData, deleteType, deleteSelectorEnabled, 
+    cableDeleteRemoveAll, cableDeleteSelected,
+    estimateDeleteRemoveAll, estimateDeleteSelected,
+  undoClear, undoCableJournalDataSave, undoEstimateDataSave } = props;
   
   // Clicking delete button
   const deleteClickHandler = () => {
     switch(deleteType){
       case 'cable_journal':
-        props.cableDeleteSelected(deleteData);
-        props.undoCableJournalDataSave();
+        cableDeleteSelected(deleteData);
+        undoCableJournalDataSave();
         break;
       case 'estimates':
-        props.estimateDeleteSelected(deleteData);
-        props.undoEstimateDataSave();
+        estimateDeleteSelected(deleteData);
+        undoEstimateDataSave();
         break;
       default:
         break;
@@ -48,12 +50,12 @@ const DeleteBar = (props) => {
   const cancelClickHandler = () => {
     switch(deleteType){
       case 'cable_journal':
-        props.cableDeleteRemoveAll();
-        props.undoClear();
+        cableDeleteRemoveAll();
+        undoClear();
         break;
       case 'estimates':
-        props.estimateDeleteRemoveAll();
-        props.undoClear();
+        estimateDeleteRemoveAll();
+        undoClear();
         break;
       default:
         break;
@@ -95,6 +97,6 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, 
-  { cableDeleteRemoveAll, cableDeleteSelected, getJournalByObjectBySystem,
+  { cableDeleteRemoveAll, cableDeleteSelected,
     estimateDeleteRemoveAll, estimateDeleteSelected,
   undoClear, undoCableJournalDataSave, undoEstimateDataSave })(DeleteBar);

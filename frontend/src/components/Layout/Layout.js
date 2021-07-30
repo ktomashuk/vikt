@@ -9,34 +9,35 @@ import Loading from '../UI/Loading/Loading';
 import { connect } from 'react-redux';
 import { checkAuthentication } from '../../store/actions/auth';
 import { hideError } from '../../store/actions/errors';
-import { hideInfo, hideSpinner } from '../../store/actions/info';
+import { hideInfo } from '../../store/actions/info';
 import { hideSnack } from '../../store/actions/snack';
 
 const Layout = React.memo(props => {
-    const { isAuthenticated } = props;
+    const { isAuthenticated, checkAuthentication, pageName, errorShow, errorMessage,
+    showInfo, infoMessage, hideInfo, hideError, showSnack, snackSeverity, snackMessage,
+    hideSnack, loadingSpinner } = props;
     // Getting user names when he is authenticated
     useEffect(() => {
-        props.checkAuthentication();
-      }, [isAuthenticated]);
+        checkAuthentication();
+    }, [isAuthenticated, checkAuthentication]);
     
       return (
         <React.Fragment>
-            <MainDrawer pageName={props.pageName}/>
+            <MainDrawer pageName={pageName}/>
             <ErrorModal 
-            show={props.errorShow} 
-            message={props.errorMessage}
-            clicked={() => {props.hideError()}}/>
+            show={errorShow} 
+            message={errorMessage}
+            clicked={() => {hideError()}}/>
             <InfoModal 
-            show={props.showInfo} 
-            message={props.infoMessage}
-            clickedOk={() => {props.hideInfo()}}/>
+            show={showInfo} 
+            message={infoMessage}
+            clickedOk={() => {hideInfo()}}/>
             <SnackBar 
-            show={props.showSnack}
-            message={props.snackMessage}
-            severity={props.snackSeverity}
-            clicked={() => {props.hideSnack()}}/>
-            <Loading active={props.loadingSpinner}
-            clicked={() => hideSpinner()}/>
+            show={showSnack}
+            message={snackMessage}
+            severity={snackSeverity}
+            clicked={() => {hideSnack()}}/>
+            <Loading active={loadingSpinner}/>
         </React.Fragment>
     );
 });

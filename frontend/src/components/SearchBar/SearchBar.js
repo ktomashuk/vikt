@@ -5,7 +5,6 @@ import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
 import CancelIcon from '@material-ui/icons/Cancel';
 import { connect } from 'react-redux';
-import { searchEstimatesByObject, searchEstimatesByObjectBySystem } from '../../store/actions/estimates';
 import { searchStart, searchStop } from '../../store/actions/search';
 
 const useStyles = makeStyles((theme) => ({
@@ -26,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 
 const SearchBar = (props) => {
   const classes = useStyles();
-  const { type, estimatesSystem, filter } = props;
+  const { type, estimatesSystem, filter, searchStart, searchStop } = props;
   // Text in a search bar
   const [searchValue, setSearchValue] = useState('');
   // Start searching when text in a search bar changes
@@ -34,9 +33,9 @@ const SearchBar = (props) => {
         const search = setTimeout(() => {
             // Saving search result to redux
             if (searchValue === '') {
-                props.searchStop();
+                searchStop();
             } else {
-                props.searchStart(searchValue);
+                searchStart(searchValue);
             }
             // Checking what to search
             switch(type){
@@ -74,9 +73,7 @@ const mapStateToProps = state => {
     return {
         estimatesObject: state.est.estimatesObject,
         estimatesSystem: state.est.estimatesSystem,
-        searchResult: state.srch.searchResult,
     };
 };
 
-export default connect(mapStateToProps, { searchEstimatesByObject, 
-    searchEstimatesByObjectBySystem, searchStart, searchStop })(SearchBar);
+export default connect(mapStateToProps, { searchStart, searchStop })(SearchBar);

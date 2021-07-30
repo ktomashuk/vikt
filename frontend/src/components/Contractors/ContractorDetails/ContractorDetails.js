@@ -17,7 +17,7 @@ import ContractorEmployeeModal from '../ContractorEmployeeModal/ContractorEmploy
 // Redux
 import { connect } from 'react-redux';
 import { editContractorData, deleteContractor,
-    getContractors, unloadContractors, getRepresentativesByContractor } from '../../../store/actions/contractors';
+    getContractors, unloadContractors } from '../../../store/actions/contractors';
 
 const useStyles = makeStyles({
     root: {
@@ -50,7 +50,9 @@ const useStyles = makeStyles({
 
 const ContractorDetails = (props) => {
     const classes = useStyles();
-    const { contractorData, contractorDataLoaded, contractorDataSpinner } = props;
+    const { contractorData, contractorDataLoaded, contractorDataSpinner,
+        editContractorData, deleteContractor,
+        getContractors, unloadContractors } = props;
     const [editing, setEditing] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [fieldsData, setFieldsData] = useState(null);
@@ -65,7 +67,7 @@ const ContractorDetails = (props) => {
     const saveClickHandler = () => {
         const equality = _.isEqual(contractorData, fieldsData);
         if (!equality) {
-            props.editContractorData(fieldsData.id, fieldsData);
+            editContractorData(fieldsData.id, fieldsData);
         }
         setEditing(false);
     };
@@ -77,15 +79,15 @@ const ContractorDetails = (props) => {
     };
     // Clicking delete button
     const deleteClickHandler = () => {
-        props.deleteContractor(contractorData.id);
-        props.unloadContractors();
+        deleteContractor(contractorData.id);
+        unloadContractors();
         refreshContractors();
         setDeleting(false);
     };
     // Refreshing data from the server
     const refreshContractors = () => {
         setTimeout(() => {
-            props.getContractors();
+            getContractors();
         }, 500)
     };
     // Buttons when editing is disabled
@@ -261,4 +263,4 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, 
     { editContractorData, deleteContractor, 
-        getContractors, unloadContractors, getRepresentativesByContractor })(ContractorDetails);  
+        getContractors, unloadContractors })(ContractorDetails);  

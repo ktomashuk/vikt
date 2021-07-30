@@ -46,7 +46,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const ContractorEmployeeModal = (props) => {
   const classes = useStyles();
   // Variables to control opening/closing
-  const { show, contractorData } = props;
+  const { show, contractorData, addRepresentative, getRepresentativesByContractor } = props;
   const [open, setOpen] = useState(false);
   // Setting a row to be added
   const [employee, setEmployee] = useState({
@@ -86,15 +86,15 @@ const ContractorEmployeeModal = (props) => {
   }, [contractorData, employee]);
   // Add row and prepare for another
   const addDeviceAndContinue = async () => {
-    await props.addRepresentative(employee);
+    await addRepresentative(employee);
     clearFields();
-    props.getRepresentativesByContractor(contractorData.id);
+    getRepresentativesByContractor(contractorData.id);
   };
   // Add row and close modal
   const addDeviceAndClose = async () => {
-    await props.addRepresentative(employee);
+    await addRepresentative(employee);
     clearFields();
-    props.getRepresentativesByContractor(contractorData.id);
+    getRepresentativesByContractor(contractorData.id);
     handleClose();
   };
 

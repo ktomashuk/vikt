@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 // Material UI
 import TableCell from '@material-ui/core/TableCell';
@@ -8,7 +8,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 // Redux
 import { connect } from 'react-redux';
 import { cableDeleteAddItem, cableDeleteRemoveItem } from '../../../../store/actions/delete';
-import { undoCableJournalRowAdd, undoCableJournalRowRemove} from '../../../../store/actions/undo';
+import { undoCableJournalRowAdd, undoCableJournalRowRemove } from '../../../../store/actions/undo';
 import { editStart } from '../../../../store/actions/edit';
 
 const useStyles = makeStyles({
@@ -33,9 +33,27 @@ const useStyles = makeStyles({
 
 const CableRow = (props) => {
     const classes = useStyles();
-    const { row, deleteItemsNumber, deleteAllEnabled } = props;
+    const { row, deleteItemsNumber, deleteAllEnabled, editStart,
+        cableDeleteAddItem, cableDeleteRemoveItem, undoCableJournalRowAdd, undoCableJournalRowRemove } = props;
     // State for clicking delete button
     const [deletingCheck, setDeletingCheck] = useState(false);
+    // Clicking checbkox
+    const checkboxClickHandler = useCallback((type, data) => {
+        // If checkbox is not checked
+        if (deletingCheck === false) {
+            setDeletingCheck(true);
+            cableDeleteAddItem(type, data);
+            undoCableJournalRowAdd('cable_journal_delete',row);
+        } 
+        else
+        // If checkbox is checked 
+        {
+            setDeletingCheck(false);
+            cableDeleteRemoveItem(data);
+            undoCableJournalRowRemove('cable_journal_delete', data);
+        }
+    }, [row, cableDeleteAddItem, cableDeleteRemoveItem, deletingCheck,
+          undoCableJournalRowAdd, undoCableJournalRowRemove]);
     // Unchecking the checkbox when the clear button is pressed in delete bar
     useEffect(() => {
         if (deleteItemsNumber < 1) {
@@ -47,24 +65,10 @@ const CableRow = (props) => {
         if (deleteAllEnabled) {
             checkboxClickHandler('cable_journal', row.id);
         };
-    }, [deleteAllEnabled]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [deleteAllEnabled, row.id]);
     
-    // Clicking checbkox
-    const checkboxClickHandler = (type, data) => {
-        // If checkbox is not checked
-        if (deletingCheck === false) {
-            setDeletingCheck(true);
-            props.cableDeleteAddItem(type, data);
-            props.undoCableJournalRowAdd('cable_journal_delete',row);
-        } 
-        else
-        // If checkbox is checked 
-        {
-            setDeletingCheck(false);
-            props.cableDeleteRemoveItem(data);
-            props.undoCableJournalRowRemove('cable_journal_delete', data);
-        }
-    };
+    
 
     const mainRow = (
             <React.Fragment key={`fragmentrow${row.id}`}>
@@ -95,7 +99,7 @@ const CableRow = (props) => {
                         <EditIcon className={classes.icon}
                         key={`edit${row.id}`}
                         color="primary"
-                        onClick={() => props.editStart('cable_journal_row', row)}/>
+                        onClick={() => editStart('cable_journal_row', row)}/>
                         <Checkbox size="small" checked={deletingCheck}
                         className={classes.checkbox}
                         onClick={() => checkboxClickHandler('cable_journal', row.id)}/>
@@ -114,10 +118,6 @@ const CableRow = (props) => {
 
 const mapStateToProps = state => {
     return {
-        cableJournalLoaded: state.cable.cableJournalLoaded,
-        cableJournal: state.cable.cableJournal,
-        cableObject: state.cable.cableObject,
-        cableSystem: state.cable.cableSystem,
         deleteItemsNumber: state.del.deleteItemsNumber,
         deleteAllEnabled: state.del.deleteAllEnabled,
     };

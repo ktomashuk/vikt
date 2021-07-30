@@ -12,8 +12,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import ObjectSystemsRow from '../ObjectSystemsRow/ObjectSystemsRow';
 // Redux
 import { connect } from 'react-redux';
-import { getSystemsByObject } from '../../../store/actions/core';
-
 
 const useStyles = makeStyles({
     root: {
@@ -92,8 +90,7 @@ const mapStateToProps = state => {
     return {
         chosenObjectSystems: state.core.chosenObjectSystems,
         chosenObjectSystemsLoaded: state.core.chosenObjectSystemsLoaded,
-        representatives: state.contr.representatives,
     };
 };
 
-export default connect(mapStateToProps, { getSystemsByObject })(ObjectSystemsTable);
+export default connect(mapStateToProps)(ObjectSystemsTable);

@@ -27,7 +27,6 @@ import MenuBookIcon from '@material-ui/icons/MenuBook';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logoutUser } from '../../../store/actions/auth';
-import { loadPageName } from '../../../store/actions/info';
 import { unloadEverything } from '../../../store/actions/unload';
 
 const useStyles = makeStyles((theme) => ({
@@ -47,6 +46,7 @@ const useStyles = makeStyles((theme) => ({
 const MainDrawer = React.memo(props => {
     
     const classes = useStyles();
+    const { logoutUser, unloadEverything, isAuthenticated, firstName, lastName, history, pageName } = props;
     // Drawer sub menus opening
     const [openInv, setOpenInv] = useState(false);
     const [openReq, setOpenReq] = useState(false);
@@ -64,9 +64,9 @@ const MainDrawer = React.memo(props => {
       };
     // Clicking a drawer item
     const drawerClick = (adress) => {
-      props.unloadEverything();
+      unloadEverything();
       setState({ ...state, open: false });
-      props.history.push(`/${adress}`);
+      history.push(`/${adress}`);
     };
     // Drawer menu contents
     const drawerItems = [
@@ -166,12 +166,12 @@ const MainDrawer = React.memo(props => {
       </React.Fragment>
     );
     // Profile menu if user is authenticated
-    if (props.isAuthenticated) {
+    if (isAuthenticated) {
       profileItems = (
       <React.Fragment key="profile-full" >
             <ListItem button onClick={() => setOpenProfile(!openProfile)}>
             <ListItemIcon ><AccountBoxIcon /></ListItemIcon>
-            <ListItemText >{props.firstName} {props.lastName} </ListItemText>
+            <ListItemText >{firstName} {lastName} </ListItemText>
             {openProfile ? <ExpandLess /> : <ExpandMore />} 
             </ListItem>
                   <Collapse in={openProfile} timeout="auto" unmountOnExit>
@@ -179,7 +179,7 @@ const MainDrawer = React.memo(props => {
                       <ListItemText >Профиль</ListItemText>
                       </ListItem>
                       <ListItem key="logout" button onClick={() => {
-                        props.logoutUser();
+                        logoutUser();
                         drawerClick('login');}} className={classes.nested}>
                       <ListItemText >Выйти</ListItemText>
                       </ListItem>
@@ -197,7 +197,7 @@ const MainDrawer = React.memo(props => {
       <MenuIcon />
     </IconButton>
     <Typography variant="h6" className={classes.title}>
-      {props.pageName}
+      {pageName}
     </Typography>
     </Toolbar>
     </AppBar>
@@ -207,7 +207,7 @@ const MainDrawer = React.memo(props => {
       className={classes.root}>
       {profileItems}
       <Divider />
-      {props.isAuthenticated && drawerItems.map((item) => {
+      {isAuthenticated && drawerItems.map((item) => {
         if (item.collapsable) {
           return(
             <React.Fragment key={item.text} >
@@ -250,10 +250,8 @@ const mapStateToProps = state => {
       isAuthenticated: state.auth.isAuthenticated,
       firstName: state.auth.firstName,
       lastName: state.auth.lastName,
-      estimatesLoaded: state.est.estimatesLoaded,
-
   };
 };
 
 export default connect(mapStateToProps, 
-  { logoutUser, loadPageName, unloadEverything })(withRouter(MainDrawer));
+  { logoutUser, unloadEverything })(withRouter(MainDrawer));

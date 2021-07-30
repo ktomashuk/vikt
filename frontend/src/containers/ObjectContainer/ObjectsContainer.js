@@ -32,17 +32,10 @@ const useStyles = makeStyles((theme) => ({
         mindWidth: 200,
         width: 200,
     },
-    button: {
-        marginRight: 10,
-        marginLeft: 10,
-    },
-    icon: {
-        cursor: 'pointer',
-    },
 }));
 
 const ObjectsContainer = React.memo(props => {
-    const { objectsData, objectsLoaded } = props;
+    const { objectsData, objectsLoaded, getObjects, getObjectById, getSystemsByObject, loadPageName } = props;
     const classes = useStyles();
     const [object, setObject] = useState('');
     const [objectModal, setObjectModal] = useState(false);
@@ -52,18 +45,18 @@ const ObjectsContainer = React.memo(props => {
         const objName = event.target.value;
         setObject(objName);
         const objFound = objectsData.filter(obj => obj.name === objName)[0];
-        props.getObjectById(objFound.id);
-        props.getSystemsByObject(objFound.id);
+        getObjectById(objFound.id);
+        getSystemsByObject(objFound.id);
         setAccordionClickable(true);
     };
     // Setting page name
     useEffect(() => {
-        props.loadPageName('Данные объекта');
+        loadPageName('Данные объекта');
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     // Fetching objects
     useEffect(() => {
-        props.getObjects();
+        getObjects();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     // Opening the object add modal
@@ -75,7 +68,7 @@ const ObjectsContainer = React.memo(props => {
     let objectsList = <MenuItem>Загрузка</MenuItem>;
 
     if (objectsLoaded) {
-        objectsList = props.objectsData.map(item => {
+        objectsList = objectsData.map(item => {
             return(
                 <MenuItem value={item.name} key={item.name}>
                     {item.name}

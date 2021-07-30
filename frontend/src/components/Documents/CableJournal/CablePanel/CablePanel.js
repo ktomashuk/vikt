@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -69,7 +69,10 @@ const useStyles = makeStyles((theme) => ({
 const CablePanel = (props) => {
     const classes = useStyles();
     const { deviceList, cableJournal, cableJournalLoaded, refreshNeeded, objectsLoaded, objectsData,
-        deleteSelectorEnabled, lengthSelectorEnabled, chosenObjectSystems, chosenObjectSystemsLoaded } = props;
+        deleteSelectorEnabled, lengthSelectorEnabled, chosenObjectSystems, chosenObjectSystemsLoaded, 
+        removeDevice, getJournalByObjectBySystem, addCableRow, editCableRow, exportJournalByObjectBySystem,
+        cableDeleteAddAll, cableDeleteRemoveAll, getObjects, getSystemsByObject, showInfo,
+        switchToDeleting, switchToLength} = props;
     const [noNumChecked, setNoNumChecked] = useState(false);
     const [customStartChecked, setCustomStartChecked] = useState(false);
     const [object, setObject] = useState('');
@@ -93,8 +96,8 @@ const CablePanel = (props) => {
 
     // Fetching objects
     useEffect(() => {
-        props.getObjects();
-        props.switchToDeleting();
+        getObjects();
+        switchToDeleting();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     // Changing starting index when journal is loaded
@@ -102,33 +105,33 @@ const CablePanel = (props) => {
         if (cableJournalLoaded && cableJournal[0]) {
             const lastIndex = cableJournal[cableJournal.length - 1].index;
             const newIndex = Number(lastIndex) + 1;
-            setJournal({
-                ...journal, index: newIndex}); } else {
-            setJournal({
-                ...journal, index: 1, });
+            setJournal(journal => ({...journal, index: newIndex}));
+            } else {
+            setJournal(journal => ({...journal, index: 1, }));
             };
-    }, [cableJournal]);
+    }, [cableJournal, cableJournalLoaded]);
     // Refreshing the journal manually
-    const refreshJournal = () => { 
-        props.cableDeleteRemoveAll();
+    const refreshJournal = useCallback(() => { 
+        cableDeleteRemoveAll();
         setTimeout(() => {
-        props.getJournalByObjectBySystem(objectId, system.id)}, 300) };
+        getJournalByObjectBySystem(objectId, system.id)}, 
+        300); 
+    }, [cableDeleteRemoveAll, getJournalByObjectBySystem, objectId, system.id]);
     // Auto refreshing the journal after add / delete was performed
     useEffect(() => {
         if (cableJournalLoaded && refreshNeeded) {
             refreshJournal();
         };
-    }, [refreshNeeded]);
+    }, [refreshNeeded, cableJournalLoaded, refreshJournal]);
     // Export to excel
     const exportClickHandler = (id, sys) => {
-        props.exportJournalByObjectBySystem(id, sys);
+        exportJournalByObjectBySystem(id, sys);
     };
     // Clicking chips to add devices
     const addCLickHandler = (device) => {
         // Finding if no number is checked anywhere
         let noNum = false;
         if (noNumChecked || device.noNum) {
-            console.log('NO NUM FUCKING CHECKED');
             noNum = true;
         };
         // Finding if item with previous index exists
@@ -172,7 +175,6 @@ const CablePanel = (props) => {
     };
     // Adding a single first item to the empty journal
     const addFirstItemSingle = (device, noNumActive) => {
-        console.log(noNumActive);
         // Start and end numbers of the item to be added
         let startNum = Number(journal.start);
         let middle = ' ';
@@ -191,7 +193,7 @@ const CablePanel = (props) => {
             cable_cut: device.cable_cut,
             length: journal.length,
         };
-        props.addCableRow(data);
+        addCableRow(data);
     };
     // Adding multiple items to the journal
     const addFirstItemsMultiple = (device, noNumActive) => {
@@ -232,11 +234,10 @@ const CablePanel = (props) => {
                 endNum++;
             };
         };
-        props.addCableRow(cableArray);    
+        addCableRow(cableArray);    
     };
     // Adding items if there are 1 or more entries already in the journal
     const addItemsRegular = (device, noNumActive) => {
-        console.log(noNumActive);
         // Starting index and index of the item that is last in journal
         let startIndex = Number(journal.index);
         let prevIndex = startIndex - 1;
@@ -250,7 +251,7 @@ const CablePanel = (props) => {
         let prevEntry = cableJournal.filter(item => item.index === prevIndex);
         // Showing error if previous entry does not exist
         if (prevEntry[0] === undefined) {
-            return props.showInfo('Стартового устройства не существует!');
+            return showInfo('Стартового устройства не существует!');
         };
         let prevName = prevEntry[0].end;
         // Start and end numbers of the item to be added
@@ -277,7 +278,7 @@ const CablePanel = (props) => {
                 cable_cut: device.cable_cut,
                 length: journal.length,
             };
-            props.editCableRow(prevEntry[0].id, prevData);
+            editCableRow(prevEntry[0].id, prevData);
         } else {
         // If custom start is checked choose the stating device - if left direction is chosen (default)
         if (customStartChecked && customStartDirection === 'L') {
@@ -336,17 +337,17 @@ const CablePanel = (props) => {
                 endNum++;
             };
         };
-        props.addCableRow(cableArray);
+        addCableRow(cableArray);
     };
     // Loading data for a chosen object
     const objChange = event => {
         setObject(event.target.value);
         const objName = event.target.value;
-        const objFound = props.objectsData.filter(obj => obj.name === objName)[0];
+        const objFound = objectsData.filter(obj => obj.name === objName)[0];
         setObjectId(objFound.id);
         setSystem({...system, name: ''});
-        props.getSystemsByObject(objFound.id);
-        props.cableDeleteRemoveAll();
+        getSystemsByObject(objFound.id);
+        cableDeleteRemoveAll();
     };
     // Loading data for a chosen system
     const systemChange = event => {
@@ -355,9 +356,9 @@ const CablePanel = (props) => {
         const sysName = sysFound.acronym;
         const sysId = sysFound.id;
         setSystem({...system, name: sysName, id: sysId});
-        props.getJournalByObjectBySystem(objectId, sysId);
+        getJournalByObjectBySystem(objectId, sysId);
         setAddingEnabled(true);
-        props.cableDeleteRemoveAll();
+        cableDeleteRemoveAll();
     };
     // Settings menu
     const [anchorEl, setAnchorEl] = useState(null);
@@ -370,14 +371,14 @@ const CablePanel = (props) => {
     // Selecting 'delete' option in the menu
     const menuDeleteClickHandler = () => {
         if (lengthSelectorEnabled) {
-            props.switchToDeleting();
+            switchToDeleting();
         };
     };
     // Selecting 'length' option in the game
     const menuLengthClickHandler = () => {
         if (deleteSelectorEnabled) {
-            props.switchToLength();
-            props.cableDeleteRemoveAll();
+            switchToLength();
+            cableDeleteRemoveAll();
         };
     };
     // Objects list by default
@@ -476,8 +477,8 @@ const CablePanel = (props) => {
             <ClearButton tooltipOn="Выбрать все" tooltipOff="Выбор недоступен"
             clearEnabled={cableJournalLoaded && cableJournal[0] !== undefined} 
             clicked={ async () => {
-                await props.cableDeleteRemoveAll();
-                props.cableDeleteAddAll();
+                await cableDeleteRemoveAll();
+                cableDeleteAddAll();
             }}/>
             <RefreshButton tooltipOn="Обновить" tooltipOff="Обновление недоступно"
             refreshType='cable_journal' clicked={() => refreshJournal()} refreshEnabled={cableJournalLoaded}/>
@@ -515,7 +516,7 @@ const CablePanel = (props) => {
                     color="primary"
                     label={item.name + '(' + item.prefix + 'X) ' + item.cable}
                     onClick={() => {addCLickHandler(item)}}
-                    onDelete={() => {props.removeDevice(item.id)}} />
+                    onDelete={() => {removeDevice(item.id)}} />
                 );
                 })}
             </div>

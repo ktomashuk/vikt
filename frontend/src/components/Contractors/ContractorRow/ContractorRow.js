@@ -17,10 +17,10 @@ const useStyles = makeStyles({
 
 const ContractorRow = (props) => {
     const classes = useStyles();
-    const { row } = props;
+    const { row, getContractorById } = props;
     // Clicking a row
     const rowClickHandler = (rowId) => {
-        props.getContractorById(rowId);
+        getContractorById(rowId);
     };
 
     return(
@@ -36,11 +36,5 @@ const ContractorRow = (props) => {
     );
 };
 
-const mapStateToProps = state => {
-    return {
-        contractorData: state.contr.contractorData,
-        contractorDataLoaded: state.contr.contractorDataLoaded,
-    };
-};
 
-export default connect(mapStateToProps, { getContractorById })(ContractorRow);
+export default connect(null, { getContractorById })(ContractorRow);

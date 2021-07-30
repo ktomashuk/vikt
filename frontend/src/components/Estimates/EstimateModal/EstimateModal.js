@@ -44,7 +44,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const EstimateModal = React.memo(props => {
   const classes = useStyles();
   // Variables to control opening/closing
-  const { show, estimatesObject, chosenObjectSystems, chosenObjectSystemsLoaded, units } = props;
+  const { show, estimatesObject, chosenObjectSystems, chosenObjectSystemsLoaded, units, addEstimateRow } = props;
   const [open, setOpen] = React.useState(false);
   // Setting a row to be added
   const [newRow, setNewRow] = useState({
@@ -86,7 +86,7 @@ const EstimateModal = React.memo(props => {
   // Add row and prepare for another
   const addRowAndContinue = () => {
     const data = JSON.stringify(newRow);
-    props.addEstimateRow(data);
+    addEstimateRow(data);
     setNewRow({
         system_number: 0,
         ware_number: 0,
@@ -101,7 +101,7 @@ const EstimateModal = React.memo(props => {
   // Add row and close modal
   const addRowAndClose = () => {
     const data = JSON.stringify(newRow);
-    props.addEstimateRow(data);
+    addEstimateRow(data);
     handleClose();
   };
   

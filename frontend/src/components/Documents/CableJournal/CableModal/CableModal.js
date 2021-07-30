@@ -50,7 +50,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const CableModal = (props) => {
   const classes = useStyles();
   // Variables to control opening/closing
-  const { show } = props;
+  const { show, addDevice } = props;
   const [open, setOpen] = useState(false);
   const [id, setId] = useState(1);
   // Setting a row to be added
@@ -74,13 +74,13 @@ const CableModal = (props) => {
   // Add row and prepare for another
   const addDeviceAndContinue = () => {
     setDevice({...device, id: id});
-    props.addDevice(device);
+    addDevice(device);
     setId(id + 1);
   };
   // Add row and close modal
   const addDeviceAndClose = () => {
     setDevice({...device, id: id});
-    props.addDevice(device);
+    addDevice(device);
     setId(id + 1);
     handleClose();
   };
@@ -134,10 +134,5 @@ const CableModal = (props) => {
   );
 }
 
-const mapStateToProps = state => {
-  return {
-      deviceList: state.cable.deviceList,
-  };
-};
 
-export default connect(mapStateToProps, { addDevice })(CableModal);
+export default connect(null, { addDevice })(CableModal);

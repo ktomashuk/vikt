@@ -37,12 +37,12 @@ const useStyles = makeStyles((theme) => ({
 
 const LoginPage = props => {
     const classes = useStyles();
-    const { isAuthenticated } = props;
+    const { isAuthenticated, loginUser, loadPageName } = props;
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
 
     useEffect(() => {
-    props.loadPageName('Войти');
+    loadPageName('Войти');
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -70,7 +70,7 @@ const LoginPage = props => {
                 <Box className={classes.box}>
                 <Button className={classes.button}
                 variant="contained" color="primary"
-                onClick={() => props.loginUser(login, password)}>
+                onClick={() => loginUser(login, password)}>
                         Войти
                 </Button>
                 </Box>    

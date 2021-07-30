@@ -44,7 +44,8 @@ const useStyles = makeStyles({
 
 const ContractorList = (props) => {
     const classes = useStyles();
-    const { contractorsLoaded, contractorsList, contractorListSpinner, searchType } = props;
+    const { contractorsLoaded, contractorsList, contractorListSpinner, searchType,
+        searchContractors, searchContractorsByType } = props;
     // Searching contractors
     const searchContractorsFilter = (value) => {
         if (searchType === '') {
@@ -52,9 +53,9 @@ const ContractorList = (props) => {
         }
         switch(searchType) {
             case 'Все':
-                return props.searchContractors(value);
+                return searchContractors(value);
             default:
-                return props.searchContractorsByType(value, searchType);
+                return searchContractorsByType(value, searchType);
             }
         };
     // Default table

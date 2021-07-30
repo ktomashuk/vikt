@@ -11,8 +11,6 @@ import TableRow from '@material-ui/core/TableRow';
 import IsolationRow from '../IsolationRow/IsolationRow';
 // Redux
 import { connect } from 'react-redux';
-import { getJournalByObjectBySystem } from '../../../../store/actions/cable';
-
 
 const columns = [
     { id: 'number', label: '№ П/П', minWidth: 50, maxWidth: 50 },
@@ -99,4 +97,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, { getJournalByObjectBySystem })(IsolationTable);
+export default connect(mapStateToProps)(IsolationTable);

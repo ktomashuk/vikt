@@ -38,7 +38,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const ObjectAddModal = (props) => {
   const classes = useStyles();
   // Variables to control opening/closing
-  const { show } = props;
+  const { show, addObject } = props;
   const [open, setOpen] = useState(false);
   const [object, setObject] = useState(
       {
@@ -65,7 +65,7 @@ const ObjectAddModal = (props) => {
   }
   // Adding contractor to the database
   const addObjectClickHandler = () => {    
-    props.addObject(object);
+    addObject(object);
     setObject({...object, name: ''});
   };
   
@@ -96,10 +96,4 @@ const ObjectAddModal = (props) => {
   );
 }
 
-const mapStateToProps = state => {
-  return {
-      estimatesObject: state.est.estimatesObject,
-  };
-};
-
-export default connect(mapStateToProps, { addObject })(ObjectAddModal);
+export default connect(null, { addObject })(ObjectAddModal);

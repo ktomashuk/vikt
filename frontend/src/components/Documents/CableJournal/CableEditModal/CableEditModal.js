@@ -50,7 +50,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const CableEditModal = (props) => {
 const classes = useStyles();
 // Variables to control opening/closing
-const { editData, editType, editEnabled } = props;
+const { editData, editType, editEnabled, editCableRow, editStop, undoDataSave} = props;
 const [open, setOpen] = useState(false);
 // State of data being edited before editing
 const [oldData, setOldData] = useState(null);
@@ -59,7 +59,7 @@ const [dataLoaded, setDataLoaded] = useState(false);
 // Closing the modal
 const handleClose = () => {
     setOpen(false);
-    props.editStop();
+    editStop();
     setOldData(null);
     setNewData(null);
     setDataLoaded(false);
@@ -72,15 +72,15 @@ useEffect(() => {
       setNewData(editData);
       setDataLoaded(true);
     }
-  }, [editData])
+  }, [editEnabled, editType, editData])
   // Confirming edit
   const confirmEdit = () => {
       const equality = _.isEqual(oldData, newData);
       if (!equality){
         const data = JSON.stringify(newData);
         const id = newData.id;
-        props.undoDataSave('cable_journal_edit', oldData, id);
-        props.editCableRow(id, data);
+        undoDataSave('cable_journal_edit', oldData, id);
+        editCableRow(id, data);
         handleClose();
       };
     };

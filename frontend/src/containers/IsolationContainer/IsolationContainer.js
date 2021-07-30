@@ -1,8 +1,5 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { getSystemsByObject } from '../../store/actions/estimates';
-import { getObjects } from '../../store/actions/core';
-import { getJournalByObjectBySystem } from '../../store/actions/cable';
 import { loadPageName } from '../../store/actions/info';
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
@@ -25,33 +22,14 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.secondary,
         alignItems: 'center',
     },
-    button: {
-        marginTop: 5,
-        marginBottom: 5,
-        width: 50,
-        marginLeft: 10,
-        marginRight: 10,
-    },
-    formControl: {
-        margin: theme.spacing(1),
-        mindWidth: 200,
-        width: 200,
-    },
-    icon: {
-        cursor: 'pointer',
-    },
-    panel: {
-        display: 'flex',
-        alignItems: 'center',
-    },
 }));
 
 const IsolationContainer = (props) => {
     const classes = useStyles();
-
+    const { loadPageName } = props;
     // Setting page name
     useEffect(() => {
-        props.loadPageName('Акт измерения сопротивления изоляции');
+        loadPageName('Акт измерения сопротивления изоляции');
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -74,15 +52,5 @@ const IsolationContainer = (props) => {
     );
 }
 
-const mapStateToProps = state => {
-    return {
-        objectsLoaded: state.core.objectsLoaded,
-        objectsData: state.core.objectsData,
-        systemsByObject: state.est.systemsByObject,
-        systemsLoaded: state.est.systemsLoaded,
-        deviceList: state.cable.deviceList,
-    };
-};
 
-export default connect(mapStateToProps, 
-    { getObjects, getSystemsByObject, loadPageName, getJournalByObjectBySystem })(IsolationContainer);
+export default connect(null, { loadPageName })(IsolationContainer);

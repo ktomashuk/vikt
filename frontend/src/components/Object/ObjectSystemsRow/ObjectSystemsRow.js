@@ -37,7 +37,7 @@ const useStyles = makeStyles({
 
 const ObjectSystemsRow = (props) => {
     const classes = useStyles();
-    const { row, chosenObjectSystems, chosenObjectId } = props;
+    const { row, chosenObjectSystems, chosenObjectId, editSystemData, deleteSystem, getSystemsByObject } = props;
     // State of row being edited before editing
     const [rowOld, setRowOld] = useState({
         id: 0,
@@ -101,8 +101,8 @@ const ObjectSystemsRow = (props) => {
         const equality = _.isEqual(rowOld, rowNew);
         if (!equality){
             const data = JSON.stringify(rowNew);
-            await props.editSystemData(editing.rowId, data);
-            await props.getSystemsByObject(chosenObjectId);
+            await editSystemData(editing.rowId, data);
+            await getSystemsByObject(chosenObjectId);
         };
         setEditing({rowId: 0, enabled: false});
     };
@@ -126,7 +126,7 @@ const ObjectSystemsRow = (props) => {
     // Confirming delete 
     const confirmDelete = () => {
         setDeleting({rowId: 0, enabled: false});
-        props.deleteSystem(deleting.rowId);
+        deleteSystem(deleting.rowId);
         setRowRender(false);
     };
     // Clicking confirm button

@@ -41,10 +41,6 @@ const useStyles = makeStyles((theme) => ({
         mindWidth: 200,
         width: 200,
     },
-    button: {
-        marginRight: 10,
-        marginLeft: 10,
-    },
     topGrid: {
         height: '20%',
     },
@@ -52,15 +48,16 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         height: '50%',
     },
-    icon: {
-        cursor: 'pointer',
-    },
 }));
 
 const EstimatesContainer = React.memo(props => {
     const { estimatesObject, estimatesSystem, estimatesLoaded, estimatesData,
     chosenObjectId, chosenObjectSystems, chosenObjectSystemsLoaded,
-    objectsData, objectsLoaded, } = props;
+    objectsData, objectsLoaded, 
+    getEstimatesByObject, getObjects, getObjectById, getUnits,
+    getSystemsByObjectAndAddAll, getEstimatesByObjectBySystem, switchToDeleting,
+    estimateDeleteRemoveAll, estimateDeleteAddAll, loadPageName,
+    searchEstimatesByObjectBySystem, searchEstimatesByObject } = props;
     const classes = useStyles();
     const [object, setObject] = useState('');
     const [system, setSystem] = useState('');
@@ -73,9 +70,9 @@ const EstimatesContainer = React.memo(props => {
         const objName = event.target.value;
         const objFound = objectsData.filter(obj => obj.name === objName)[0];
         setSystem('');
-        props.getEstimatesByObject(objFound.id);
-        props.getObjectById(objFound.id);
-        props.getSystemsByObjectAndAddAll(objFound.id);
+        getEstimatesByObject(objFound.id);
+        getObjectById(objFound.id);
+        getSystemsByObjectAndAddAll(objFound.id);
         setAddingEnabled(true);
     };
     // Loading data for a chosen system
@@ -84,9 +81,9 @@ const EstimatesContainer = React.memo(props => {
         const sysFound = chosenObjectSystems.filter(sys => sys.acronym === chosenSystem)[0]['id'];
         setSystem(chosenSystem);
         if (chosenSystem === 'Все') {
-        props.getEstimatesByObject(chosenObjectId);
+        getEstimatesByObject(chosenObjectId);
         } else {
-        props.getEstimatesByObjectBySystem(chosenObjectId, sysFound);
+        getEstimatesByObjectBySystem(chosenObjectId, sysFound);
         }
     };
     // Searching estimates
@@ -96,26 +93,26 @@ const EstimatesContainer = React.memo(props => {
     }
     switch(system) {
         case 'Все':
-            props.searchEstimatesByObject(value, estimatesObject);
+            searchEstimatesByObject(value, estimatesObject);
             break;
         default:
-            props.searchEstimatesByObjectBySystem(value, estimatesObject, estimatesSystem)
+            searchEstimatesByObjectBySystem(value, estimatesObject, estimatesSystem)
             break;
         }
     };
     // Setting page name & fetching objects && activating delete bar
     useEffect(() => {
-        props.loadPageName('Просмотр смет');
-        props.getObjects();
-        props.getUnits();
-        props.switchToDeleting();
+        loadPageName('Просмотр смет');
+        getObjects();
+        getUnits();
+        switchToDeleting();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     // Objects list by default
     let objectsList = <MenuItem>Загрузка</MenuItem>;
     // Objects list after it is loaded
     if (objectsLoaded) {
-        objectsList = props.objectsData.map(item => {
+        objectsList = objectsData.map(item => {
             return(
                 <MenuItem value={item.name} key={item.name}>
                     {item.name}
@@ -136,7 +133,7 @@ const EstimatesContainer = React.memo(props => {
         });
     };
         return(
-                <div className={classes.root}>
+                <React.Fragment>
                 <EstimateModal show={openModal}/>
                 <EstimateEditModal />
                 <DeleteBar />
@@ -176,8 +173,8 @@ const EstimatesContainer = React.memo(props => {
                             <ClearButton tooltipOn="Выбрать все" tooltipOff="Выбор недоступен"
                             clearEnabled={estimatesLoaded && estimatesData[0] !== undefined} 
                             clicked={ async () => {
-                                await props.estimateDeleteRemoveAll();
-                                props.estimateDeleteAddAll();
+                                await estimateDeleteRemoveAll();
+                                estimateDeleteAddAll();
                             }}/>
                             <UndoButton />
                         </Paper>
@@ -186,7 +183,7 @@ const EstimatesContainer = React.memo(props => {
                         <EstimatesTable key="table1"/>
                     </Grid>
                 </Grid>
-                </div>
+                </React.Fragment>
         );
 });
 

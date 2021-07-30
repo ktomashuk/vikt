@@ -1,4 +1,5 @@
 import React from 'react';
+// Material UI
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -7,23 +8,22 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 const ErrorModal = props => {
-
-    return(
+const { message, show, clicked } = props;
+return(
 <div>
       <Dialog
-        open={props.show}
-        onClose={props.clicked}
+        open={show}
+        onClose={clicked}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
+        aria-describedby="alert-dialog-description">
         <DialogTitle id="alert-dialog-title">{"Ошибка!"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {props.message}
+            {message}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.clicked} color="primary" autoFocus>
+          <Button onClick={clicked} color="primary" autoFocus>
             Закрыть
           </Button>
         </DialogActions>

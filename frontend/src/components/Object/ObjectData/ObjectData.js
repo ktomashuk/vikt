@@ -45,7 +45,8 @@ const useStyles = makeStyles((theme) => ({
 
 const ObjectData = (props) => {
     const classes = useStyles();
-    const { chosenObjectId, chosenObjectData, clickable, contractorsList } = props;
+    const { chosenObjectId, chosenObjectData, clickable, contractorsList, 
+        deleteObject, editObjectData, getObjects, getContractorsByType } = props;
     // State for controlling buttons
     const [editing, setEditing] = useState(false);
     const [deleting, setDeleting] = useState(false);
@@ -73,7 +74,7 @@ const ObjectData = (props) => {
     // Setting the state after object is chosen
     useEffect(() => {
         if (chosenObjectId !== 0) {
-            setObject({
+            setObject(object => ({
                 ...object,
                 id: chosenObjectId,
                 name: chosenObjectData.name,
@@ -81,15 +82,14 @@ const ObjectData = (props) => {
                 city: chosenObjectData.city,
                 address: chosenObjectData.address,
                 contractors: chosenObjectData.contractors,
-            });
-            props.getContractorsByType('Заказчик');
-
+            }));
+            getContractorsByType('Заказчик');
         }
-    }, [chosenObjectId])
+    }, [chosenObjectId, chosenObjectData, getContractorsByType])
     // Opening the first accordion when object is selected
     useEffect(() => {
         if (clickable) {
-            setAccordion({...accordion, data: true, systems: false });
+            setAccordion(accordion => ({...accordion, data: true, systems: false }));
         };
     }, [clickable]);
     // Clicking add contractor button to open a menu
@@ -107,7 +107,7 @@ const ObjectData = (props) => {
             const newData = {...object, 
                 contractors: [...object.contractors, id],
             };
-            props.editObjectData(object.id, newData);
+            editObjectData(object.id, newData);
             setObject(newData);
         };
         addContractorCloseClickHandler();
@@ -116,7 +116,7 @@ const ObjectData = (props) => {
     const saveClickHandler = () => {
         const equality = _.isEqual(object, chosenObjectData);
         if (!equality) {
-            props.editObjectData(object.id, object);
+            editObjectData(object.id, object);
         }
         setEditing(false);
     };
@@ -128,8 +128,8 @@ const ObjectData = (props) => {
     };
     // Clicking delete button
     const deleteClickHandler = () => {
-        props.deleteObject(object.id);
-        props.getObjects();
+        deleteObject(object.id);
+        getObjects();
         setDeleting(false);
     };
     // Clicking delete on a contractor chip
@@ -137,7 +137,7 @@ const ObjectData = (props) => {
         const newData = {...object, 
         contractors: object.contractors.filter(item => item !== id),
         };
-        props.editObjectData(object.id, newData);
+        editObjectData(object.id, newData);
         setObject(newData);
     };
     // Opening the system add modal

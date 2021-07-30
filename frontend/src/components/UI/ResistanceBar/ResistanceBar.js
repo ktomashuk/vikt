@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import TextField from '@material-ui/core/TextField';
@@ -8,7 +8,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { makeStyles } from '@material-ui/core/styles';
 // Redux
 import { connect } from 'react-redux';
-import { getJournalByObjectBySystem, setCableResistance } from '../../../store/actions/cable';
+import { setCableResistance } from '../../../store/actions/cable';
 import { cableDeleteRemoveAll } from '../../../store/actions/delete';
 import { undoClear } from '../../../store/actions/undo';
 import { showInfo } from '../../../store/actions/info';
@@ -32,7 +32,9 @@ const useStyles = makeStyles((theme) => ({
 
 const ResistanceBar = (props) => {
   const classes = useStyles();
-  const { deleteData, deleteType, deleteItemsNumber, deleteEnabled, resistanceSelectorEnabled } = props;
+  const { deleteData, deleteType, deleteItemsNumber, deleteEnabled, resistanceSelectorEnabled,
+    cableDeleteRemoveAll, setCableResistance,
+    undoClear, showInfo } = props;
   const [resistance, setResistance] = useState({ low: 0, high: 0});
   const [error, setError] = useState(false);
   // Clicking delete button
@@ -43,17 +45,17 @@ const ResistanceBar = (props) => {
         checkValidity();
         // Show error if values are not numbers
         if (error) {
-            return props.showInfo('Введенные значения должны быть числами!')};
+            return showInfo('Введенные значения должны быть числами!')};
         // Show error if low is bigger than high
         if (Number(resistance.low) > Number(resistance.high)) {
-            return props.showInfo('Верхний порог должен быть не меньше нижнего!')};
+            return showInfo('Верхний порог должен быть не меньше нижнего!')};
         const data = {
             low: resistance.low,
             high: resistance.high,
             cables: deleteData,
         };
         // If no errors are found
-        props.setCableResistance(data);
+        setCableResistance(data);
         break;
       default:
         break;
@@ -63,8 +65,8 @@ const ResistanceBar = (props) => {
   const cancelClickHandler = () => {
     switch(deleteType){
       case 'cable_journal':
-        props.cableDeleteRemoveAll();
-        props.undoClear();
+        cableDeleteRemoveAll();
+        undoClear();
         return setResistance({...resistance, low: 0, high: 0});
       default:
         break;
@@ -79,34 +81,35 @@ const ResistanceBar = (props) => {
     return replacement;
   };
   // Check if values have commas and if they have change them to dots
-  const floatCheckHandler = () => {
+  const floatCheckHandler = useCallback(() => {
       if (String(resistance.low).includes(',')) {
-        setResistance({
+        setResistance(resistance => ({
             ...resistance, 
             low: floatChangeHandler(resistance.low),
-        }); 
+        })); 
     };
     if (String(resistance.high).includes(',')) {
-        setResistance({
+        setResistance(resistance => ({
             ...resistance, 
             high: floatChangeHandler(resistance.high),
-        }); 
+        })); 
     };
-  };
-  // Checking if entered values are numbers
-  useEffect(() => {
-    floatCheckHandler();
-    checkValidity();
   }, [resistance]);
   // Checking if entered values are numbers manually
-  const checkValidity = () => {
+  const checkValidity = useCallback(() => {
     const test = Number(resistance.low) + Number(resistance.high)
     if (isNaN(test)) {
         setError(true);
     } else {
         setError(false);
     };
-  };
+  }, [resistance]);
+  // Checking if entered values are numbers
+  useEffect(() => {
+    floatCheckHandler();
+    checkValidity();
+  }, [resistance, checkValidity, floatCheckHandler]);
+  
   // Default snack
   let cableSnack = null;
   // Snack if it is enabled
@@ -155,5 +158,4 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, 
-  { cableDeleteRemoveAll, getJournalByObjectBySystem, setCableResistance,
-  undoClear, showInfo })(ResistanceBar);
+  { cableDeleteRemoveAll, setCableResistance, undoClear, showInfo })(ResistanceBar);

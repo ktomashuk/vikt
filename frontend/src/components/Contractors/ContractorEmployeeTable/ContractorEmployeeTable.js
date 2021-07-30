@@ -52,7 +52,7 @@ const ContractorEmployeeTable = (props) => {
         if (contractorDataLoaded) {
             getRepresentativesByContractor(contractorData.id);
         }
-    }, [contractorData, contractorDataLoaded])
+    }, [contractorData, contractorDataLoaded, getRepresentativesByContractor])
     // Default table
     let rows = <TableRow><TableCell>
         <CircularProgress className={classes.loading} />

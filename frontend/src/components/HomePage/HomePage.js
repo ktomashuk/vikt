@@ -22,11 +22,11 @@ const useStyles = makeStyles((theme) => ({
 
 const HomePage = props => {
     const classes = useStyles();
-    const { firstName, lastName, isAuthenticated } = props;
+    const { firstName, lastName, isAuthenticated, loadPageName } = props;
     // Setting page name
     useEffect(() => {
-        props.loadPageName('Главная');
-       // eslint-disable-next-line react-hooks/exhaustive-deps
+        loadPageName('Главная');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     let dashboard = (

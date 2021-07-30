@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+// Material UI
+import { makeStyles } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import TextField from '@material-ui/core/TextField';
@@ -8,12 +10,12 @@ import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import TrendingDownIcon from '@material-ui/icons/TrendingDown';
-import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 // Redux
 import { connect } from 'react-redux';
-import { getJournalByObjectBySystem, setCableLength } from '../../../store/actions/cable';
-import { cableDeleteRemoveAll, cableDeleteSelected } from '../../../store/actions/delete';
-import { undoClear, undoCableJournalDataSave } from '../../../store/actions/undo';
+import { setCableLength } from '../../../store/actions/cable';
+import { cableDeleteRemoveAll } from '../../../store/actions/delete';
+import { undoClear } from '../../../store/actions/undo';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,7 +35,8 @@ const useStyles = makeStyles((theme) => ({
 
 const CableBar = (props) => {
   const classes = useStyles();
-  const { deleteData, deleteType, deleteItemsNumber, deleteEnabled, lengthSelectorEnabled } = props;
+  const { deleteData, deleteType, deleteItemsNumber, deleteEnabled, lengthSelectorEnabled, 
+    cableDeleteRemoveAll, undoClear, setCableLength } = props;
   const [totalLength, setTotalLength] = useState(0);
   const [varianceType, setVarianceType] = useState('low');
   // Clicking delete button
@@ -45,7 +48,7 @@ const CableBar = (props) => {
             variance: varianceType,
             cables: deleteData,
         };
-        props.setCableLength(data);
+        setCableLength(data);
         break;
       default:
         break;
@@ -55,8 +58,8 @@ const CableBar = (props) => {
   const cancelClickHandler = () => {
     switch(deleteType){
       case 'cable_journal':
-        props.cableDeleteRemoveAll();
-        props.undoClear();
+        cableDeleteRemoveAll();
+        undoClear();
         break;
       default:
         break;
@@ -78,10 +81,10 @@ const CableBar = (props) => {
             }} style={{ width: 70 }}/>
             <IconButton onClick={varianceType === 'low' ? () => setVarianceType('high') : () => setVarianceType('low')}>
                 {varianceType === "low" ? 
-                <Tooltip title={<h6>Низкая вариативность</h6>} arrow>
+                <Tooltip title={<Typography variant='subtitle1'>Низкая вариативность</Typography>} arrow>
                     <TrendingDownIcon style={{ color: 'white'}}/>
                 </Tooltip>
-                : <Tooltip title={<h6>Высокая вариативность</h6>} arrow>
+                : <Tooltip title={<Typography variant='subtitle1'>Высокая вариативность</Typography>} arrow>
                     <TrendingUpIcon style={{ color: 'white'}}/>
                 </Tooltip> }
             </IconButton>
@@ -111,5 +114,4 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, 
-  { cableDeleteRemoveAll, cableDeleteSelected, getJournalByObjectBySystem,
-  undoClear, undoCableJournalDataSave, setCableLength })(CableBar);
+  { cableDeleteRemoveAll, undoClear, setCableLength })(CableBar);

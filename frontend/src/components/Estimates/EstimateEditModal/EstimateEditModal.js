@@ -53,7 +53,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const EstimateEditModal = (props) => {
 const classes = useStyles();
 // Variables to control opening/closing
-const { editData, editType, editEnabled, units, chosenObjectSystems } = props;
+const { editData, editType, editEnabled, units, chosenObjectSystems,
+    editEstimateRow, editStop, undoDataSave } = props;
 const [open, setOpen] = useState(false);
 // State of data being edited before editing
 const [oldData, setOldData] = useState(null);
@@ -62,7 +63,7 @@ const [dataLoaded, setDataLoaded] = useState(false);
 // Closing the modal
 const handleClose = () => {
     setOpen(false);
-    props.editStop();
+    editStop();
     setOldData(null);
     setNewData(null);
     setDataLoaded(false);
@@ -75,15 +76,15 @@ useEffect(() => {
       setNewData(editData);
       setDataLoaded(true);
     }
-  }, [editData])
+  }, [editData, editEnabled, editType])
   // Confirming edit
   const confirmEdit = () => {
       const equality = _.isEqual(oldData, newData);
       if (!equality){
         const data = JSON.stringify(newData);
         const id = newData.id;
-        props.undoDataSave('estimate_row_edit', oldData, id);
-        props.editEstimateRow(id, data);
+        undoDataSave('estimate_row_edit', oldData, id);
+        editEstimateRow(id, data);
         handleClose();
       };
     };

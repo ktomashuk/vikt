@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -13,7 +13,6 @@ import RefreshButton from '../../../Buttons/RefreshButton/RefreshButton';
 import { connect } from 'react-redux';
 import { getJournalByObjectBySystem } from '../../../../store/actions/cable';
 import { getObjects, getSystemsByObject } from '../../../../store/actions/core';
-import { showInfo } from '../../../../store/actions/info';
 import { switchToResistance } from '../../../../store/actions/selectors';
 import { cableDeleteAddAll, cableDeleteRemoveAll } from '../../../../store/actions/delete';
 
@@ -49,35 +48,39 @@ const useStyles = makeStyles((theme) => ({
 
 const IsolationPanel = (props) => {
     const classes = useStyles();
-    const { cableJournal, cableJournalLoaded, refreshNeeded, chosenObjectSystems, chosenObjectSystemsLoaded } = props;
+    const { cableJournal, cableJournalLoaded, refreshNeeded, 
+        chosenObjectSystems, chosenObjectSystemsLoaded, objectsData, objectsLoaded,
+        getObjects, getSystemsByObject, getJournalByObjectBySystem, 
+        switchToResistance, cableDeleteAddAll, cableDeleteRemoveAll } = props;
     const [object, setObject] = useState('');
     const [objectId, setObjectId] = useState('');
     const [system, setSystem] = useState({name: '', id: 0});
     // Fetching objects
     useEffect(() => {
-        props.getObjects();
-        props.switchToResistance();
+        getObjects();
+        switchToResistance();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     // Refreshing the journal manually
-    const refreshJournal = () => { 
-        props.cableDeleteRemoveAll();
+    const refreshJournal = useCallback(() => { 
+        cableDeleteRemoveAll();
         setTimeout(() => {
-        props.getJournalByObjectBySystem(objectId, system.id)}, 300) };
+        getJournalByObjectBySystem(objectId, system.id)}, 300) }, 
+        [cableDeleteRemoveAll, getJournalByObjectBySystem, objectId, system.id]);
     // Auto refreshing the journal after add / delete was performed
     useEffect(() => {
         if (cableJournalLoaded && refreshNeeded) {
             refreshJournal();
         };
-    }, [refreshNeeded]);
+    }, [refreshNeeded, cableJournalLoaded, refreshJournal]);
     // Loading data for a chosen object
     const objChange = event => {
         setObject(event.target.value);
         const objName = event.target.value;
-        const objFound = props.objectsData.filter(obj => obj.name === objName)[0];
+        const objFound = objectsData.filter(obj => obj.name === objName)[0];
         setObjectId(objFound.id);
         setSystem('');
-        props.getSystemsByObject(objFound.id);
+        getSystemsByObject(objFound.id);
     };
     // Loading data for a chosen system
     const systemChange = event => {
@@ -86,14 +89,14 @@ const IsolationPanel = (props) => {
         const sysName = sysFound.acronym;
         const sysId = sysFound.id;
         setSystem({...system, name: sysName, id: sysId});
-        props.getJournalByObjectBySystem(objectId, sysId);
-        props.cableDeleteRemoveAll();
+        getJournalByObjectBySystem(objectId, sysId);
+        cableDeleteRemoveAll();
     };
     // Objects list by default
     let objectsList = <MenuItem>Загрузка</MenuItem>;
     // Objects after loading
-    if (props.objectsLoaded) {
-        objectsList = props.objectsData.map(item => {
+    if (objectsLoaded) {
+        objectsList = objectsData.map(item => {
             return(
                 <MenuItem value={item.name} key={item.name}>
                     {item.name}
@@ -139,8 +142,8 @@ const IsolationPanel = (props) => {
             <ClearButton tooltipOn="Выбрать все" tooltipOff="Выбор недоступен"
             clearEnabled={cableJournalLoaded && cableJournal[0] !== undefined} 
             clicked={ async () => {
-                await props.cableDeleteRemoveAll();
-                props.cableDeleteAddAll();
+                await cableDeleteRemoveAll();
+                cableDeleteAddAll();
             }}/>
             <RefreshButton tooltipOn="Обновить" tooltipOff="Обновление недоступно"
             refreshType='cable_journal' clicked={() => refreshJournal()} refreshEnabled={cableJournalLoaded}/>
@@ -156,7 +159,6 @@ const mapStateToProps = state => {
         objectsData: state.core.objectsData,
         chosenObjectSystems: state.core.chosenObjectSystems,
         chosenObjectSystemsLoaded: state.core.chosenObjectSystemsLoaded,
-        deviceList: state.cable.deviceList,
         cableJournal: state.cable.cableJournal,
         cableJournalLoaded: state.cable.cableJournalLoaded,
         refreshNeeded: state.cable.refreshNeeded,
@@ -164,5 +166,5 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, 
-    { getObjects, getSystemsByObject, showInfo,
-        getJournalByObjectBySystem, switchToResistance, cableDeleteAddAll, cableDeleteRemoveAll })(IsolationPanel);
+    { getObjects, getSystemsByObject, getJournalByObjectBySystem, 
+        switchToResistance, cableDeleteAddAll, cableDeleteRemoveAll })(IsolationPanel);

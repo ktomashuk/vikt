@@ -39,7 +39,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const ObjectSystemsModal = (props) => {
   const classes = useStyles();
   // Variables to control opening/closing
-  const { show, chosenObjectId } = props;
+  const { show, chosenObjectId, addSystem, showInfo, getSystemsByObject } = props;
   const [open, setOpen] = useState(false);
   const [system, setSystem] = useState(
       {
@@ -63,12 +63,12 @@ const ObjectSystemsModal = (props) => {
   const addSystemClickHandler = () => {    
     // Check if acronym is empty
     if (system.acronym === '') {
-        return props.showInfo('Поле "Аббревиатура" должно быть заполнено!');
+        return showInfo('Поле "Аббревиатура" должно быть заполнено!');
     };
-    props.addSystem(system);
+    addSystem(system);
     setSystem({...system, acronym: ''});
     setTimeout(() => {
-        props.getSystemsByObject(chosenObjectId);
+        getSystemsByObject(chosenObjectId);
     }, 500);
   };
   

@@ -14,7 +14,7 @@ import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 // Redux
 import { connect } from 'react-redux';
-import { addRepresentative, deleteRepresentative, 
+import { deleteRepresentative, 
     editRepresentative, getRepresentativesByContractor } from '../../../store/actions/contractors';
 
 const _ = require('lodash');
@@ -38,7 +38,8 @@ const useStyles = makeStyles({
 
 const ContractorEmployeeRow = (props) => {
     const classes = useStyles();
-    const { row, representatives } = props;
+    const { row, representatives, deleteRepresentative, 
+        editRepresentative, getRepresentativesByContractor } = props;
     // State of row being edited before editing
     const [rowOld, setRowOld] = useState({
         id: 0,
@@ -120,8 +121,8 @@ const ContractorEmployeeRow = (props) => {
         const equality = _.isEqual(rowOld, rowNew);
         if (!equality){
             const data = JSON.stringify(rowNew);
-            await props.editRepresentative(editing.rowId, data);
-            props.getRepresentativesByContractor(row.company);
+            await editRepresentative(editing.rowId, data);
+            getRepresentativesByContractor(row.company);
         }
         setEditing({rowId: 0, enabled: false});
         setRowLoaded(false);
@@ -150,7 +151,7 @@ const ContractorEmployeeRow = (props) => {
     // Confirming delete 
     const confirmDelete = () => {
         setDeleting({rowId: 0, enabled: false});
-        props.deleteRepresentative(deleting.rowId);
+        deleteRepresentative(deleting.rowId);
         setRowRender(false);
     };
     // Clicking confirm button
@@ -290,5 +291,4 @@ const mapStateToProps = state => {
 
 
 export default connect(mapStateToProps, 
-    { addRepresentative, deleteRepresentative, 
-        editRepresentative, getRepresentativesByContractor })(ContractorEmployeeRow);
+    { deleteRepresentative, editRepresentative, getRepresentativesByContractor })(ContractorEmployeeRow);

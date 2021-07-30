@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -64,31 +64,31 @@ const EstimatesTable = React.memo(props => {
     const { estimatesData, estimatesLoaded, estimatesSystem, units, unitsLoaded,
     chosenObjectSystems, chosenObjectSystemsLoaded, chosenObjectId, 
     deleteEstimateRow, editEstimateRow, 
-    estimateDeleteAddItem, estimateDeleteRemoveItem, estimatesRefreshNeeded, 
-    searchActive, searchResult,
+    estimateDeleteAddItem, estimateDeleteRemoveItem, estimatesRefreshNeeded, estimateDeleteRemoveAll, 
+    searchActive, searchResult, getEstimatesByObject, 
     undoDataSave, undoEstimateRowAdd, undoEstimateRowRemove } = props;
     // Refresh estimates
-    const refreshEstimates = () => {
-        props.estimateDeleteRemoveAll();
+    const refreshEstimates = useCallback(() => {
+        estimateDeleteRemoveAll();
         if (estimatesSystem === 'Все' && !searchActive ) {
-            props.getEstimatesByObject(chosenObjectId);
+            getEstimatesByObject(chosenObjectId);
         };
         if (estimatesSystem !== 'Все' && !searchActive) {
-            props.getEstimatesByObjectBySystem(chosenObjectId, estimatesSystem);
+            getEstimatesByObjectBySystem(chosenObjectId, estimatesSystem);
         };
         if (estimatesSystem === 'Все' && searchActive) {
-            props.searchEstimatesByObject(searchResult, chosenObjectId);
+            searchEstimatesByObject(searchResult, chosenObjectId);
         };
         if (estimatesSystem !== 'Все' && searchActive) {
-            props.searchEstimatesByObjectBySystem(searchResult, chosenObjectId, estimatesSystem);
+            searchEstimatesByObjectBySystem(searchResult, chosenObjectId, estimatesSystem);
         };
-    };
+    }, [chosenObjectId, estimateDeleteRemoveAll, estimatesSystem, getEstimatesByObject, searchActive, searchResult]);
     // Auto refreshing estimates after deleting
     useEffect(() => {
         if (estimatesRefreshNeeded) {
             refreshEstimates();
         };
-    }, [estimatesRefreshNeeded])
+    }, [estimatesRefreshNeeded, refreshEstimates])
     // Default table
     let rows = <TableRow><TableCell>Выберите объект</TableCell></TableRow>
     // Loaded table

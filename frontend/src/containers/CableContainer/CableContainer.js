@@ -1,9 +1,4 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { getSystemsByObject } from '../../store/actions/estimates';
-import { getObjects } from '../../store/actions/core';
-import { getJournalByObjectBySystem } from '../../store/actions/cable';
-import { loadPageName } from '../../store/actions/info';
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -14,6 +9,9 @@ import CableTable from '../../components/Documents/CableJournal/CableTable/Cable
 import DeleteBar from '../../components/UI/DeleteBar/DeleteBar';
 import CableBar from '../../components/UI/CableBar/CableBar';
 import CableEditModal from '../../components/Documents/CableJournal/CableEditModal/CableEditModal';
+// Redux
+import { connect } from 'react-redux';
+import { loadPageName } from '../../store/actions/info';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -27,33 +25,14 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.secondary,
         alignItems: 'center',
     },
-    button: {
-        marginTop: 5,
-        marginBottom: 5,
-        width: 50,
-        marginLeft: 10,
-        marginRight: 10,
-    },
-    formControl: {
-        margin: theme.spacing(1),
-        mindWidth: 200,
-        width: 200,
-    },
-    icon: {
-        cursor: 'pointer',
-    },
-    panel: {
-        display: 'flex',
-        alignItems: 'center',
-    },
 }));
 
 const CableContainer = (props) => {
     const classes = useStyles();
-
+    const { loadPageName } = props;
     // Setting page name
     useEffect(() => {
-        props.loadPageName('Кабельный журнал');
+        loadPageName('Кабельный журнал');
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -88,5 +67,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, 
-    { getObjects, getSystemsByObject, loadPageName, getJournalByObjectBySystem })(CableContainer);
+export default connect(mapStateToProps, { loadPageName })(CableContainer);

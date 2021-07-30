@@ -7,7 +7,6 @@ import Checkbox from '@material-ui/core/Checkbox';
 import EditIcon from '@material-ui/icons/Edit';
 // Redux
 import { connect } from 'react-redux';
-import { undoDataSave } from '../../../store/actions/undo';
 import { editStart } from '../../../store/actions/edit';
 
 const useStyles = makeStyles({
@@ -30,7 +29,7 @@ const useStyles = makeStyles({
 const EstimatesRow = props => {
     const classes = useStyles();
     const { row, units, systems, deleteAllEnabled, deleteItemsNumber, 
-        checkOn, checkOff, undoAdd, undoRemove } = props;
+        checkOn, checkOff, undoAdd, undoRemove, editStart } = props;
     // State for clicking delete button
     const [deletingCheck, setDeletingCheck] = useState(false);
     // Unchecking the checkbox when the clear button is pressed in delete bar
@@ -44,7 +43,8 @@ const EstimatesRow = props => {
         if (deleteAllEnabled) {
             checkboxClickHandler('cable_journal', row.id);
         };
-    }, [deleteAllEnabled]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [deleteAllEnabled, row.id]);
     // Clicking checbkox
     const checkboxClickHandler = (type, data) => {
         // If checkbox is not checked
@@ -90,7 +90,7 @@ const EstimatesRow = props => {
                         <EditIcon className={classes.icon}
                         key={`edit${row.id}`}
                         color="primary"
-                        onClick={() => props.editStart('estimate_row', row)}/>
+                        onClick={() => editStart('estimate_row', row)}/>
                         <Checkbox size="small" checked={deletingCheck}
                         className={classes.checkbox}
                         onClick={() => checkboxClickHandler('estimates', row.id)}/>
@@ -114,4 +114,4 @@ const mapStateToProps = state => {
 };
 
 
-export default connect(mapStateToProps, { editStart, undoDataSave })(EstimatesRow);
+export default connect(mapStateToProps, { editStart })(EstimatesRow);

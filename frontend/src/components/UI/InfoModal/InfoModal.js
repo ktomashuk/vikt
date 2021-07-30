@@ -7,34 +7,29 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 const InfoModal = props => {
+    const { clickedCancel, clicked, show, message, clickedOk} = props;
+    const  cancelButton = (
+      <Button onClick={clickedCancel} color="secondary" autoFocus>
+          ОТМЕНА
+      </Button>
+      );
 
-    let cancelButton = null;
-
-    if (props.clickedCancel) {
-        cancelButton = (
-        <Button onClick={props.clickedCancel} color="secondary" autoFocus>
-            ОТМЕНА
-        </Button>
-        );
-    }
-
-    return(
-<div>
+  return(
+    <div>
       <Dialog
-        open={props.show}
-        onClose={props.clicked}
+        open={show}
+        onClose={clicked}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
+        aria-describedby="alert-dialog-description">
         <DialogTitle id="alert-dialog-title">{"Внимание!"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {props.message}
+            {message}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-        {cancelButton}
-        <Button onClick={props.clickedOk} color="primary" autoFocus>
+        {clickedCancel ? cancelButton : null}
+        <Button onClick={clickedOk} color="primary" autoFocus>
             ОК
         </Button>
         </DialogActions>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 // Material UI
 import TableCell from '@material-ui/core/TableCell';
@@ -6,9 +6,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
 // Redux
 import { connect } from 'react-redux';
-import { editCableRow, deleteCableRow, getJournalByObjectBySystem } from '../../../../store/actions/cable';
 import { cableDeleteAddItem, cableDeleteRemoveItem } from '../../../../store/actions/delete';
-import { undoCableJournalRowAdd, undoCableJournalRowRemove, undoCableJournalRowEdit, undoDataSave } from '../../../../store/actions/undo';
+import { undoCableJournalRowAdd, undoCableJournalRowRemove } from '../../../../store/actions/undo';
 
 const useStyles = makeStyles({
     root: {
@@ -32,7 +31,9 @@ const useStyles = makeStyles({
 
 const IsolationRow = (props) => {
     const classes = useStyles();
-    const { row, deleteItemsNumber, deleteAllEnabled } = props;
+    const { row, deleteItemsNumber, deleteAllEnabled, 
+        cableDeleteRemoveItem, cableDeleteAddItem, 
+        undoCableJournalRowAdd, undoCableJournalRowRemove } = props;
     // State for clicking delete button
     const [deletingCheck, setDeletingCheck] = useState(false);
     // Unchecking the checkbox when the clear button is pressed in delete bar
@@ -46,23 +47,25 @@ const IsolationRow = (props) => {
         if (deleteAllEnabled) {
             checkboxClickHandler('cable_journal', row.id);
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [deleteAllEnabled])
     // Clicking checbkox
-    const checkboxClickHandler = (type, data) => {
+    const checkboxClickHandler = useCallback((type, data) => {
         // If checkbox is not checked
         if (deletingCheck === false) {
             setDeletingCheck(true);
-            props.cableDeleteAddItem(type, data);
-            props.undoCableJournalRowAdd('cable_journal_delete',row);
+            cableDeleteAddItem(type, data);
+            undoCableJournalRowAdd('cable_journal_delete',row);
         } 
         else
         // If checkbox is checked 
         {
             setDeletingCheck(false);
-            props.cableDeleteRemoveItem(data);
-            props.undoCableJournalRowRemove('cable_journal_delete', data);
+            cableDeleteRemoveItem(data);
+            undoCableJournalRowRemove('cable_journal_delete', data);
         }
-    };
+    }, [cableDeleteRemoveItem, cableDeleteAddItem, deletingCheck,
+         row, undoCableJournalRowRemove, undoCableJournalRowAdd]);
 
     const mainRow = (
             <React.Fragment key={`fragmentrow${row.id}`}>
@@ -115,6 +118,5 @@ const mapStateToProps = state => {
 
 
 export default connect(mapStateToProps, 
-    { editCableRow, deleteCableRow, getJournalByObjectBySystem, 
-        cableDeleteRemoveItem, cableDeleteAddItem, 
-        undoCableJournalRowAdd, undoCableJournalRowRemove, undoCableJournalRowEdit, undoDataSave })(IsolationRow);
+    { cableDeleteRemoveItem, cableDeleteAddItem, 
+        undoCableJournalRowAdd, undoCableJournalRowRemove })(IsolationRow);
