@@ -1,32 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Container, Col, Row, Form, Button} from 'react-bootstrap';
+// Material UI
+import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+// Redux
 import { connect } from 'react-redux';
 import { loginUser } from '../../store/actions/auth';
 import { loadPageName } from '../../store/actions/info';
+// Router
 import { Redirect, withRouter } from 'react-router-dom';
 
-const LoginPage = props => {
+const useStyles = makeStyles((theme) => ({
+    box: {
+        display: 'flex',
+        marginLeft: 10,
+        marginBottom: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    paper : {
+        width: '50%',
+        paddingBottom: 10,
+        paddingTop: 10,
+    },
+    text: {
+        width: '80%',
+        marginBottom: 10,
+    },
+    button: {
+        width: '50%',
+    },
+}));
 
+const LoginPage = props => {
+    const classes = useStyles();
+    const { isAuthenticated } = props;
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
-
-    const loginChangeHandler = event => {
-        setLogin(event.target.value);
-    };
-
-    const passwordChangeHandler = event => {
-        setPassword(event.target.value);  
-    };
-
-    const submitLoginHandler = (event) => {
-        event.preventDefault();
-        props.loginUser(login, password);
-    };
-
-    let redirectToMain = null;
-    if (props.isAuthenticated) {
-        redirectToMain = <Redirect to="/" />;
-    }
 
     useEffect(() => {
     props.loadPageName('Войти');
@@ -34,31 +47,37 @@ const LoginPage = props => {
     }, []);
 
     return (
-        <div>
-            <Container fluid>
-                <Row className="justify-content-center mt-3">
-                    <Col md="8">
-                    <Card>
-                        <Card.Header as="h5">Авторизация</Card.Header>
-                        <Card.Body>
-                            <Form>
-                                <Form.Group controlId="authLogin">
-                                    <Form.Label>Логин</Form.Label>
-                                    <Form.Control type="text" placeholder="Введите логин" onChange={loginChangeHandler} value={login}/>
-                                </Form.Group>
-                                <Form.Group controlId="authPassword">
-                                    <Form.Label>Пароль</Form.Label>
-                                    <Form.Control type="password" placeholder="Введите пароль" onChange={passwordChangeHandler} value={password}/>
-                                    <Button className="mt-3" variant="primary" type="submit" onClick={submitLoginHandler}>Войти</Button>
-                                </Form.Group>
-                            </Form>
-                        </Card.Body>
-                    </Card>
-                    </Col>
-                </Row>
-            </Container>
-            {redirectToMain}
-        </div>
+        <React.Fragment>
+            <Box className={classes.box}>
+                <Paper className={classes.paper}>
+                <Box className={classes.box}>
+                    <Typography variant="h6">
+                        Введите данные для авторизации
+                    </Typography>
+                </Box>
+                <Box className={classes.box}>
+                <TextField className={classes.text} 
+                label="Логин" variant="outlined" placeholder="Введите логин"
+                value={login} 
+                onChange={(e) => {setLogin(e.target.value)}}/>
+                </Box>
+                <Box className={classes.box}>
+                <TextField className={classes.text} 
+                label="Пароль" variant="outlined" placeholder="Введите пароль"
+                value={password} type="password"
+                onChange={(e) => {setPassword(e.target.value)}}/>
+                </Box>
+                <Box className={classes.box}>
+                <Button className={classes.button}
+                variant="contained" color="primary"
+                onClick={() => props.loginUser(login, password)}>
+                        Войти
+                </Button>
+                </Box>    
+                </Paper>
+            </Box>
+        {isAuthenticated ? <Redirect to="/" /> : null}
+        </React.Fragment>
     );
 };
 
@@ -66,7 +85,6 @@ const LoginPage = props => {
 const mapStateToProps = state => {
     return {
         isAuthenticated: state.auth.isAuthenticated,
-        username: state.auth.username,
     };
 };
 

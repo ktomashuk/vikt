@@ -9,10 +9,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 // Custom components
-import CablePanel from '../../components/Documents/CablePanel/CablePanel';
-import CableTable from '../../components/Documents/CableTable/CableTable';
+import CablePanel from '../../components/Documents/CableJournal/CablePanel/CablePanel';
+import CableTable from '../../components/Documents/CableJournal/CableTable/CableTable';
 import DeleteBar from '../../components/UI/DeleteBar/DeleteBar';
 import CableBar from '../../components/UI/CableBar/CableBar';
+import CableEditModal from '../../components/Documents/CableJournal/CableEditModal/CableEditModal';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -60,6 +61,7 @@ const CableContainer = (props) => {
         <div className={classes.root}>
             <DeleteBar />
             <CableBar />
+            <CableEditModal />
             <Grid container spacing={1}>
                     <Grid item xs={12}>
                     <Paper className={classes.paper}>

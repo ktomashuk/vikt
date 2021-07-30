@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
+// Custom components
 import ErrorModal from '../UI/ErrorModal/ErrorModal';
 import InfoModal from '../UI/InfoModal/InfoModal';
 import SnackBar from '../UI/SnackBar/SnackBar';
 import MainDrawer from '../Navigation/NavigationBar/Drawer';
 import Loading from '../UI/Loading/Loading';
+// Redux
 import { connect } from 'react-redux';
 import { checkAuthentication } from '../../store/actions/auth';
 import { hideError } from '../../store/actions/errors';
@@ -11,11 +13,11 @@ import { hideInfo, hideSpinner } from '../../store/actions/info';
 import { hideSnack } from '../../store/actions/snack';
 
 const Layout = React.memo(props => {
-
+    const { isAuthenticated } = props;
+    // Getting user names when he is authenticated
     useEffect(() => {
         props.checkAuthentication();
-       // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, []);
+      }, [isAuthenticated]);
     
       return (
         <React.Fragment>

@@ -144,7 +144,8 @@ const IsolationPanel = (props) => {
             }}/>
             <RefreshButton tooltipOn="Обновить" tooltipOff="Обновление недоступно"
             refreshType='cable_journal' clicked={() => refreshJournal()} refreshEnabled={cableJournalLoaded}/>
-            <ExportButton exportEnabled={cableJournalLoaded}/>                       
+            <ExportButton exportEnabled={cableJournalLoaded}
+            tooltipOn="Экспорт в Word" tooltipOff="Экспорт недоступен"/>                       
         </div>
     );
 }

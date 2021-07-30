@@ -19,9 +19,6 @@ export const loginUser = (username, password) => async dispatch => {
         });
     } catch(err) {
         dispatch({
-            type: actionTypes.LOGIN_FAIL,
-        });
-        dispatch({
             type: actionTypes.ERROR_SHOW,
             errorMessage: 'Неправильный логин или пароль!'
         });

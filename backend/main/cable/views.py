@@ -8,6 +8,8 @@ from django.http import HttpResponse
 import xlsxwriter
 import json
 import numpy as np
+import io
+from docxtpl import DocxTemplate, InlineImage
 
 
 # ViewSet with ability to add multiple records with 1 request
@@ -260,4 +262,36 @@ class IsolationExportView(APIView):
             content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         )
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return response
+
+
+class IsolationWordExportView(APIView):
+    serializer_class = CableJournalSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        object_id = self.kwargs['id']
+        system_name = self.kwargs['system']
+        cj = CableJournal.objects.filter(object=object_id, system=system_name)
+        return cj
+
+    def get(self, request, *args, **kwargs):
+        cj = self.get_queryset()
+        serializer = CableJournalSerializer(cj, many=True)
+        export_array = []
+        template = DocxTemplate('Isolation_template.docx')
+
+        context = {
+            'city': 'Moscow',
+            'object': 'School',
+        }
+        template.render(context)
+        doc_io = io.BytesIO()  # create a file-like object
+        template.save(doc_io)  # save data to file-like object
+        doc_io.seek(0)  # go to the beginning of the file-like object
+
+        response = HttpResponse(doc_io.read())
+        response["Content-Disposition"] = "attachment; filename=generated_doc.docx"
+        response["Content-Type"] = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
         return response

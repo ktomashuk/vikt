@@ -19,7 +19,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 // Redux
 import { connect } from 'react-redux';
-import { addDevice } from '../../../store/actions/cable';
+import { addDevice } from '../../../../store/actions/cable';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {

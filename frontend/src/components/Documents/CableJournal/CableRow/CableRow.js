@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-// Material UI
 import { makeStyles } from '@material-ui/core/styles';
+// Material UI
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import Checkbox from '@material-ui/core/Checkbox';
 import EditIcon from '@material-ui/icons/Edit';
+import Checkbox from '@material-ui/core/Checkbox';
 // Redux
 import { connect } from 'react-redux';
-import { undoDataSave } from '../../../store/actions/undo';
-import { editStart } from '../../../store/actions/edit';
+import { cableDeleteAddItem, cableDeleteRemoveItem } from '../../../../store/actions/delete';
+import { undoCableJournalRowAdd, undoCableJournalRowRemove} from '../../../../store/actions/undo';
+import { editStart } from '../../../../store/actions/edit';
 
 const useStyles = makeStyles({
     root: {
@@ -25,12 +26,14 @@ const useStyles = makeStyles({
         maxWidth: 1500,
         fontSize: 30,
     },
+    checkbox: {
+        marginBottom: 1,
+    },
 });
 
-const EstimatesRow = props => {
+const CableRow = (props) => {
     const classes = useStyles();
-    const { row, units, systems, deleteAllEnabled, deleteItemsNumber, 
-        checkOn, checkOff, undoAdd, undoRemove } = props;
+    const { row, deleteItemsNumber, deleteAllEnabled } = props;
     // State for clicking delete button
     const [deletingCheck, setDeletingCheck] = useState(false);
     // Unchecking the checkbox when the clear button is pressed in delete bar
@@ -45,55 +48,57 @@ const EstimatesRow = props => {
             checkboxClickHandler('cable_journal', row.id);
         };
     }, [deleteAllEnabled]);
+    
     // Clicking checbkox
     const checkboxClickHandler = (type, data) => {
         // If checkbox is not checked
         if (deletingCheck === false) {
             setDeletingCheck(true);
-            checkOn(type, data);
-            undoAdd('estimate_delete', row);
+            props.cableDeleteAddItem(type, data);
+            props.undoCableJournalRowAdd('cable_journal_delete',row);
         } 
         else
         // If checkbox is checked 
         {
             setDeletingCheck(false);
-            checkOff(data);
-            undoRemove('estimate_delete', data)
+            props.cableDeleteRemoveItem(data);
+            props.undoCableJournalRowRemove('cable_journal_delete', data);
         }
     };
-    let mainRow = (
+
+    const mainRow = (
             <React.Fragment key={`fragmentrow${row.id}`}>
-            <TableRow key={`r${row.id}`} hover >
-                <TableCell padding="default" key={`number${row.id}`}>
-                {row.system_number}.{row.ware_number}
+            <TableRow key={`r${row.id}`} hover>
+                <TableCell padding="default" key={`index${row.id}`} onClick={() => checkboxClickHandler('cable_journal', row.id)}>
+                {row.index}
                 </TableCell>
-                <TableCell key={`ware${row.id}`}>
-                {row.ware}                    
+                <TableCell key={`name${row.id}`} onClick={() => checkboxClickHandler('cable_journal', row.id)}>
+                {row.name}                    
                 </TableCell>
-                <TableCell key={`units${row.id}`}>
-                {units.find(u => u.id === row.units).name}
+                <TableCell key={`start${row.id}`} onClick={() => checkboxClickHandler('cable_journal', row.id)}>
+                {row.start}
                 </TableCell>
-                <TableCell key={`quantity${row.id}`}>
-                {row.quantity}
+                <TableCell key={`end${row.id}`} onClick={() => checkboxClickHandler('cable_journal', row.id)}>
+                {row.end}
                 </TableCell>
-                <TableCell key={`price${row.id}`}>
-                {row.price}
+                <TableCell key={`cable${row.id}`} onClick={() => checkboxClickHandler('cable_journal', row.id)}>
+                {row.cable}
                 </TableCell>
-                <TableCell key={`system${row.id}`}>
-                {systems.find(sys => sys.id === row.system).acronym}
+                <TableCell key={`cut${row.id}`} onClick={() => checkboxClickHandler('cable_journal', row.id)}>
+                {row.cable_cut}
                 </TableCell>
-                <TableCell key={`note${row.id}`}>
-                {row.note}
+                <TableCell key={`length${row.id}`} onClick={() => checkboxClickHandler('cable_journal', row.id)}>
+                {row.length}    
                 </TableCell>
                 <TableCell key={`buttons${row.id}`}>
                     <React.Fragment key={`frag2${row.id}`}>
                         <EditIcon className={classes.icon}
                         key={`edit${row.id}`}
                         color="primary"
-                        onClick={() => props.editStart('estimate_row', row)}/>
+                        onClick={() => props.editStart('cable_journal_row', row)}/>
                         <Checkbox size="small" checked={deletingCheck}
                         className={classes.checkbox}
-                        onClick={() => checkboxClickHandler('estimates', row.id)}/>
+                        onClick={() => checkboxClickHandler('cable_journal', row.id)}/>
                     </React.Fragment>
                 </TableCell>
             </TableRow>
@@ -103,15 +108,22 @@ const EstimatesRow = props => {
             </TableRow>
             </React.Fragment>
         );
+    
     return mainRow;
 };
 
 const mapStateToProps = state => {
     return {
+        cableJournalLoaded: state.cable.cableJournalLoaded,
+        cableJournal: state.cable.cableJournal,
+        cableObject: state.cable.cableObject,
+        cableSystem: state.cable.cableSystem,
         deleteItemsNumber: state.del.deleteItemsNumber,
         deleteAllEnabled: state.del.deleteAllEnabled,
     };
 };
 
 
-export default connect(mapStateToProps, { editStart, undoDataSave })(EstimatesRow);
+export default connect(mapStateToProps, { editStart, 
+        cableDeleteRemoveItem, cableDeleteAddItem, 
+        undoCableJournalRowAdd, undoCableJournalRowRemove })(CableRow);

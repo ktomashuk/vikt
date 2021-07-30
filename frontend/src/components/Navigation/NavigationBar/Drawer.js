@@ -28,8 +28,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logoutUser } from '../../../store/actions/auth';
 import { loadPageName } from '../../../store/actions/info';
-import { unloadEstimates } from '../../../store/actions/estimates';
-import { unloadContractors } from '../../../store/actions/contractors';
+import { unloadEverything } from '../../../store/actions/unload';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,24 +64,9 @@ const MainDrawer = React.memo(props => {
       };
     // Clicking a drawer item
     const drawerClick = (adress) => {
-      switch(adress){
-      case 'estimates':
-        setState({ ...state, open: false });
-        props.history.push(`/${adress}`);
-        props.unloadContractors();
-        break;
-      case 'contractors':
-        setState({ ...state, open: false });
-        props.history.push(`/${adress}`);
-        props.unloadEstimates();
-        break;
-      default:
-        setState({ ...state, open: false });
-        props.history.push(`/${adress}`);
-        props.unloadEstimates();
-        props.unloadContractors();
-        break;
-      };
+      props.unloadEverything();
+      setState({ ...state, open: false });
+      props.history.push(`/${adress}`);
     };
     // Drawer menu contents
     const drawerItems = [
@@ -272,4 +256,4 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, 
-  { logoutUser, loadPageName, unloadEstimates, unloadContractors })(withRouter(MainDrawer));
+  { logoutUser, loadPageName, unloadEverything })(withRouter(MainDrawer));

@@ -83,7 +83,7 @@ const ContractorEmployeeModal = (props) => {
   // Setting company id
   useEffect(() => {
     setEmployee({...employee, company: contractorData.id});
-  }, [contractorData]);
+  }, [contractorData, employee]);
   // Add row and prepare for another
   const addDeviceAndContinue = async () => {
     await props.addRepresentative(employee);

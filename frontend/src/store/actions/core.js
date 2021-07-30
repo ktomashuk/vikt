@@ -110,7 +110,30 @@ export const editObjectData = (id, data) => async dispatch => {
     }
 };
 
+export const unloadObjects = () => dispatch => {
+    dispatch({
+        type: actionTypes.OBJECTS_UNLOAD,
+    });
+};
+
 export const getSystemsByObject = (id) => async dispatch => {
+
+    try {
+        const res = await axiosInstance.get(`/core/systems-by-object/${id}/`);
+        const data = res.data;
+        dispatch({
+            type: actionTypes.OBJECTS_GET_SYSTEMS,
+            data: data,
+        });
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно загрузить список систем!',
+        });   
+    }
+};
+
+export const getSystemsByObjectAndAddAll = (id) => async dispatch => {
 
     try {
         const res = await axiosInstance.get(`/core/systems-by-object/${id}/`);

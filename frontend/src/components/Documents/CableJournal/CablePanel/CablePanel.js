@@ -20,21 +20,22 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import Tooltip from '@material-ui/core/Tooltip';
 import Fab from '@material-ui/core/Fab';
 import Menu from '@material-ui/core/Menu';
+import Typography from '@material-ui/core/Typography';
 // Redux
 import { connect } from 'react-redux';
 import { removeDevice, getJournalByObjectBySystem, 
-    addCableRow, editCableRow, exportJournalByObjectBySystem } from '../../../store/actions/cable';
-import { cableDeleteAddAll, cableDeleteRemoveAll } from '../../../store/actions/delete';
-import { getObjects, getSystemsByObject } from '../../../store/actions/core';
-import { showInfo } from '../../../store/actions/info';
-import { switchToDeleting, switchToLength } from '../../../store/actions/selectors';
+    addCableRow, editCableRow, exportJournalByObjectBySystem } from '../../../../store/actions/cable';
+import { cableDeleteAddAll, cableDeleteRemoveAll } from '../../../../store/actions/delete';
+import { getObjects, getSystemsByObject } from '../../../../store/actions/core';
+import { showInfo } from '../../../../store/actions/info';
+import { switchToDeleting, switchToLength } from '../../../../store/actions/selectors';
 // Custom components
 import CableModal from '../CableModal/CableModal';
-import UndoButton from '../../Buttons/UndoButton/UndoButton';
-import AddButton from '../../Buttons/AddButton/AddButton';
-import ClearButton from '../../Buttons/ClearButton/ClearButton';
-import ExportButton from '../../Buttons/ExportButton/ExportButton';
-import RefreshButton from '../../Buttons/RefreshButton/RefreshButton';
+import UndoButton from '../../../Buttons/UndoButton/UndoButton';
+import AddButton from '../../../Buttons/AddButton/AddButton';
+import ClearButton from '../../../Buttons/ClearButton/ClearButton';
+import ExportButton from '../../../Buttons/ExportButton/ExportButton';
+import RefreshButton from '../../../Buttons/RefreshButton/RefreshButton';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -481,7 +482,7 @@ const CablePanel = (props) => {
             <RefreshButton tooltipOn="Обновить" tooltipOff="Обновление недоступно"
             refreshType='cable_journal' clicked={() => refreshJournal()} refreshEnabled={cableJournalLoaded}/>
             <div>
-            <Tooltip title={<h6>Настройки</h6>} arrow>
+            <Tooltip title={<Typography variant="subtitle1">Настройки</Typography>} arrow>
             <Fab color="primary" aria-label="settings" className={classes.button} size="medium"
             onClick={handleClick}>
                 <SettingsIcon style={{color: 'white'}} />
@@ -503,18 +504,21 @@ const CablePanel = (props) => {
                 </MenuItem>
             </Menu>
             </div>
-            <ExportButton clicked={() => exportClickHandler(objectId, system)} exportEnabled={cableJournalLoaded}/>
+            <ExportButton clicked={() => exportClickHandler(objectId, system)} exportEnabled={cableJournalLoaded}
+            tooltipOn="Экспорт в Word" tooltipOff="Экспорт недоступен"/>
+            <div>
             {deviceList.map((item) => {
                 return(
-            <Chip
-            className={classes.chip}
-            key={item.id}
-            color="primary"
-            label={item.name + '(' + item.prefix + 'X) ' + item.cable}
-            onClick={() => {addCLickHandler(item)}}
-            onDelete={() => {props.removeDevice(item.id)}} />
-            );
-            })}
+                <Chip
+                    className={classes.chip}
+                    key={item.id}
+                    color="primary"
+                    label={item.name + '(' + item.prefix + 'X) ' + item.cable}
+                    onClick={() => {addCLickHandler(item)}}
+                    onDelete={() => {props.removeDevice(item.id)}} />
+                );
+                })}
+            </div>
         </div>
     );
 }

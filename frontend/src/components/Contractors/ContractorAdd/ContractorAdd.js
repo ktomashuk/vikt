@@ -43,7 +43,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const ContractorAdd = (props) => {
   const classes = useStyles();
   // Variables to control opening/closing
-  const { show } = props;
+  const { show, showInfo, addContractor, getContractors } = props;
   const [open, setOpen] = useState(false);
   const [contractorName, setContractorName] = useState({name: '', type: ''});
     // Closing the modal
@@ -64,9 +64,9 @@ const ContractorAdd = (props) => {
   const addContractorClickHandler = () => {
     // Checking if type is chosen
     if (contractorName.type === '') {
-      return props.showInfo('Выберите тип контрагента!');
+      return showInfo('Выберите тип контрагента!');
     };
-    props.addContractor(contractorName);
+    addContractor(contractorName);
     setContractorName({...contractorName, name: ''});
     refreshContractors();
   };
@@ -77,7 +77,7 @@ const ContractorAdd = (props) => {
   // Refreshing data from the server
   const refreshContractors = () => {
     setTimeout(() => {
-        props.getContractors();
+        getContractors();
     }, 500)
   };
 
@@ -120,10 +120,4 @@ const ContractorAdd = (props) => {
   );
 }
 
-const mapStateToProps = state => {
-  return {
-      estimatesObject: state.est.estimatesObject,
-  };
-};
-
-export default connect(mapStateToProps, { addContractor, getContractors, showInfo })(ContractorAdd);
+export default connect(null, { addContractor, getContractors, showInfo })(ContractorAdd);

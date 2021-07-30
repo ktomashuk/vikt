@@ -36,12 +36,15 @@ const reducer = (state = initialState, action) => {
             return {...state};
         case actionTypes.ESTIMATES_LOAD_FAIL:
             return {...state, estimatesLoaded: false };
-        case actionTypes.ESTIMATES_UNLOAD_SUCCESS:
-            return {...state, 
-                estimatesData: null, 
-                estimatesLoaded: false,
+        case actionTypes.ESTIMATES_DATA_UNLOAD:
+            return {...state,
+                estimatesLoaded: false, 
+                estimatesData: null,
                 systemsByObject: null,
                 systemsLoaded: false,
+                estimatesObject: 0,
+                estimatesSystem: '',
+                estimatesRefreshNeeded: false,
             };
         case actionTypes.SEARCH_ESTIMATES:
             return {...state,

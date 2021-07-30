@@ -1,41 +1,73 @@
 import React, { useEffect } from 'react';
+// Material UI
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
+// Redux
 import { connect } from 'react-redux';
-import { loadPageName, showSpinner } from '../../store/actions/info';
-import { Jumbotron, Container, Button } from 'react-bootstrap';
+import { loadPageName } from '../../store/actions/info';
+// Router
+import { withRouter } from 'react-router-dom';
+
+const useStyles = makeStyles((theme) => ({
+    box: {
+        display: 'flex',
+        marginLeft: 10,
+        marginBottom: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+}));
 
 const HomePage = props => {
-
+    const classes = useStyles();
+    const { firstName, lastName, isAuthenticated } = props;
     // Setting page name
     useEffect(() => {
         props.loadPageName('Главная');
        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    let dashboard = '';
-    if (props.isAuthenticated) {
+    let dashboard = (
+        <React.Fragment>
+            <Box className={classes.box}>
+            <Typography variant="h4">
+            Чтобы получить доступ к порталу, войдите в систему!
+            </Typography>
+            </Box>
+            <Box className={classes.box}>
+            <Button variant="contained" color="primary" title="Войти"
+            onClick={() => {props.history.push(`/login`);}}>
+            Войти
+            </Button>
+            </Box>
+        </React.Fragment>
+    );
+
+    if (isAuthenticated) {
+        const fullName = firstName + ' ' + lastName;
         dashboard = (
-            <Jumbotron fluid>
-            <Container>
-                <h1>Здравствуйте, {props.firstName} {props.lastName}!</h1>
-                <p>Это тестовая версия портала.</p>
-                <Button onClick={
-                    () => {console.log(localStorage.getItem('access_token'))}}>
-                    JWT</Button>
-            </Container>
-            </Jumbotron>
-        );
-    } else {
-        dashboard = (
-            <Jumbotron>
-                <h1>Здравствуйте!</h1>
-                <p>Чтобы получить доступ к функционалу портала, войдите в систему.</p>
-                <p>
-                    <Button variant="primary" href="/login">Войти</Button>
-                </p>
-            </Jumbotron>
+            <React.Fragment>
+            <Box className={classes.box}>
+            <Typography variant="h4">
+            Здравствуйте, {fullName}
+            </Typography>
+            </Box>
+            <Box className={classes.box}>
+            <Typography variant="h5">
+            Это тестовая версия портала
+            </Typography>
+            </Box>
+                <Box className={classes.box}>
+                    <Button variant="contained" color="primary"
+                    onClick={() => {console.log(localStorage.getItem('access_token'))}}>
+                    JWT
+                    </Button>
+                </Box>
+            </React.Fragment>
         );
     }
-
     return(
         <div>
             {dashboard}
@@ -46,10 +78,9 @@ const HomePage = props => {
 const mapStateToProps = state => {
     return {
         isAuthenticated: state.auth.isAuthenticated,
-        username: state.auth.username,
         firstName: state.auth.firstName,
         lastName: state.auth.lastName,
     };
 };
 
-export default connect(mapStateToProps, { loadPageName, showSpinner })(HomePage);
+export default connect(mapStateToProps, { loadPageName })(withRouter(HomePage));

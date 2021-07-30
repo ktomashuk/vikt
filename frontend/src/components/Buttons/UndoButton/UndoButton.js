@@ -1,10 +1,13 @@
 import React from 'react';
-import { connect } from 'react-redux';
+// Material UI
 import { makeStyles } from '@material-ui/core/styles';
 import ReplayIcon from '@material-ui/icons/Replay';
 import Box from '@material-ui/core/Box';
 import Fab from '@material-ui/core/Fab';
 import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+// Redux
+import { connect } from 'react-redux';
 import { undoEstimateDelete, undoEstimateRowEdit, undoClear,
     undoCableJournalDelete, undoCableJournalRowEdit } from '../../../store/actions/undo';
 import { getEstimatesByObject, getEstimatesByObjectBySystem, 
@@ -47,16 +50,16 @@ const UndoButton = props => {
         }
     };
     // Tooltip text
-    let tooltipTitle = <h6>Отмена недоступна</h6>;
+    let tooltipTitle = "Отмена недоступна";
     if (undoActive) {
         switch (undoType) {
             case 'estimate_row_delete':
             case 'cable_journal_delete':
-                tooltipTitle = <h6>Отменить удаление</h6>;
+                tooltipTitle = "Отменить удаление";
                 break;
             case 'estimate_row_edit':
             case 'cable_journal_edit':
-                tooltipTitle = <h6>Отменить редактирование</h6>;
+                tooltipTitle = "Отменить редактирование";
                 break;
             default:
                 break;
@@ -65,7 +68,7 @@ const UndoButton = props => {
         return(
             <Box className={classes.root}>
                 <Tooltip
-                title={tooltipTitle} arrow>
+                title={<Typography variant="subtitle1">{tooltipTitle}</Typography>} arrow>
                <Fab color="primary" aria-label="add" size="medium"
                onClick={undoActive ? () => undoClickHandler(undoType, undoData) : null}>
                <ReplayIcon 

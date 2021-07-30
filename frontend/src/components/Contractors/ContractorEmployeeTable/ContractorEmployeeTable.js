@@ -45,13 +45,14 @@ const useStyles = makeStyles({
 
 const ContractorEmployeeTable = (props) => {
     const classes = useStyles();
-    const { representatives, contractorData, contractorDataLoaded } = props;
+    const { representatives, contractorData, contractorDataLoaded,
+        getRepresentativesByContractor } = props;
     // Fetching employees from server
     useEffect(() => {
         if (contractorDataLoaded) {
-            props.getRepresentativesByContractor(contractorData.id);
+            getRepresentativesByContractor(contractorData.id);
         }
-    }, [contractorData])
+    }, [contractorData, contractorDataLoaded])
     // Default table
     let rows = <TableRow><TableCell>
         <CircularProgress className={classes.loading} />

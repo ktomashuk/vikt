@@ -36,6 +36,10 @@ const reducer = (state = initialState, action) => {
                 contractorsList: null,
                 contractorData: [],
                 contractorDataLoaded: false,
+                contractorTypes: [],
+                contractorListSpinner: false,
+                contractorDataSpinner: false,
+                representatives: [],
             };
         case actionTypes.CONTRACTOR_REPRESENTATIVES_DATA_LOAD:
             return {...state,

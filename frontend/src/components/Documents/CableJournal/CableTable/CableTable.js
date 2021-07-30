@@ -9,7 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import CableRow from '../CableRow/CableRow';
 import { connect } from 'react-redux';
-import { getJournalByObjectBySystem } from '../../../store/actions/cable';
+import { getJournalByObjectBySystem } from '../../../../store/actions/cable';
 
 
 const columns = [

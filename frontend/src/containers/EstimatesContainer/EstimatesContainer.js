@@ -12,14 +12,17 @@ import AddButton from '../../components/Buttons/AddButton/AddButton';
 // Custom components
 import EstimatesTable from '../../components/Estimates/EstimatesTable/EstimatesTable';
 import UndoButton from '../../components/Buttons/UndoButton/UndoButton';
+import ClearButton from '../../components/Buttons/ClearButton/ClearButton';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import EstimateModal from '../../components/Estimates/EstimateModal/EstimateModal';
+import EstimateEditModal from '../../components/Estimates/EstimateEditModal/EstimateEditModal';
 import DeleteBar from '../../components/UI/DeleteBar/DeleteBar';
 // Redux
 import { connect } from 'react-redux';
 import { getEstimatesByObject, getEstimatesByObjectBySystem,
      searchEstimatesByObject, searchEstimatesByObjectBySystem } from '../../store/actions/estimates';
-import { getObjects, getSystemsByObject, getObjectById, getUnits } from '../../store/actions/core';
+import { estimateDeleteRemoveAll, estimateDeleteAddAll } from '../../store/actions/delete';
+import { getObjects, getSystemsByObjectAndAddAll, getObjectById, getUnits } from '../../store/actions/core';
 import { switchToDeleting } from '../../store/actions/selectors';
 import { loadPageName } from '../../store/actions/info';
 
@@ -55,8 +58,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EstimatesContainer = React.memo(props => {
-    const { estimatesObject, estimatesSystem, objectsData, objectsLoaded,
-    chosenObjectId, chosenObjectSystems, chosenObjectSystemsLoaded } = props;
+    const { estimatesObject, estimatesSystem, estimatesLoaded, estimatesData,
+    chosenObjectId, chosenObjectSystems, chosenObjectSystemsLoaded,
+    objectsData, objectsLoaded, } = props;
     const classes = useStyles();
     const [object, setObject] = useState('');
     const [system, setSystem] = useState('');
@@ -71,7 +75,7 @@ const EstimatesContainer = React.memo(props => {
         setSystem('');
         props.getEstimatesByObject(objFound.id);
         props.getObjectById(objFound.id);
-        props.getSystemsByObject(objFound.id);
+        props.getSystemsByObjectAndAddAll(objFound.id);
         setAddingEnabled(true);
     };
     // Loading data for a chosen system
@@ -134,6 +138,7 @@ const EstimatesContainer = React.memo(props => {
         return(
                 <div className={classes.root}>
                 <EstimateModal show={openModal}/>
+                <EstimateEditModal />
                 <DeleteBar />
                 <Grid container spacing={1}>
                     <Grid item xs={12} className={classes.topGrid}>
@@ -168,6 +173,12 @@ const EstimatesContainer = React.memo(props => {
                                 setOpenModal(true);
                                 setTimeout(() => setOpenModal(false), 500)}}
                             />
+                            <ClearButton tooltipOn="Выбрать все" tooltipOff="Выбор недоступен"
+                            clearEnabled={estimatesLoaded && estimatesData[0] !== undefined} 
+                            clicked={ async () => {
+                                await props.estimateDeleteRemoveAll();
+                                props.estimateDeleteAddAll();
+                            }}/>
                             <UndoButton />
                         </Paper>
                     </Grid>
@@ -195,5 +206,6 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, 
     { getEstimatesByObject, getObjects, getObjectById, getUnits,
-        getSystemsByObject, getEstimatesByObjectBySystem, switchToDeleting,
-        searchEstimatesByObjectBySystem, searchEstimatesByObject, loadPageName })(EstimatesContainer);
+        getSystemsByObjectAndAddAll, getEstimatesByObjectBySystem, switchToDeleting,
+        estimateDeleteRemoveAll, estimateDeleteAddAll, loadPageName,
+        searchEstimatesByObjectBySystem, searchEstimatesByObject  })(EstimatesContainer);

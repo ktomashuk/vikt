@@ -10,15 +10,24 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import QueueIcon from '@material-ui/icons/Queue';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
+import Chip from '@material-ui/core/Chip';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 // Custom components
 import ObjectSystemsTable from '../ObjectSystemsTable/ObjectSystemsTable';
 import ObjectSystemsModal from '../ObjectSystemsModal/ObjectSystemsModal';
+import ObjectDataContractorChip from '../ObjectDataContractorChip/ObjectDataContractorChip';
 // Redux
 import { connect } from 'react-redux';
 import { deleteObject, editObjectData, getObjects } from '../../../store/actions/core';
+import { getContractorsByType } from '../../../store/actions/contractors';
 // For comparing objects
 const _ = require('lodash');
+// Adding contractors menu height
+const ITEM_HEIGHT = 48;
 
 const useStyles = makeStyles((theme) => ({
     box: {
@@ -36,10 +45,13 @@ const useStyles = makeStyles((theme) => ({
 
 const ObjectData = (props) => {
     const classes = useStyles();
-    const { chosenObjectId, chosenObjectData, clickable } = props;
+    const { chosenObjectId, chosenObjectData, clickable, contractorsList } = props;
     // State for controlling buttons
     const [editing, setEditing] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    // State for controlling menu for adding contractors
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
     // State for controlling accordion
     const [accordion, setAccordion] = useState({
         data: false,
@@ -70,6 +82,8 @@ const ObjectData = (props) => {
                 address: chosenObjectData.address,
                 contractors: chosenObjectData.contractors,
             });
+            props.getContractorsByType('Заказчик');
+
         }
     }, [chosenObjectId])
     // Opening the first accordion when object is selected
@@ -78,6 +92,26 @@ const ObjectData = (props) => {
             setAccordion({...accordion, data: true, systems: false });
         };
     }, [clickable]);
+    // Clicking add contractor button to open a menu
+    const addContractorOpenClickHandler = (event) => {
+        setAnchorEl(event.currentTarget);
+      };
+    // Closing the contractor menu
+    const addContractorCloseClickHandler = () => {
+        setAnchorEl(null);
+      };
+    // Adding a contractor to an object
+    const addContractorClickHandler = (id) => {
+        // Only add new contractor if it doesnt exist in an array already
+        if (!object.contractors.includes(id)) {
+            const newData = {...object, 
+                contractors: [...object.contractors, id],
+            };
+            props.editObjectData(object.id, newData);
+            setObject(newData);
+        };
+        addContractorCloseClickHandler();
+    };
     // Clicking save button
     const saveClickHandler = () => {
         const equality = _.isEqual(object, chosenObjectData);
@@ -98,6 +132,14 @@ const ObjectData = (props) => {
         props.getObjects();
         setDeleting(false);
     };
+    // Clicking delete on a contractor chip
+    const deleteContractorHandler = (id) => {
+        const newData = {...object, 
+        contractors: object.contractors.filter(item => item !== id),
+        };
+        props.editObjectData(object.id, newData);
+        setObject(newData);
+    };
     // Opening the system add modal
     const addClickHandler = () => {
         setSystemsModal(true);
@@ -107,13 +149,13 @@ const ObjectData = (props) => {
     const addSystemButton = (
     <React.Fragment>
     <Tooltip title={<h6>Добавить систему</h6>} arrow>
-        <QueueIcon style={{marginLeft: 10}}
+        <AddBoxIcon style={{marginLeft: 10}}
         onClick={(event) => {
             event.stopPropagation();
             addClickHandler();
         }}/>
     </Tooltip>
-    </React.Fragment>   
+    </React.Fragment>
     );
     // Buttons when editing is disabled
     const buttonsDefault = (
@@ -174,6 +216,44 @@ const ObjectData = (props) => {
                 value={object.address} 
                 onChange={ editing ? (e) => setObject({...object, address: e.target.value}) : undefined}/>
             </Box>
+            <Divider />
+            <Box className={classes.box}>       
+            <Typography vatiant="h6">
+                Заказчики:
+            </Typography>   
+            </Box>
+            <Box className={classes.box}>          
+            {chosenObjectId && contractorsList ? 
+            chosenObjectData.contractors.map((contractor) => {
+                const contractorName = contractorsList.filter(item => item.id === contractor)[0].name;
+                return(
+                <ObjectDataContractorChip key={contractor} name={contractorName} deletable={editing} 
+                deleteClick={() => deleteContractorHandler(contractor)}/>
+            )}) : null }
+            {chosenObjectId && !chosenObjectData.contractors[0] && !editing ?
+            <Chip style={{ marginLeft: 10 }} label="Нет заказчиков" color="secondary"/> : null }
+            {editing ? 
+            <React.Fragment>
+            <Chip style={{ marginLeft: 10 }} color="primary"
+            label="Добавить заказчика" 
+            onClick={addContractorOpenClickHandler}/>
+            <Menu
+                id="long-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={open}
+                onClose={addContractorCloseClickHandler}
+                PaperProps={{
+                style: { maxHeight: ITEM_HEIGHT * 4.5, width: '20ch' },}} >
+                {contractorsList.map((option) => (
+                <MenuItem key={option.name} onClick={() => addContractorClickHandler(option.id)}>
+                    {option.name}
+                </MenuItem>
+                ))}
+            </Menu>
+            </React.Fragment>
+            : null }
+            </Box>
             <Box style={{marginTop: 20, marginLeft: '40%', paddingBottom: 10,}}>
             {!editing && !deleting ? buttonsDefault : null }
             {editing ? buttonsEditOn : null}
@@ -205,8 +285,9 @@ const mapStateToProps = state => {
     return {
         chosenObjectId: state.core.chosenObjectId,
         chosenObjectData: state.core.chosenObjectData,
+        contractorsList: state.contr.contractorsList,
     };
 };
 
 export default connect(mapStateToProps, 
-    { deleteObject, editObjectData, getObjects })(ObjectData);
+    { deleteObject, editObjectData, getObjects, getContractorsByType })(ObjectData);

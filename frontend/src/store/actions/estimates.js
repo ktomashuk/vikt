@@ -133,6 +133,9 @@ export const addEstimateRow = (data) => async dispatch => {
             snackSeverity: 'success',
             snackMessage: 'Запись добавлена!',
         });
+        dispatch({
+            type: actionTypes.ESTIMATES_REFRESH_NEEDED,
+        });
     } catch(err) {
         dispatch({
             type: actionTypes.ESTIMATE_ROW_ADD_FAIL,
@@ -155,6 +158,9 @@ export const editEstimateRow = (rowId, data) => async dispatch => {
             type: actionTypes.SNACK_SHOW,
             snackSeverity: 'warning',
             snackMessage: 'Запись изменена!',
+        }); 
+        dispatch({
+            type: actionTypes.ESTIMATES_REFRESH_NEEDED,
         });
     } catch(err) {
         dispatch({
@@ -221,6 +227,6 @@ export const searchEstimatesByObjectBySystem = (ware, objId, system) => async di
 
 export const unloadEstimates = () => async dispatch => {
     dispatch({
-        type: actionTypes.ESTIMATES_UNLOAD_SUCCESS,
+        type: actionTypes.ESTIMATES_DATA_UNLOAD,
     });
 };

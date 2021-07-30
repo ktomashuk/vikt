@@ -30,6 +30,15 @@ const reducer = (state = initialState, action) => {
         case actionTypes.CABLE_JOURNAL_ROWS_UPDATE:
             return {...state,
             refreshNeeded: true,};
+        case actionTypes.CABLE_JOURNAL_DATA_UNLOAD:
+            return {...state,
+                deviceList: [],
+                cableJournal: null,
+                cableJournalLoaded: false,
+                refreshNeeded: false,
+                cableObject: 0,
+                cableSystem: '',
+            };
         default:
             return state;
     }

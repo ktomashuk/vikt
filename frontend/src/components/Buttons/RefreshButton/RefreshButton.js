@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import CachedIcon from '@material-ui/icons/Cached';
 import Fab from '@material-ui/core/Fab';
+import Typography from '@material-ui/core/Typography';
 // Redux
 import { connect } from 'react-redux';
 import { showSnack } from '../../../store/actions/snack';
@@ -21,7 +22,9 @@ const RefreshButton = (props) => {
     const { clicked, refreshEnabled, tooltipOn, tooltipOff } = props;
     const classes = useStyles();
     return(
-    <Tooltip title={refreshEnabled ? <h6>{tooltipOn}</h6> : <h6>{tooltipOff}</h6>} arrow>
+        <Tooltip title={refreshEnabled ?
+            <Typography variant="subtitle1">{tooltipOn}</Typography> :
+            <Typography variant="subtitle1">{tooltipOff}</Typography>} arrow>
         <Fab color="primary" aria-label="add" className={classes.button} size="medium"
                     onClick={refreshEnabled ? () => {
                         clicked();

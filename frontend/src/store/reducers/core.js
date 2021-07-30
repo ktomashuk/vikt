@@ -32,6 +32,17 @@ const reducer = (state = initialState, action) => {
                 chosenObjectSystems: action.data,
                 chosenObjectSystemsLoaded: true,
             };
+        case actionTypes.OBJECTS_UNLOAD:
+            return {
+                objectsLoaded: false,
+                objectsData: null,
+                chosenObjectId: 0,
+                chosenObjectData: null,
+                chosenObjectSystems: null,
+                chosenObjectSystemsLoaded: false,
+                units: null,
+                unitsLoaded: false,
+            };
         case actionTypes.UNITS_LOAD:
             return {...state, 
                 units: action.data,
