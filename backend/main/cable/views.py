@@ -48,16 +48,6 @@ class CableJournalUpdateView(generics.UpdateAPIView):
 class CableJournalDeleteView(APIView):
     serializer_class = CableJournalSerializer
 
-    def get_queryset(self):
-        cj = CableJournal.objects.all()
-        return cj
-
-    def get(self, request, *args, **kwargs):
-        cj = self.get_queryset()
-        serializer = CableJournalSerializer(cj, many=True)
-
-        return Response(serializer.data)
-
     def post(self, request, *args, **kwargs):
         cj_data = request.data
         for i in cj_data:

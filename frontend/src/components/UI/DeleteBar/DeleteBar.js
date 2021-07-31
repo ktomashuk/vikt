@@ -9,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { cableDeleteRemoveAll, cableDeleteSelected, 
   estimateDeleteRemoveAll, estimateDeleteSelected } from '../../../store/actions/delete';
-import { undoClear, undoCableJournalDataSave, undoEstimateDataSave } from '../../../store/actions/undo';
+import { undoTempClear, undoCableJournalDataSave, undoEstimateDataSave } from '../../../store/actions/undo';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,7 +29,7 @@ const DeleteBar = (props) => {
   const { deleteEnabled, deleteItemsNumber, deleteData, deleteType, deleteSelectorEnabled, 
     cableDeleteRemoveAll, cableDeleteSelected,
     estimateDeleteRemoveAll, estimateDeleteSelected,
-  undoClear, undoCableJournalDataSave, undoEstimateDataSave } = props;
+    undoTempClear, undoCableJournalDataSave, undoEstimateDataSave } = props;
   
   // Clicking delete button
   const deleteClickHandler = () => {
@@ -51,11 +51,11 @@ const DeleteBar = (props) => {
     switch(deleteType){
       case 'cable_journal':
         cableDeleteRemoveAll();
-        undoClear();
+        undoTempClear();
         break;
       case 'estimates':
         estimateDeleteRemoveAll();
-        undoClear();
+        undoTempClear();
         break;
       default:
         break;
@@ -99,4 +99,4 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps, 
   { cableDeleteRemoveAll, cableDeleteSelected,
     estimateDeleteRemoveAll, estimateDeleteSelected,
-  undoClear, undoCableJournalDataSave, undoEstimateDataSave })(DeleteBar);
+    undoTempClear, undoCableJournalDataSave, undoEstimateDataSave })(DeleteBar);

@@ -18,37 +18,13 @@ export const undoClear = () => dispatch => {
     });
 };
 
-// Undoing estimates changes
-
-export const undoEstimateRowDelete = (undoData) => async dispatch => {
-    try {
-        dispatch({
-            type: actionTypes.INFO_LOADING_SPINNER_SHOW,
-        });
-        const body = JSON.stringify(undoData);
-        await axiosInstance.post(`router/estimates/`, body);
-        dispatch({
-            type: actionTypes.UNDO_CLEAR,
-        });
-        dispatch({
-            type: actionTypes.INFO_LOADING_SPINNER_HIDE,
-        });
-        dispatch({
-            type: actionTypes.SNACK_SHOW,
-            snackSeverity: 'success',
-            snackMessage: 'Данные восстановлены!',
-        });
-    } catch(err) {
-        dispatch({
-            type: actionTypes.INFO_LOADING_SPINNER_HIDE,
-        });
-        dispatch({
-            type: actionTypes.ERROR_SHOW,
-            errorMessage: 'Невозможно отменить удаление!'
-        });
-    }
+export const undoTempClear = () => dispatch => {
+    dispatch({
+        type: actionTypes.UNDO_TEMP_CLEAR,
+    });
 };
 
+// Undoing estimates changes
 export const undoEstimateRowAdd = (undoType, undoData) => dispatch => {
     dispatch({
         type: actionTypes.UNDO_ESTIMATES_ROW_ADD,
@@ -76,7 +52,27 @@ export const undoEstimateDelete = (data) => async dispatch => {
         dispatch({
             type: actionTypes.INFO_LOADING_SPINNER_SHOW,
         });
-        await axiosInstance.post(`router/estimates/`, data);
+        // Check if data type is an array
+        if (Array.isArray(data))
+        {
+        // Splitting estimate data into chunks of 20
+        let allRows=[];
+        const dataLength = data.length;
+        for (let i = 0; i < dataLength; i += 20) {
+        const chunk = data.slice(i, i + 20);
+        allRows.push(chunk);
+        };
+        // Running a loop to add each chunk with a separate request
+        const allRowsLength = allRows.length;
+        for (let i = 0; i < allRowsLength; i++ ) {
+            const chunkData = allRows[i];
+            await axiosInstance.post(`router/estimates/`, chunkData);
+        };
+        } else 
+        // If data is not an array
+        {
+            await axiosInstance.post(`router/estimates/`, data);
+        };
         dispatch({
             type: actionTypes.UNDO_CLEAR,
         });
@@ -185,7 +181,27 @@ export const undoCableJournalDelete = (data) => async dispatch => {
         dispatch({
             type: actionTypes.INFO_LOADING_SPINNER_SHOW,
         });
-        await axiosInstance.post(`router/cables/`, data);
+        // Check if data type is an array
+        if (Array.isArray(data))
+        {
+        // Splitting estimate data into chunks of 20
+        let allRows=[];
+        const dataLength = data.length;
+        for (let i = 0; i < dataLength; i += 20) {
+        const chunk = data.slice(i, i + 20);
+        allRows.push(chunk);
+        };
+        // Running a loop to add each chunk with a separate request
+        const allRowsLength = allRows.length;
+        for (let i = 0; i < allRowsLength; i++ ) {
+            const chunkData = allRows[i];
+            await axiosInstance.post(`router/cables/`, chunkData);
+        };
+        } else 
+        // If data is not an array
+        {
+            await axiosInstance.post(`router/cables/`, data);
+        };
         dispatch({
             type: actionTypes.CABLE_JOURNAL_ROWS_UPDATE,
         });

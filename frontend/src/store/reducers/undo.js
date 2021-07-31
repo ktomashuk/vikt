@@ -40,9 +40,14 @@ const reducer = (state = initialState, action) => {
             return {...state, 
                 undoActive: false,
                 undoType: '',
+                undoData: [],
                 undoDataTemp: [],
                 undoId: 0,
             };
+        case actionTypes.UNDO_TEMP_CLEAR:
+            return {...state, 
+                undoDataTemp: [],
+                };
         default:
             return state;
     }

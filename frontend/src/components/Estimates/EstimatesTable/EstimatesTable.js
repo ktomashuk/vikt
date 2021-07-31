@@ -11,7 +11,6 @@ import TableRow from '@material-ui/core/TableRow';
 import EstimatesRow from '../EstimatesRow/EstimatesRow';
 // Redux
 import { connect } from 'react-redux';
-import { getUnits } from '../../../store/actions/core';
 import { deleteEstimateRow, editEstimateRow, 
     getEstimatesByObject, getEstimatesByObjectBySystem, 
     searchEstimatesByObject, searchEstimatesByObjectBySystem } from '../../../store/actions/estimates';
@@ -61,12 +60,13 @@ const useStyles = makeStyles((theme) => ({
 
 const EstimatesTable = React.memo(props => {
     const classes = useStyles();
-    const { estimatesData, estimatesLoaded, estimatesSystem, units, unitsLoaded,
+    const { estimatesData, estimatesLoaded, estimatesSystem, estimatesRefreshNeeded, 
+    units, unitsLoaded, searchActive, searchResult,
     chosenObjectSystems, chosenObjectSystemsLoaded, chosenObjectId, 
-    deleteEstimateRow, editEstimateRow, 
-    estimateDeleteAddItem, estimateDeleteRemoveItem, estimatesRefreshNeeded, estimateDeleteRemoveAll, 
-    searchActive, searchResult, getEstimatesByObject, 
-    undoDataSave, undoEstimateRowAdd, undoEstimateRowRemove } = props;
+    estimateDeleteAddItem, estimateDeleteRemoveItem, estimateDeleteRemoveAll,
+    deleteEstimateRow, editEstimateRow, undoDataSave, undoEstimateRowAdd, undoEstimateRowRemove, 
+    getEstimatesByObject, getEstimatesByObjectBySystem, 
+    searchEstimatesByObject, searchEstimatesByObjectBySystem } = props;
     // Refresh estimates
     const refreshEstimates = useCallback(() => {
         estimateDeleteRemoveAll();
@@ -82,7 +82,8 @@ const EstimatesTable = React.memo(props => {
         if (estimatesSystem !== 'Все' && searchActive) {
             searchEstimatesByObjectBySystem(searchResult, chosenObjectId, estimatesSystem);
         };
-    }, [chosenObjectId, estimateDeleteRemoveAll, estimatesSystem, getEstimatesByObject, searchActive, searchResult]);
+    }, [chosenObjectId, estimateDeleteRemoveAll, estimatesSystem, searchActive, searchResult, 
+        getEstimatesByObject, getEstimatesByObjectBySystem, searchEstimatesByObject, searchEstimatesByObjectBySystem]);
     // Auto refreshing estimates after deleting
     useEffect(() => {
         if (estimatesRefreshNeeded) {
@@ -149,8 +150,7 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, { getUnits, 
-    estimateDeleteAddItem, estimateDeleteRemoveItem, estimateDeleteRemoveAll,
+export default connect(mapStateToProps, { estimateDeleteAddItem, estimateDeleteRemoveItem, estimateDeleteRemoveAll,
     deleteEstimateRow, editEstimateRow, undoDataSave, undoEstimateRowAdd, undoEstimateRowRemove, 
     getEstimatesByObject, getEstimatesByObjectBySystem, 
     searchEstimatesByObject, searchEstimatesByObjectBySystem })(EstimatesTable);

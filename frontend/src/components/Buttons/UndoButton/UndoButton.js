@@ -10,8 +10,6 @@ import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
 import { undoEstimateDelete, undoEstimateRowEdit, undoClear,
     undoCableJournalDelete, undoCableJournalRowEdit } from '../../../store/actions/undo';
-import { getEstimatesByObject, getEstimatesByObjectBySystem, 
-    searchEstimatesByObject, searchEstimatesByObjectBySystem,  } from '../../../store/actions/estimates';
 
 const useStyles = makeStyles(() => ({   
     root: {
@@ -24,26 +22,28 @@ const useStyles = makeStyles(() => ({
 const UndoButton = props => {
     
     const classes = useStyles();
-    const { undoActive, undoType, undoData, undoId, } = props;
+    const { undoActive, undoType, undoData, undoId,
+        undoEstimateDelete, undoEstimateRowEdit,
+        undoCableJournalDelete, undoCableJournalRowEdit, undoClear } = props;
     // Clicking the undo button
     const undoClickHandler = async (type, data) => {
         switch (type) { 
             // Undoing the deleting of an estimates row
             case 'estimate_delete':
-                await props.undoEstimateDelete(data);
-                props.undoClear();
+                await undoEstimateDelete(data);
+                undoClear();
                 break;
             case 'estimate_row_edit':
-                await props.undoEstimateRowEdit(undoId, data);
-                props.undoClear();
+                await undoEstimateRowEdit(undoId, data);
+                undoClear();
                 break;
             case 'cable_journal_delete':
-                await props.undoCableJournalDelete(data);
-                props.undoClear();
+                await undoCableJournalDelete(data);
+                undoClear();
                 break;
             case 'cable_journal_edit':
-                await props.undoCableJournalRowEdit(undoId, data);
-                props.undoClear();
+                await undoCableJournalRowEdit(undoId, data);
+                undoClear();
                 break;
             default:
                 break;
@@ -95,6 +95,4 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, 
     { undoEstimateDelete, undoEstimateRowEdit,
-        getEstimatesByObject, getEstimatesByObjectBySystem,
-        searchEstimatesByObject, searchEstimatesByObjectBySystem,
         undoCableJournalDelete, undoCableJournalRowEdit, undoClear })(UndoButton);

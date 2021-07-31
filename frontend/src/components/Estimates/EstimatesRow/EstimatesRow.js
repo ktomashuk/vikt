@@ -41,7 +41,7 @@ const EstimatesRow = props => {
     // Checking the checkbox when 'select all' is pressed in the cable panel
     useEffect(() => {
         if (deleteAllEnabled) {
-            checkboxClickHandler('cable_journal', row.id);
+            checkboxClickHandler('estimates', row.id);
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [deleteAllEnabled, row.id]);

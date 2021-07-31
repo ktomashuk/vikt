@@ -41,6 +41,9 @@ export const getEstimatesByObject = (object) => async dispatch => {
         });
     } catch(err) {
         dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_HIDE,
+        });
+        dispatch({
             type: actionTypes.ESTIMATES_LOAD_FAIL,
         });
         dispatch({
@@ -69,6 +72,9 @@ export const getEstimatesByObjectBySystem = (object, system) => async dispatch =
             type: actionTypes.INFO_LOADING_SPINNER_HIDE,
         });
     } catch(err) {
+        dispatch({
+            type: actionTypes.INFO_LOADING_SPINNER_HIDE,
+        });
         dispatch({
             type: actionTypes.ESTIMATES_LOAD_FAIL,
         });
