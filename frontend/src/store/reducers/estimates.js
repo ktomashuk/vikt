@@ -48,7 +48,8 @@ const reducer = (state = initialState, action) => {
             };
         case actionTypes.SEARCH_ESTIMATES:
             return {...state,
-                estimatesData: action.data
+                estimatesData: action.data,
+                estimatesRefreshNeeded: false,
             };
         case actionTypes.ESTIMATES_REFRESH_NEEDED:
             return {...state, estimatesRefreshNeeded: true };
