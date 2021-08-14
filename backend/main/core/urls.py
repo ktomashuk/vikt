@@ -24,4 +24,6 @@ urlpatterns = [
          core_views.SystemsByObjectView.as_view(), name='systems-by-object'),
     path('edit-system/<int:id>/',
          core_views.SystemUpdateView.as_view(), name='edit-system'),
+    path('representatives-by-object/<int:id>/',
+         core_views.RepresentativesByObjectView.as_view(), name='representatives-by-object'),
 ]

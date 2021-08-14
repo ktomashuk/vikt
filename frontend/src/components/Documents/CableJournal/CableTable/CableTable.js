@@ -13,7 +13,7 @@ import { getJournalByObjectBySystem } from '../../../../store/actions/cable';
 
 
 const columns = [
-    { id: 'number', label: '№ П/П', minWidth: 50, maxWidth: 50 },
+    { id: 'number', label: '№', minWidth: 50, maxWidth: 50 },
     { id: 'name', label: 'Обозначение', minWidth: 100, maxWidth: 150  },
     { id: 'start', label: 'Начало', minWidth: 150, maxWidth: 300  },
     { id: 'end', label: 'Конец', minWidth: 150, maxWidth: 300  },
@@ -33,10 +33,10 @@ const useStyles = makeStyles((theme) => ({
         height: 500,
         },
         [theme.breakpoints.up('lg')]:{
-        height: 750,
+        height: 700,
         },
         [theme.breakpoints.up('xl')]:{
-        height: 1100,
+        height: 1000,
         },
     },
     icon: {

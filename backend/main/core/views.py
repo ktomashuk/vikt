@@ -4,6 +4,9 @@ from .serializers import ObjectSerializer, ContractorSerializer,\
 from .models import Object, Contractor, Representative, System, Unit
 from rest_framework import generics, filters
 from rest_framework.filters import OrderingFilter
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.contrib.auth.models import User
 
 
 class ObjectViewSet(viewsets.ModelViewSet):
@@ -127,3 +130,25 @@ class UnitViewSet(viewsets.ModelViewSet):
     queryset = Unit.objects.all()
     serializer_class = UnitSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class RepresentativesByObjectView(APIView):
+    serializer_class = RepresentativeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    # Find all contractors assigned to the chosen object
+    def get_queryset(self):
+        object_id = self.kwargs['id']
+        return Contractor.objects.filter(object__id=object_id)
+
+    def get(self, request, *args, **kwargs):
+        contractors = self.get_queryset()
+        all_representatives = []
+        # For each contractor find representatives that work for that company and add to the list
+        for contractor in contractors:
+            contractor_id = contractor.id
+            representatives = Representative.objects.filter(company=contractor_id)
+            for item in representatives:
+                all_representatives.append(item)
+        response = Response(RepresentativeSerializer(all_representatives, many=True).data)
+        return response

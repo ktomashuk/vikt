@@ -11,7 +11,7 @@ import ExportButton from '../../../Buttons/ExportButton/ExportButton';
 import RefreshButton from '../../../Buttons/RefreshButton/RefreshButton';
 // Redux
 import { connect } from 'react-redux';
-import { getJournalByObjectBySystem } from '../../../../store/actions/cable';
+import { getJournalByObjectBySystem, exportResistanceByObjectBySystem } from '../../../../store/actions/cable';
 import { getObjects, getSystemsByObject } from '../../../../store/actions/core';
 import { switchToResistance } from '../../../../store/actions/selectors';
 import { cableDeleteAddAll, cableDeleteRemoveAll } from '../../../../store/actions/delete';
@@ -50,8 +50,8 @@ const IsolationPanel = (props) => {
     const classes = useStyles();
     const { cableJournal, cableJournalLoaded, refreshNeeded, 
         chosenObjectSystems, chosenObjectSystemsLoaded, objectsData, objectsLoaded,
-        getObjects, getSystemsByObject, getJournalByObjectBySystem, 
-        switchToResistance, cableDeleteAddAll, cableDeleteRemoveAll } = props;
+        getObjects, getSystemsByObject, getJournalByObjectBySystem, exportResistanceByObjectBySystem,
+        switchToResistance, cableDeleteAddAll, cableDeleteRemoveAll  } = props;
     const [object, setObject] = useState('');
     const [objectId, setObjectId] = useState('');
     const [system, setSystem] = useState({name: '', id: 0});
@@ -148,6 +148,7 @@ const IsolationPanel = (props) => {
             <RefreshButton tooltipOn="Обновить" tooltipOff="Обновление недоступно"
             refreshType='cable_journal' clicked={() => refreshJournal()} refreshEnabled={cableJournalLoaded}/>
             <ExportButton exportEnabled={cableJournalLoaded}
+            clicked={() => exportResistanceByObjectBySystem(objectId, system.id)}
             tooltipOn="Экспорт в Word" tooltipOff="Экспорт недоступен"/>                       
         </div>
     );
@@ -166,5 +167,5 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, 
-    { getObjects, getSystemsByObject, getJournalByObjectBySystem, 
+    { getObjects, getSystemsByObject, getJournalByObjectBySystem, exportResistanceByObjectBySystem, 
         switchToResistance, cableDeleteAddAll, cableDeleteRemoveAll })(IsolationPanel);

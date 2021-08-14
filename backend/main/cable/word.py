@@ -1,25 +1,37 @@
 from docx.shared import Cm, Inches, Mm, Emu
-from docxtpl import DocxTemplate, InlineImage
-import random
-import datetime
+from docxtpl import DocxTemplate
+import os
 
-template = DocxTemplate('Isolation_template.docx')
+template = DocxTemplate('CJ_template.docx')
 table_contents = []
-x = []
-y = []
-for i in range(0, 12):
-    number = round(random.random(), 3)
-    table_contents.append({
-        'Index': i,
-        'Value': number
-    })
-    x.append(i)
-    y.append(number)
-
+for i in range(33):
+    item_to_add = {
+        'name': 'k.1',
+        'start': 'Start 1',
+        'end': 'End 1',
+        'cable': 'Cable',
+        'cable_cut': '1x2x1',
+        'length': '100',
+    }
+    table_contents.append(item_to_add)
+people = [
+    {
+        'p': 'engineer',
+        'n': 'Vasiliev',
+        'd': '22.01.2021'
+    },
+    {
+        'p': 'gip',
+        'n': 'Petrov',
+        'd': '22.02.2021',
+    }
+]
 context = {
-    'city': 'Moscow',
-    'object': 'School',
+    'system_code': 'cj-mgn-2021',
+    'system_name': 'MGN',
     'table_contents': table_contents,
+    'people': people,
 }
 template.render(context)
-template.save('generated.docx')
+template.save('CJ.docx')
+print(os.path.abspath('doc22.docx'))

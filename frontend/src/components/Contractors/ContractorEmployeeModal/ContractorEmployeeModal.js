@@ -82,8 +82,8 @@ const ContractorEmployeeModal = (props) => {
   };
   // Setting company id
   useEffect(() => {
-    setEmployee({...employee, company: contractorData.id});
-  }, [contractorData, employee]);
+    setEmployee(employee => ({...employee, company: contractorData.id}));
+  }, [contractorData]);
   // Add row and prepare for another
   const addDeviceAndContinue = async () => {
     await addRepresentative(employee);
@@ -115,10 +115,10 @@ const ContractorEmployeeModal = (props) => {
             <TableBody>
             <TableRow key={`cr1`}>
             <TableCell key={`tc1`}>
-            <TextField className={classes.textField} label="Фамилия" style={{width: "31%"}} value={employee.first_name}
-            onChange={(e) => {setEmployee({...employee, first_name: e.target.value})}}/>
-            <TextField className={classes.textField} label="Имя" style={{width: "31%"}} value={employee.last_name}
+            <TextField className={classes.textField} label="Фамилия" style={{width: "31%"}} value={employee.last_name}
             onChange={(e) => {setEmployee({...employee, last_name: e.target.value})}}/>
+            <TextField className={classes.textField} label="Имя" style={{width: "31%"}} value={employee.first_name}
+            onChange={(e) => {setEmployee({...employee, first_name: e.target.value})}}/>
             <TextField className={classes.textField} label="Отчество" style={{width: "31%"}} value={employee.patron_name}
             onChange={(e) => {setEmployee({...employee, patron_name: e.target.value})}}/>
             </TableCell>

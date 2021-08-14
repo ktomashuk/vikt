@@ -23,7 +23,7 @@ import ObjectDataContractorChip from '../ObjectDataContractorChip/ObjectDataCont
 // Redux
 import { connect } from 'react-redux';
 import { deleteObject, editObjectData, getObjects } from '../../../store/actions/core';
-import { getContractorsByType } from '../../../store/actions/contractors';
+import { getContractors } from '../../../store/actions/contractors';
 // For comparing objects
 const _ = require('lodash');
 // Adding contractors menu height
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
 const ObjectData = (props) => {
     const classes = useStyles();
     const { chosenObjectId, chosenObjectData, clickable, contractorsList, 
-        deleteObject, editObjectData, getObjects, getContractorsByType } = props;
+        deleteObject, editObjectData, getObjects, getContractors } = props;
     // State for controlling buttons
     const [editing, setEditing] = useState(false);
     const [deleting, setDeleting] = useState(false);
@@ -83,9 +83,9 @@ const ObjectData = (props) => {
                 address: chosenObjectData.address,
                 contractors: chosenObjectData.contractors,
             }));
-            getContractorsByType('Заказчик');
+            getContractors();
         }
-    }, [chosenObjectId, chosenObjectData, getContractorsByType])
+    }, [chosenObjectId, chosenObjectData, getContractors])
     // Opening the first accordion when object is selected
     useEffect(() => {
         if (clickable) {
@@ -219,7 +219,7 @@ const ObjectData = (props) => {
             <Divider />
             <Box className={classes.box}>       
             <Typography vatiant="h6">
-                Заказчики:
+                Компании на объекте:
             </Typography>   
             </Box>
             <Box className={classes.box}>          
@@ -231,11 +231,11 @@ const ObjectData = (props) => {
                 deleteClick={() => deleteContractorHandler(contractor)}/>
             )}) : null }
             {chosenObjectId && !chosenObjectData.contractors[0] && !editing ?
-            <Chip style={{ marginLeft: 10 }} label="Нет заказчиков" color="secondary"/> : null }
+            <Chip style={{ marginLeft: 10 }} label="Нет компаний" color="secondary"/> : null }
             {editing ? 
             <React.Fragment>
             <Chip style={{ marginLeft: 10 }} color="primary"
-            label="Добавить заказчика" 
+            label="Добавить компанию" 
             onClick={addContractorOpenClickHandler}/>
             <Menu
                 id="long-menu"
@@ -290,4 +290,4 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, 
-    { deleteObject, editObjectData, getObjects, getContractorsByType })(ObjectData);
+    { deleteObject, editObjectData, getObjects, getContractors })(ObjectData);

@@ -9,19 +9,23 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import ContractorRow from '../ContractorRow/ContractorRow';
 import CircularProgress from '@material-ui/core/CircularProgress';
-// Custom components
-import SearchBar from '../../SearchBar/SearchBar';
 // Redux
 import { connect } from 'react-redux';
-import { searchContractors, searchContractorsByType } from '../../../store/actions/contractors';
 
-
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
     },
     container: {
-        maxHeight: 577,
+        [theme.breakpoints.down('lg')]:{
+        height: 580,
+        },
+        [theme.breakpoints.up('lg')]:{
+        height: 780,
+        },
+        [theme.breakpoints.up('xl')]:{
+        height: 1100,
+        },
     },
     icon: {
         cursor: 'pointer',
@@ -39,25 +43,12 @@ const useStyles = makeStyles({
         position: 'relative',
         left: '30%',
     },
-});
+}));
 
 
 const ContractorList = (props) => {
     const classes = useStyles();
-    const { contractorsLoaded, contractorsList, contractorListSpinner, searchType,
-        searchContractors, searchContractorsByType } = props;
-    // Searching contractors
-    const searchContractorsFilter = (value) => {
-        if (searchType === '') {
-            return;
-        }
-        switch(searchType) {
-            case 'Все':
-                return searchContractors(value);
-            default:
-                return searchContractorsByType(value, searchType);
-            }
-        };
+    const { contractorsLoaded, contractorsList, contractorListSpinner } = props;
     // Default table
     let rows = <TableRow><TableCell>
         <p className={classes.loadingText}>Выберите тип контрагента</p>
@@ -84,7 +75,6 @@ const ContractorList = (props) => {
                         <TableRow key="header">
                             <TableCell key="head"
                             style={{ maxWidth: 1500}}>
-                            <SearchBar type="contractors" filter={searchContractorsFilter}/>
                             </TableCell>
                         </TableRow>
                     </TableHead>
@@ -105,4 +95,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, { searchContractors, searchContractorsByType } )(ContractorList);
+export default connect(mapStateToProps )(ContractorList);

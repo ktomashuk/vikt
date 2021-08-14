@@ -12,6 +12,7 @@ import cableReducer from './reducers/cable';
 import deleteReducer from './reducers/delete';
 import selectorsReducer from './reducers/selectors';
 import editReducer from './reducers/edit';
+import exportReducer from './reducers/export';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
     del: deleteReducer,
     sel: selectorsReducer,
     edit: editReducer,
+    exp: exportReducer,
 });
 
 const store = createStore(

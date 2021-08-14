@@ -105,3 +105,7 @@ export const SWITCH_TO_RESISTANCE = 'SWITCH_TO_RESISTANCE';
 // Editing handling
 export const EDIT_START = 'EDIT_START';
 export const EDIT_STOP = 'EDIT_STOP';
+// Export handling
+export const EXPORT_START = 'EXPORT_START';
+export const EXPORT_STOP = 'EXPORT_STOP';
+export const EXPORT_GET_SIGNERS = 'EXPORT_GET_SIGNERS';

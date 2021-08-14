@@ -24,11 +24,13 @@ import Typography from '@material-ui/core/Typography';
 // Redux
 import { connect } from 'react-redux';
 import { removeDevice, getJournalByObjectBySystem, 
-    addCableRow, editCableRow, exportJournalByObjectBySystem } from '../../../../store/actions/cable';
+    addCableRow, editCableRow, exportResistanceByObjectBySystem, 
+    exportJournalByObjectBySystem } from '../../../../store/actions/cable';
 import { cableDeleteAddAll, cableDeleteRemoveAll } from '../../../../store/actions/delete';
-import { getObjects, getSystemsByObject } from '../../../../store/actions/core';
+import { getObjects, getSystemsByObject, getObjectById } from '../../../../store/actions/core';
 import { showInfo } from '../../../../store/actions/info';
 import { switchToDeleting, switchToLength } from '../../../../store/actions/selectors';
+import { exportStart, getSignersByObject } from '../../../../store/actions/export';
 // Custom components
 import CableModal from '../CableModal/CableModal';
 import UndoButton from '../../../Buttons/UndoButton/UndoButton';
@@ -58,9 +60,15 @@ const useStyles = makeStyles((theme) => ({
         width: 50,
         marginLeft: 10,
     },
-    formControl: {
+    formControlObject: {
         minWidth: 150,
         width: '12%',
+        marginBottom: 10,
+        marginLeft: 10,
+    },
+    formControlSystem: {
+        minWidth: 120,
+        width: '8%',
         marginBottom: 10,
         marginLeft: 10,
     },
@@ -70,10 +78,10 @@ const CablePanel = (props) => {
     const classes = useStyles();
     const { deviceList, cableJournal, cableJournalLoaded, refreshNeeded, objectsLoaded, objectsData,
         deleteSelectorEnabled, lengthSelectorEnabled, chosenObjectSystems, chosenObjectSystemsLoaded, 
-        removeDevice, getJournalByObjectBySystem, addCableRow, editCableRow, exportJournalByObjectBySystem,
-        cableDeleteAddAll, cableDeleteRemoveAll, getObjects, getSystemsByObject, showInfo,
-        switchToDeleting, switchToLength} = props;
-    const [noNumChecked, setNoNumChecked] = useState(false);
+        removeDevice, getJournalByObjectBySystem, addCableRow, editCableRow, getSignersByObject,
+        cableDeleteAddAll, cableDeleteRemoveAll, getObjects, getSystemsByObject, showInfo, getObjectById,
+        exportStart, switchToDeleting, switchToLength, chosenObjectId } = props;
+    const [noIncCheck, setNoIncCheck] = useState(false);
     const [customStartChecked, setCustomStartChecked] = useState(false);
     const [object, setObject] = useState('');
     const [objectId, setObjectId] = useState('');
@@ -85,7 +93,7 @@ const CablePanel = (props) => {
         object: 0,
         system: 0,
         index: 1,
-        prefix: '',
+        name: '',
         start: '1',
         end: '1',
         quantity: '1',
@@ -124,14 +132,22 @@ const CablePanel = (props) => {
         };
     }, [refreshNeeded, cableJournalLoaded, refreshJournal]);
     // Export to excel
-    const exportClickHandler = (id, sys) => {
-        exportJournalByObjectBySystem(id, sys);
+    const exportClickHandler = () => {
+        const sysAcronym = chosenObjectSystems.filter(sys => sys.acronym === system.name)[0].acronym;
+        const sysCode = chosenObjectSystems.filter(sys => sys.acronym === system.name)[0].project_name;
+        const data = {
+            tableContents: cableJournal,
+            systemAcronym: sysAcronym,
+            systemCode: sysCode,
+        };
+        getSignersByObject(chosenObjectId);
+        exportStart('cable_journal', data);
     };
     // Clicking chips to add devices
     const addCLickHandler = (device) => {
         // Finding if no number is checked anywhere
         let noNum = false;
-        if (noNumChecked || device.noNum) {
+        if (device.noNum) {
             noNum = true;
         };
         // Finding if item with previous index exists
@@ -139,7 +155,7 @@ const CablePanel = (props) => {
         const prevItem = cableJournal.filter(item => item.index === prevIndex)[0];
         // Changing the values in the top bar
         const oldQuantity = Number(journal.quantity);
-        if (noNum) {
+        if (noNum || noIncCheck) {
             setJournal({
                 ...journal,
                 quantity: 1,
@@ -176,7 +192,12 @@ const CablePanel = (props) => {
     // Adding a single first item to the empty journal
     const addFirstItemSingle = (device, noNumActive) => {
         // Start and end numbers of the item to be added
-        let startNum = Number(journal.start);
+        let startNum = null;
+        if (isNaN(journal.start)) {
+            startNum = journal.start;
+        } else {
+            startNum = Number(journal.start);
+        };
         let middle = ' ';
         // If 'not numbered' is checked set numbers to blank
         if (noNumActive) {
@@ -186,7 +207,7 @@ const CablePanel = (props) => {
             object: objectId,
             system: system.id,
             index: journal.index,
-            name: "Каб." + journal.index,
+            name: journal.name + '.' + journal.index,
             start: device.name + middle + device.prefix + startNum,
             end: '???',
             cable: device.cable,
@@ -197,14 +218,20 @@ const CablePanel = (props) => {
     };
     // Adding multiple items to the journal
     const addFirstItemsMultiple = (device, noNumActive) => {
-        console.log(noNumActive);
         // Starting index 
         let startIndex = Number(journal.index);
         // Array for adding to the db
         let cableArray = [];
         // Start and end numbers of the item to be added
-        let startNum = Number(journal.start);
-        let endNum = startNum + 1;
+        let startNum = null;
+        let endNum = null;
+        if (isNaN(journal.start)) {
+            startNum = journal.start;
+            endNum = '';
+        } else {
+            startNum = Number(journal.start);
+            endNum = startNum + 1;
+        };
         let middle = ' ';
         // If 'not numbered' is checked set numbers to blank
         if (noNumActive) {
@@ -220,7 +247,7 @@ const CablePanel = (props) => {
                 object: objectId,
                 system: system.id,
                 index: startIndex,
-                name: "Каб." + startIndex,
+                name: journal.name + '.' + startIndex,
                 start: device.name + middle + device.prefix + startNum,
                 end: device.name + middle + device.prefix + endNum,
                 cable: device.cable,
@@ -255,8 +282,15 @@ const CablePanel = (props) => {
         };
         let prevName = prevEntry[0].end;
         // Start and end numbers of the item to be added
-        let startNum = Number(journal.start);
-        let endNum = startNum + 1;
+        let startNum = null;
+        let endNum = null;
+        if (isNaN(journal.start)) {
+            startNum = journal.start;
+            endNum = '';
+        } else {
+            startNum = Number(journal.start);
+            endNum = startNum + 1;
+        };
         let middle = ' ';
         // If 'not numbered' is checked set numbers to blank
           if (noNumActive) {
@@ -293,7 +327,7 @@ const CablePanel = (props) => {
             object: objectId,
             system: system.id,
             index: startIndex,
-            name: "Каб." + startIndex,
+            name: journal.name + '.' + startIndex,
             start: prevName,
             end: device.name + middle + device.prefix + startNum,
             cable: device.cable,
@@ -323,7 +357,7 @@ const CablePanel = (props) => {
                 object: objectId,
                 system: system.id,
                 index: startIndex,
-                name: "Каб." + startIndex,
+                name: journal.name + '.' + startIndex,
                 start: startName,
                 end: device.name + middle + device.prefix + endNum,
                 cable: device.cable,
@@ -345,6 +379,7 @@ const CablePanel = (props) => {
         const objName = event.target.value;
         const objFound = objectsData.filter(obj => obj.name === objName)[0];
         setObjectId(objFound.id);
+        getObjectById(objFound.id);
         setSystem({...system, name: ''});
         getSystemsByObject(objFound.id);
         cableDeleteRemoveAll();
@@ -357,6 +392,7 @@ const CablePanel = (props) => {
         const sysId = sysFound.id;
         setSystem({...system, name: sysName, id: sysId});
         getJournalByObjectBySystem(objectId, sysId);
+        setJournal({...journal, name: sysName});
         setAddingEnabled(true);
         cableDeleteRemoveAll();
     };
@@ -409,8 +445,8 @@ const CablePanel = (props) => {
     return(
         <div className={classes.root}>
             <CableModal show={openModal} />
-             <FormControl className={classes.formControl}>
-            <InputLabel id="object-select-label">Выбор объекта</InputLabel>
+             <FormControl className={classes.formControlObject}>
+            <InputLabel id="object-select-label">Объект</InputLabel>
                 <Select
                     labelId="object-select-label"
                     id="object-select"
@@ -419,8 +455,8 @@ const CablePanel = (props) => {
                     {objectsList}
                 </Select>
             </FormControl>
-            <FormControl className={classes.formControl}>
-            <InputLabel id="object-select-label">Выбор системы</InputLabel>
+            <FormControl className={classes.formControlSystem}>
+            <InputLabel id="object-select-label">Система</InputLabel>
                 <Select
                     labelId="system-select-label"
                     id="system-select"
@@ -428,16 +464,18 @@ const CablePanel = (props) => {
                     onChange={systemChange}>
                     {systemsList}
                 </Select>
-            </FormControl>                        
+            </FormControl>
+            <TextField className={classes.textField} label="Название" style={{width: "8%"}} value={journal.name}
+            onChange={(e) => setJournal({...journal, name: e.target.value})}/>                           
             <TextField className={classes.textField} label="№ П/П" style={{width: "4%"}} value={journal.index}
             onChange={(e) => setJournal({...journal, index: e.target.value})}/>            
             <TextField className={classes.textField} label="Кол-во" style={{width: "5%"}} value={journal.quantity}
-            onChange={noNumChecked ? 
+            onChange={noIncCheck ? 
             (e) => {setJournal({...journal, quantity: e.target.value})}
             : (e) => {setJournal({...journal, quantity: e.target.value, end: Number(journal.start) + Number(e.target.value) - 1})}}/>
             <TextField className={classes.textField} label="Начало" style={{width: "5%"}} value={journal.start}
-            disabled={noNumChecked} onChange={(e) => {setJournal({...journal, start: e.target.value, end: Number(e.target.value) + Number(journal.quantity) - 1})}}/>
-            <TextField className={classes.textField} label="Конец" style={{width: "5%"}} disabled={noNumChecked} value={journal.end}/>
+            onChange={(e) => {setJournal({...journal, start: e.target.value, end: Number(e.target.value) + Number(journal.quantity) - 1})}}/>
+            <TextField className={classes.textField} label="Конец" style={{width: "5%"}} value={journal.end}/>
             <FormControl style={{ width: "7%"}}>
                 <InputLabel style={{ marginLeft: 7 }}>Старт</InputLabel>
                 <Input type="text" value={journal.startpoint}
@@ -458,9 +496,9 @@ const CablePanel = (props) => {
             <FormControl component="fieldset" style={{marginLeft: 15}}>
                 <FormGroup>
                 <FormControlLabel
-                control={<Switch checked={noNumChecked} color="primary"
-                onChange={() => setNoNumChecked(!noNumChecked)} name="nunum" />}
-                label="Без номера"/>
+                control={<Switch checked={noIncCheck} color="primary"
+                onChange={() => setNoIncCheck(!noIncCheck)} name="nunum" />}
+                label="Не повышать"/>
                 <FormControlLabel
                 control={<Switch checked={customStartChecked} color="primary"
                 onChange={() => setCustomStartChecked(!customStartChecked)} name="custom" />}
@@ -505,9 +543,9 @@ const CablePanel = (props) => {
                 </MenuItem>
             </Menu>
             </div>
-            <ExportButton clicked={() => exportClickHandler(objectId, system)} exportEnabled={cableJournalLoaded}
+            <ExportButton clicked={() => exportClickHandler()} exportEnabled={cableJournalLoaded}
             tooltipOn="Экспорт в Word" tooltipOff="Экспорт недоступен"/>
-            <div>
+            <div>    
             {deviceList.map((item) => {
                 return(
                 <Chip
@@ -529,6 +567,7 @@ const mapStateToProps = state => {
         objectsLoaded: state.core.objectsLoaded,
         objectsData: state.core.objectsData,
         chosenObjectId: state.core.chosenObjectId,
+        chosenObjectData: state.core.chosenObjectData,
         chosenObjectSystems: state.core.chosenObjectSystems,
         chosenObjectSystemsLoaded: state.core.chosenObjectSystemsLoaded,
         deviceList: state.cable.deviceList,
@@ -543,7 +582,7 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, 
     { removeDevice, getJournalByObjectBySystem, 
-        getObjects, getSystemsByObject, 
-        addCableRow, editCableRow, exportJournalByObjectBySystem,
-        cableDeleteAddAll, cableDeleteRemoveAll, showInfo,
-        switchToLength, switchToDeleting })(CablePanel);
+        getObjects, getSystemsByObject, addCableRow, editCableRow, 
+        exportResistanceByObjectBySystem, exportJournalByObjectBySystem, exportStart, 
+        cableDeleteAddAll, cableDeleteRemoveAll, showInfo, getObjectById,
+        switchToLength, switchToDeleting, getSignersByObject })(CablePanel);

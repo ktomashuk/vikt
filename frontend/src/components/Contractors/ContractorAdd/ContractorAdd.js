@@ -9,14 +9,9 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 // Redux
 import { connect } from 'react-redux';
 import { addContractor, getContractors } from '../../../store/actions/contractors';
-import { showInfo } from '../../../store/actions/info';
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -43,9 +38,9 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const ContractorAdd = (props) => {
   const classes = useStyles();
   // Variables to control opening/closing
-  const { show, showInfo, addContractor, getContractors } = props;
+  const { show, addContractor, getContractors } = props;
   const [open, setOpen] = useState(false);
-  const [contractorName, setContractorName] = useState({name: '', type: ''});
+  const [contractorName, setContractorName] = useState({name: ''});
     // Closing the modal
   const handleClose = () => {
     setOpen(false); 
@@ -62,17 +57,9 @@ const ContractorAdd = (props) => {
   }
   // Adding contractor to the database
   const addContractorClickHandler = () => {
-    // Checking if type is chosen
-    if (contractorName.type === '') {
-      return showInfo('Выберите тип контрагента!');
-    };
     addContractor(contractorName);
     setContractorName({...contractorName, name: ''});
     refreshContractors();
-  };
-  // Choosing contractor type
-  const contractorTypeChangeHanlder = (cType) => {
-    setContractorName({...contractorName, type: cType})
   };
   // Refreshing data from the server
   const refreshContractors = () => {
@@ -95,29 +82,16 @@ const ContractorAdd = (props) => {
           </Toolbar>
         </AppBar>
             <div className={classes.root}>
-            <TextField style={{width: '60%'}} label="Название контрагента" placeholder="Введите название контрагента"
+            <TextField style={{width: '90%'}} label="Название контрагента" placeholder="Введите название контрагента"
             value={contractorName.name} onChange={(e) => contractorNameChangeHandler(e)}/>
-            <FormControl style={{ width: '30%'}}>
-            <InputLabel id="type-select-label">Тип контрагента</InputLabel>
-            <Select
-                labelId="type-select-label"
-                id="type-select"
-                onChange={(event) => contractorTypeChangeHanlder(event.target.value)}
-                value={contractorName.type}>
-            <MenuItem value="Поставщик" key="c1">Поставщик</MenuItem>
-            <MenuItem value="Заказчик" key="c2">Заказчик</MenuItem>
-            <MenuItem value="Субподрядчик" key="c3">Субподрядчик</MenuItem>
-            </Select>
-            </FormControl>
             </div>
             <div className={classes.root}>
             <Button variant="contained" color="primary" onClick={() => addContractorClickHandler()}>Добавить</Button>
             <Button variant="contained" color="secondary" onClick={handleClose}>Отменить</Button>
             </div>
-            
       </Dialog>
     </div>
   );
 }
 
-export default connect(null, { addContractor, getContractors, showInfo })(ContractorAdd);
+export default connect(null, { addContractor, getContractors })(ContractorAdd);

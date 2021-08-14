@@ -13,13 +13,20 @@ import ObjectSystemsRow from '../ObjectSystemsRow/ObjectSystemsRow';
 // Redux
 import { connect } from 'react-redux';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
     },
     container: {
+        [theme.breakpoints.down('lg')]:{
         height: 380,
-        maxHeight: 380,
+        },
+        [theme.breakpoints.up('lg')]:{
+        height: 580,
+        },
+        [theme.breakpoints.up('xl')]:{
+        height: 780,
+        },
     },
     icon: {
         cursor: 'pointer',
@@ -37,7 +44,7 @@ const useStyles = makeStyles({
         position: 'relative',
         left: '30%',
     },
-});
+}));
 
 
 const ObjectSystemsTable = (props) => {

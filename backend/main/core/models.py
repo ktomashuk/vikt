@@ -2,11 +2,6 @@ from django.db import models
 
 
 class Contractor(models.Model):
-    TYPES = [
-        ('Поставщик', 'Поставщик'),
-        ('Заказчик', 'Заказчик'),
-        ('Субподрядчик', 'Субподрядчик'),
-    ]
     name = models.CharField(max_length=150, blank=False)
     legal_name = models.CharField(max_length=150, blank=True)
     phone = models.CharField(max_length=32, blank=True)
@@ -24,7 +19,6 @@ class Contractor(models.Model):
     director = models.CharField(max_length=150, blank=True)
     account_settle = models.CharField(max_length=50, blank=True)
     account_correspondence = models.CharField(max_length=50, blank=True)
-    type = models.CharField(choices=TYPES, max_length=50, default='Поставщик', blank=False)
     date_added = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
 
@@ -64,7 +58,7 @@ class Representative(models.Model):
     phone = models.CharField(max_length=32, blank=True)
     email = models.EmailField(blank=True)
     notes = models.CharField(max_length=150, blank=True)
-    company = models.ForeignKey(Contractor, on_delete=models.PROTECT, default=1)
+    company = models.ForeignKey(Contractor, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return self.first_name

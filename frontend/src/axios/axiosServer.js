@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://127.0.0.1:8000/';
+const baseURL = 'http://192.168.0.41:8000/';
 
 const axiosInstance = axios.create(
     {
@@ -38,7 +38,7 @@ const axiosInstance = axios.create(
 						return axiosInstance.post('api/token/refresh/', 
 						{refresh: refreshToken}).then(response => {
 							localStorage.setItem('access_token', response.data.access);
-							localStorage.setItem('refresh_token', response.data.refresh);
+							//localStorage.setItem('refresh_token', response.data.refresh);
 							axiosInstance.defaults.headers['Authorization'] = 'JWT ' + response.data.access;
 							originalRequest.headers['Authorization'] = 'JWT ' + response.data.access;
 							return axiosInstance(originalRequest);

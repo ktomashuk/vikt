@@ -12,7 +12,15 @@ const useStyles = makeStyles((theme) => ({
     padding: '2px 4px',
     display: 'flex',
     alignItems: 'center',
-    width: 400,
+    [theme.breakpoints.down('lg')]:{
+      width: 320,
+      },
+      [theme.breakpoints.up('lg')]:{
+      width: 420,
+      },
+      [theme.breakpoints.up('xl')]:{
+      width: 500,
+      },
   },
   input: {
     marginLeft: theme.spacing(1),
@@ -73,6 +81,7 @@ const mapStateToProps = state => {
     return {
         estimatesObject: state.est.estimatesObject,
         estimatesSystem: state.est.estimatesSystem,
+        searchResult: state.srch.searchResult,
     };
 };
 

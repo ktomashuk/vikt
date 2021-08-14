@@ -11,6 +11,7 @@ import { checkAuthentication } from '../../store/actions/auth';
 import { hideError } from '../../store/actions/errors';
 import { hideInfo } from '../../store/actions/info';
 import { hideSnack } from '../../store/actions/snack';
+import ExportModal from '../Export/ExportModal/ExportModal';
 
 const Layout = React.memo(props => {
     const { isAuthenticated, checkAuthentication, pageName, errorShow, errorMessage,
@@ -24,6 +25,7 @@ const Layout = React.memo(props => {
       return (
         <React.Fragment>
             <MainDrawer pageName={pageName}/>
+            <ExportModal />
             <ErrorModal 
             show={errorShow} 
             message={errorMessage}

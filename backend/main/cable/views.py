@@ -9,7 +9,9 @@ import xlsxwriter
 import json
 import numpy as np
 import io
-from docxtpl import DocxTemplate, InlineImage
+import os
+from docxtpl import DocxTemplate
+from main.settings import MEDIA_ROOT
 
 
 # ViewSet with ability to add multiple records with 1 request
@@ -62,7 +64,7 @@ class ExportView(APIView):
     def get_queryset(self):
         object_id = self.kwargs['id']
         system_name = self.kwargs['system']
-        cj = CableJournal.objects.filter(object=object_id, system=system_name)
+        cj = CableJournal.objects.filter(object=object_id, system=system_name).order_by('index')
         return cj
 
     def get(self, request, *args, **kwargs):
@@ -224,8 +226,8 @@ class IsolationExportView(APIView):
 
     def get_queryset(self):
         object_id = self.kwargs['id']
-        system_name = self.kwargs['system']
-        cj = CableJournal.objects.filter(object=object_id, system=system_name)
+        system_id = self.kwargs['system']
+        cj = CableJournal.objects.filter(object=object_id, system=system_id).order_by('index')
         return cj
 
     def get(self, request, *args, **kwargs):
@@ -234,8 +236,9 @@ class IsolationExportView(APIView):
         export_array = []
         for i in serializer.data:
             dict_excel = json.loads(json.dumps(i))
-            array_row = [dict_excel['name'], dict_excel['start'], dict_excel['end'], dict_excel['cable'],
-                         dict_excel['cable_cut'], dict_excel['length']]
+            norm_text = 'норма'
+            array_row = [dict_excel['name'], dict_excel['cable'],
+                         dict_excel['cable_cut'], dict_excel['isolation'], norm_text]
             export_array.append(array_row)
         # Excel export
         output = io.BytesIO()
@@ -259,27 +262,14 @@ class IsolationWordExportView(APIView):
     serializer_class = CableJournalSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        object_id = self.kwargs['id']
-        system_name = self.kwargs['system']
-        cj = CableJournal.objects.filter(object=object_id, system=system_name)
-        return cj
-
-    def get(self, request, *args, **kwargs):
-        cj = self.get_queryset()
-        serializer = CableJournalSerializer(cj, many=True)
-        export_array = []
-        template = DocxTemplate('Isolation_template.docx')
-
-        context = {
-            'city': 'Moscow',
-            'object': 'School',
-        }
-        template.render(context)
+    def post(self, request, *args, **kwargs):
+        req_data = request.data
+        file_path = os.path.join(MEDIA_ROOT, 'CJ_template_final.docx')
+        template = DocxTemplate(file_path)
+        template.render(req_data)
         doc_io = io.BytesIO()  # create a file-like object
         template.save(doc_io)  # save data to file-like object
         doc_io.seek(0)  # go to the beginning of the file-like object
-
         response = HttpResponse(doc_io.read())
         response["Content-Disposition"] = "attachment; filename=generated_doc.docx"
         response["Content-Type"] = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
