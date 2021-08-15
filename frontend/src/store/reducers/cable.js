@@ -19,6 +19,11 @@ const reducer = (state = initialState, action) => {
             return {...state,
             deviceList: state.deviceList.filter(item => item.id !== action.data),
             };
+        case actionTypes.CABLE_JOURNAL_DEVICE_EDIT:
+            return {...state,
+                deviceList: state.deviceList.map((item) => 
+                item.id === action.id ? {...action.data} : {...item}), 
+            };
         case actionTypes.CABLE_JOURNAL_LOAD_SUCCESS:
             return {...state,
             cableJournal: action.data,

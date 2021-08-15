@@ -33,6 +33,7 @@ import { switchToDeleting, switchToLength } from '../../../../store/actions/sele
 import { exportStart, getSignersByObject } from '../../../../store/actions/export';
 // Custom components
 import CableModal from '../CableModal/CableModal';
+import CableDeviceEditModal from '../CableDeviceEditModal/CableDeviceEditModal';
 import UndoButton from '../../../Buttons/UndoButton/UndoButton';
 import AddButton from '../../../Buttons/AddButton/AddButton';
 import ClearButton from '../../../Buttons/ClearButton/ClearButton';
@@ -88,6 +89,7 @@ const CablePanel = (props) => {
     const [system, setSystem] = useState({name: '', id: 0});
     const [addingEnabled, setAddingEnabled] = useState(false);
     const [openModal, setOpenModal] = useState(false);
+    const [openEditModal, setOpenEditModal] = useState(false);
     const [customStartDirection, setCustomStartDirection] = useState('L');
     const [journal, setJournal] = useState({
         object: 0,
@@ -445,6 +447,7 @@ const CablePanel = (props) => {
     return(
         <div className={classes.root}>
             <CableModal show={openModal} />
+            <CableDeviceEditModal show={openEditModal} />
              <FormControl className={classes.formControlObject}>
             <InputLabel id="object-select-label">Объект</InputLabel>
                 <Select
@@ -552,11 +555,19 @@ const CablePanel = (props) => {
                     className={classes.chip}
                     key={item.id}
                     color="primary"
-                    label={item.name + '(' + item.prefix + 'X) ' + item.cable}
+                    label={item.name + ' (' + item.prefix + 'X) ' + item.cable}
                     onClick={() => {addCLickHandler(item)}}
                     onDelete={() => {removeDevice(item.id)}} />
                 );
-                })}
+            })}
+            {deviceList[0] ? <Chip className={classes.chip}
+            key="delete-device"
+            color="secondary"
+            label="Редактировать устройства"
+            onClick={() => {
+                setOpenEditModal(true);
+                setTimeout(() => setOpenEditModal(false), 500)}} 
+            /> : null }
             </div>
         </div>
     );

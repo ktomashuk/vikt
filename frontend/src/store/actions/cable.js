@@ -15,6 +15,19 @@ export const removeDevice = (id) => dispatch => {
     });
 };
 
+export const editDevice = (id, data) => dispatch => {
+    dispatch({
+        type: actionTypes.CABLE_JOURNAL_DEVICE_EDIT,
+        data: data,
+        id: id,
+    });
+    dispatch({
+        type: actionTypes.SNACK_SHOW,
+        snackSeverity: 'warning',
+        snackMessage: 'Запись изменена!',
+    });
+};
+
 export const getJournalByObjectBySystem = (object, system) => async dispatch => {
     dispatch({
         type: actionTypes.INFO_LOADING_SPINNER_SHOW,
