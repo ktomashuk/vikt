@@ -10,6 +10,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 // Custom components
 import ExportCableJournal from '../ExportCableJournal/ExportCableJournal';
+import ExportIsolation from '../ExportIsolation/ExportIsolation';
 // Redux
 import { connect } from 'react-redux';
 import { exportStop } from '../../../store/actions/export';
@@ -62,6 +63,10 @@ let textFields = null;
 switch(exportType) {
     case 'cable_journal':
         textFields = <ExportCableJournal data={exportData} 
+        signers={exportSigners} closeClick={handleClose}/>;
+        break;
+    case 'isolation':
+        textFields = <ExportIsolation data={exportData} 
         signers={exportSigners} closeClick={handleClose}/>;
         break;
     default:

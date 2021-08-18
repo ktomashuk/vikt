@@ -258,13 +258,32 @@ class IsolationExportView(APIView):
         return response
 
 
-class IsolationWordExportView(APIView):
+class CableJournalWordExportView(APIView):
     serializer_class = CableJournalSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         req_data = request.data
         file_path = os.path.join(MEDIA_ROOT, 'CJ_template_final.docx')
+        template = DocxTemplate(file_path)
+        template.render(req_data)
+        doc_io = io.BytesIO()  # create a file-like object
+        template.save(doc_io)  # save data to file-like object
+        doc_io.seek(0)  # go to the beginning of the file-like object
+        response = HttpResponse(doc_io.read())
+        response["Content-Disposition"] = "attachment; filename=generated_doc.docx"
+        response["Content-Type"] = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+        return response
+
+
+class IsolationWordExportView(APIView):
+    serializer_class = CableJournalSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        req_data = request.data
+        file_path = os.path.join(MEDIA_ROOT, 'Isolation_template.docx')
         template = DocxTemplate(file_path)
         template.render(req_data)
         doc_io = io.BytesIO()  # create a file-like object

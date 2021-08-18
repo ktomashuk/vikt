@@ -31,7 +31,7 @@ const useStyles = makeStyles({
     },
 });
 
-const CableRow = (props) => {
+const CableRow = React.memo((props) => {
     const classes = useStyles();
     const { row, deleteItemsNumber, deleteAllEnabled, editStart,
         cableDeleteAddItem, cableDeleteRemoveItem, undoCableJournalRowAdd, undoCableJournalRowRemove } = props;
@@ -63,7 +63,8 @@ const CableRow = (props) => {
     // Checking the checkbox when 'select all' is pressed in the cable panel
     useEffect(() => {
         if (deleteAllEnabled) {
-            checkboxClickHandler('cable_journal', row.id);
+            //checkboxClickHandler('cable_journal', row.id);
+            setDeletingCheck(true);
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [deleteAllEnabled, row.id]);
@@ -72,7 +73,7 @@ const CableRow = (props) => {
 
     const mainRow = (
             <React.Fragment key={`fragmentrow${row.id}`}>
-            <TableRow key={`r${row.id}`} hover>
+            <TableRow key={`r${row.id}`} hover >
                 <TableCell padding="default" key={`index${row.id}`} onClick={() => checkboxClickHandler('cable_journal', row.id)}>
                 {row.index}
                 </TableCell>
@@ -114,7 +115,7 @@ const CableRow = (props) => {
         );
     
     return mainRow;
-};
+});
 
 const mapStateToProps = state => {
     return {

@@ -45,6 +45,13 @@ const reducer = (state = initialState, action) => {
             return {...state,
             deleteEnabled: true,
             deleteAllEnabled: true};
+        case actionTypes.DELETE_CABLE_JOURNAL_ADD_ALL_ITEMS:
+            return {...state,
+            deleteEnabled: true,
+            deleteData: [...state.deleteData, ...action.data],
+            deleteType: action.deleteType,
+            deleteItemsNumber: state.deleteItemsNumber + action.data.length,
+            };
         default:
             return state;
     }

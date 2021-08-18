@@ -36,6 +36,11 @@ const reducer = (state = initialState, action) => {
             undoData: state.undoDataTemp,
             undoDataTemp: [], 
             };
+        case actionTypes.UNDO_CABLE_JOURNAL_ROWS_ADD_ALL:
+            return {...state,
+            undoType: action.undoType,
+            undoDataTemp: [...state.undoDataTemp, ...action.data],
+            };
         case actionTypes.UNDO_CLEAR:
             return {...state, 
                 undoActive: false,

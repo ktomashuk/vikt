@@ -7,7 +7,6 @@ import Checkbox from '@material-ui/core/Checkbox';
 // Redux
 import { connect } from 'react-redux';
 import { cableDeleteAddItem, cableDeleteRemoveItem } from '../../../../store/actions/delete';
-import { undoCableJournalRowAdd, undoCableJournalRowRemove } from '../../../../store/actions/undo';
 
 const useStyles = makeStyles({
     root: {
@@ -32,8 +31,7 @@ const useStyles = makeStyles({
 const IsolationRow = (props) => {
     const classes = useStyles();
     const { row, deleteItemsNumber, deleteAllEnabled, 
-        cableDeleteRemoveItem, cableDeleteAddItem, 
-        undoCableJournalRowAdd, undoCableJournalRowRemove } = props;
+        cableDeleteRemoveItem, cableDeleteAddItem } = props;
     // State for clicking delete button
     const [deletingCheck, setDeletingCheck] = useState(false);
     // Unchecking the checkbox when the clear button is pressed in delete bar
@@ -45,7 +43,7 @@ const IsolationRow = (props) => {
     // Checking the checkbox when 'select all' is pressed in the cable panel
     useEffect(() => {
         if (deleteAllEnabled) {
-            checkboxClickHandler('cable_journal', row.id);
+            setDeletingCheck(true);
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [deleteAllEnabled])
@@ -55,17 +53,14 @@ const IsolationRow = (props) => {
         if (deletingCheck === false) {
             setDeletingCheck(true);
             cableDeleteAddItem(type, data);
-            undoCableJournalRowAdd('cable_journal_delete',row);
         } 
         else
         // If checkbox is checked 
         {
             setDeletingCheck(false);
             cableDeleteRemoveItem(data);
-            undoCableJournalRowRemove('cable_journal_delete', data);
         }
-    }, [cableDeleteRemoveItem, cableDeleteAddItem, deletingCheck,
-         row, undoCableJournalRowRemove, undoCableJournalRowAdd]);
+    }, [cableDeleteRemoveItem, cableDeleteAddItem, deletingCheck]);
 
     const mainRow = (
             <React.Fragment key={`fragmentrow${row.id}`}>
@@ -118,5 +113,4 @@ const mapStateToProps = state => {
 
 
 export default connect(mapStateToProps, 
-    { cableDeleteRemoveItem, cableDeleteAddItem, 
-        undoCableJournalRowAdd, undoCableJournalRowRemove })(IsolationRow);
+    { cableDeleteRemoveItem, cableDeleteAddItem })(IsolationRow);

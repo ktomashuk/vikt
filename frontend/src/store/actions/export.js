@@ -26,6 +26,24 @@ export const getSignersByObject = (object) => async dispatch => {
 
 export const exportCableJournalWord = (data) => async dispatch => {
     try {
+        const res = await axiosInstance.post(`cable/export-cj-word/`, data, {responseType: 'blob'});
+        // stolen from https://stackoverflow.com/questions/56971035/download-file-functionality-for-react-and-python-app
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'export.docx');
+        document.body.appendChild(link);
+        link.click();
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно выполнить экспорт!'
+        });
+    }
+};
+
+export const exportIsolationWord = (data) => async dispatch => {
+    try {
         const res = await axiosInstance.post(`cable/export-isolation-word/`, data, {responseType: 'blob'});
         // stolen from https://stackoverflow.com/questions/56971035/download-file-functionality-for-react-and-python-app
         const url = window.URL.createObjectURL(new Blob([res.data]));

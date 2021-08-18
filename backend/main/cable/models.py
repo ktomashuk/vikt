@@ -13,3 +13,4 @@ class CableJournal(models.Model):
     cable_cut = models.CharField(max_length=150)
     length = models.FloatField(blank=True, default=0)
     isolation = models.FloatField(blank=True, default=0)
+    cores = models.CharField(max_length=5, blank=False)

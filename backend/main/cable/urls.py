@@ -15,6 +15,8 @@ urlpatterns = [
          cable_views.CableJournalSetLengthView.as_view(), name='change-length'),
     path('isolation-set/',
          cable_views.IsolationSetView.as_view(), name='isolation-set'),
+    path('export-cj-word/',
+         csrf_exempt(cable_views.CableJournalWordExportView.as_view()), name='export-cj-word'),
     path('export-isolation-word/',
          csrf_exempt(cable_views.IsolationWordExportView.as_view()), name='export-isolation-word'),
     path('export-isolation/<int:id>/<int:system>/',

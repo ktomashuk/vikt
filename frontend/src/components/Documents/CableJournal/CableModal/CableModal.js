@@ -61,6 +61,7 @@ const CableModal = (props) => {
       cable_cut: '',
       prefix: '',
       noNum: false,
+      cores: '2',
   });
   const handleClose = () => {
     setOpen(false); 
@@ -102,12 +103,14 @@ const CableModal = (props) => {
             <TableBody>
               <TableRow key={`cr`}>
                 <TableCell key={`tc`}>
-                  <TextField className={classes.textField} label="Устройство" style={{width: "35%"}} value={device.name}
+                <TextField className={classes.textField} label="Устройство" style={{width: "30%"}} value={device.name}
                   onChange={(e) => {setDevice({...device, name: e.target.value})}}/>
                   <TextField className={classes.textField} label="Кабель" style={{width: "20%"}} value={device.cable}
                   onChange={(e) => {setDevice({...device, cable: e.target.value})}}/>
                   <TextField className={classes.textField} label="Сечение" style={{width: "15%"}} value={device.cable_cut}
                   onChange={(e) => {setDevice({...device, cable_cut: e.target.value})}}/>
+                  <TextField className={classes.textField} label="Жилы" style={{width: "5%"}} value={device.cores}
+                  onChange={(e) => {setDevice({...device, cores: e.target.value})}}/>
                   <TextField className={classes.textField} label="Префикс" style={{width: "15%"}} value={device.prefix}
                   onChange={(e) => {setDevice({...device, prefix: e.target.value})}}/>
                 <FormControl component="fieldset" style={{marginLeft: 10}}>

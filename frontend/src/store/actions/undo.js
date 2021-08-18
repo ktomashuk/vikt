@@ -133,6 +133,14 @@ export const undoCableJournalRowAdd = (undoType, undoData) => dispatch => {
     });
 };
 
+export const undoCableJournalRowsAddAll = (undoType, undoData) => dispatch => {
+    dispatch({
+        type: actionTypes.UNDO_CABLE_JOURNAL_ROWS_ADD_ALL,
+        data: undoData,
+        undoType: undoType,
+    });
+};
+
 export const undoCableJournalRowRemove = (undoType, undoData) => dispatch => {
     dispatch({
         type: actionTypes.UNDO_CABLE_JOURNAL_ROW_REMOVE,

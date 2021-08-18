@@ -12,9 +12,10 @@ import RefreshButton from '../../../Buttons/RefreshButton/RefreshButton';
 // Redux
 import { connect } from 'react-redux';
 import { getJournalByObjectBySystem, exportResistanceByObjectBySystem } from '../../../../store/actions/cable';
-import { getObjects, getSystemsByObject } from '../../../../store/actions/core';
+import { getObjects, getSystemsByObject, getObjectById } from '../../../../store/actions/core';
 import { switchToResistance } from '../../../../store/actions/selectors';
 import { cableDeleteAddAll, cableDeleteRemoveAll } from '../../../../store/actions/delete';
+import { exportStart, getSignersByObject } from '../../../../store/actions/export';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -48,9 +49,9 @@ const useStyles = makeStyles((theme) => ({
 
 const IsolationPanel = (props) => {
     const classes = useStyles();
-    const { cableJournal, cableJournalLoaded, refreshNeeded, 
+    const { cableJournal, cableJournalLoaded, refreshNeeded, exportStart, chosenObjectId, chosenObjectData, 
         chosenObjectSystems, chosenObjectSystemsLoaded, objectsData, objectsLoaded,
-        getObjects, getSystemsByObject, getJournalByObjectBySystem, exportResistanceByObjectBySystem,
+        getObjects, getSystemsByObject, getJournalByObjectBySystem, getSignersByObject, getObjectById, 
         switchToResistance, cableDeleteAddAll, cableDeleteRemoveAll  } = props;
     const [object, setObject] = useState('');
     const [objectId, setObjectId] = useState('');
@@ -79,7 +80,8 @@ const IsolationPanel = (props) => {
         const objName = event.target.value;
         const objFound = objectsData.filter(obj => obj.name === objName)[0];
         setObjectId(objFound.id);
-        setSystem('');
+        getObjectById(objFound.id);
+        setSystem({...system, name: ''});
         getSystemsByObject(objFound.id);
     };
     // Loading data for a chosen system
@@ -91,6 +93,22 @@ const IsolationPanel = (props) => {
         setSystem({...system, name: sysName, id: sysId});
         getJournalByObjectBySystem(objectId, sysId);
         cableDeleteRemoveAll();
+    };
+    // Export to word
+    const exportClickHandler = () => {
+        const sysCode = chosenObjectSystems.filter(sys => sys.acronym === system.name)[0].project_name;
+        const sysCity = chosenObjectData.city;
+        const sysName = chosenObjectData.full_name;
+        const sysAdress = chosenObjectData.adress;
+        const data = {
+            tableContents: cableJournal,
+            systemCode: sysCode,
+            systemCity: sysCity,
+            systemName: sysName,
+            systemAdress: sysAdress,
+        };
+        getSignersByObject(chosenObjectId);
+        exportStart('isolation', data);
     };
     // Objects list by default
     let objectsList = <MenuItem>Загрузка</MenuItem>;
@@ -135,7 +153,7 @@ const IsolationPanel = (props) => {
                     labelId="system-select-label"
                     id="system-select"
                     onChange={systemChange}
-                    value={system.name}>
+                    value={system.name  }>
                     {systemsList}
                 </Select>
             </FormControl>
@@ -148,7 +166,7 @@ const IsolationPanel = (props) => {
             <RefreshButton tooltipOn="Обновить" tooltipOff="Обновление недоступно"
             refreshType='cable_journal' clicked={() => refreshJournal()} refreshEnabled={cableJournalLoaded}/>
             <ExportButton exportEnabled={cableJournalLoaded}
-            clicked={() => exportResistanceByObjectBySystem(objectId, system.id)}
+            clicked={() => exportClickHandler()}
             tooltipOn="Экспорт в Word" tooltipOff="Экспорт недоступен"/>                       
         </div>
     );
@@ -159,6 +177,8 @@ const mapStateToProps = state => {
         objectsLoaded: state.core.objectsLoaded,
         objectsData: state.core.objectsData,
         chosenObjectSystems: state.core.chosenObjectSystems,
+        chosenObjectId: state.core.chosenObjectId,
+        chosenObjectData: state.core.chosenObjectData,
         chosenObjectSystemsLoaded: state.core.chosenObjectSystemsLoaded,
         cableJournal: state.cable.cableJournal,
         cableJournalLoaded: state.cable.cableJournalLoaded,
@@ -167,5 +187,6 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, 
-    { getObjects, getSystemsByObject, getJournalByObjectBySystem, exportResistanceByObjectBySystem, 
-        switchToResistance, cableDeleteAddAll, cableDeleteRemoveAll })(IsolationPanel);
+    { getObjects, getSystemsByObject, getJournalByObjectBySystem, 
+        switchToResistance, getObjectById, exportResistanceByObjectBySystem, 
+        cableDeleteAddAll, cableDeleteRemoveAll, exportStart, getSignersByObject })(IsolationPanel);

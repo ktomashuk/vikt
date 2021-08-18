@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -7,10 +7,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import TablePagination from '@material-ui/core/TablePagination'; 
 import CableRow from '../CableRow/CableRow';
+import Divider from '@material-ui/core/Divider';
 import { connect } from 'react-redux';
-import { getJournalByObjectBySystem } from '../../../../store/actions/cable';
-
+import { cableDeleteAddAllItems } from '../../../../store/actions/delete';
+import { undoCableJournalRowsAddAll } from '../../../../store/actions/undo';
 
 const columns = [
     { id: 'number', label: '№', minWidth: 50, maxWidth: 50 },
@@ -30,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     },
     container: {
         [theme.breakpoints.down('lg')]:{
-        height: 500,
+        height: 400,
         },
         [theme.breakpoints.up('lg')]:{
         height: 700,
@@ -55,17 +57,37 @@ const useStyles = makeStyles((theme) => ({
 
 const EstimatesTable = props => {
     const classes = useStyles();
-    const { cableJournal, cableJournalLoaded } = props;
-    // Default table
-    let rows = <TableRow><TableCell>Выберите объект и систему</TableCell></TableRow>
-    // Table if data is loaded
-    if (cableJournalLoaded) {
-        rows = cableJournal.map((row) => {
-            return(
-                <CableRow key={row.id} row={row} />
-            );
-        })
-    }
+    const { cableJournal, cableJournalLoaded, deleteAllEnabled, 
+        cableDeleteAddAllItems, undoCableJournalRowsAddAll } = props;
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(100);
+    const [deleteData, setDeleteData] = useState([]);
+    // Setting table to the right amount of rows as chosen in pagination menu
+    let rows = cableJournalLoaded ? 
+    cableJournal.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : null;
+    // Changing page in a pagination menu
+    const handleChangePage = (event, newPage) => {
+      setPage(newPage);
+    };
+    // Changing the amount of rows per page
+    const handleChangeRowsPerPage = (event) => {
+      setRowsPerPage(+event.target.value);
+      setPage(0);
+    };
+    // Adding all items currently shown to delete
+    useEffect(() => {
+        const deleteAllIds = rows ? rows.map((item) => {return item.id}) : null;
+        const deleteRepeated = deleteAllIds ? deleteAllIds.some((item) => deleteData.includes(item)) : null;
+        if (deleteAllEnabled && !deleteRepeated) {
+            cableDeleteAddAllItems('cable_journal', deleteAllIds);
+            undoCableJournalRowsAddAll('cable_journal_delete', rows);
+            setDeleteData(deleteData => ([...deleteData, ...deleteAllIds]));
+        };
+        if (!deleteAllEnabled) {
+            setDeleteData([]);
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [deleteAllEnabled]);
     return(
         <Paper key="papertable" className={classes.root}>
             <TableContainer key="tablecontainer" className={classes.container}>
@@ -82,10 +104,24 @@ const EstimatesTable = props => {
                         </TableRow>
                     </TableHead>
                     <TableBody key="tablebody">
-                        {rows}
+                    {cableJournalLoaded ? rows.map((row) => {
+                    return(<CableRow key={row.id} row={row} /> )}) : null}
                     </TableBody>
                 </Table>
             </TableContainer>
+            <Divider />
+            <TablePagination
+                rowsPerPageOptions={[15, 50, 100, {label: 'Все', value: -1}]}
+                component="div"
+                count={cableJournalLoaded ? cableJournal.length : 0 }
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onChangePage={handleChangePage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+                nextIconButtonText="Следующая страница"
+                backIconButtonText="Предыдущая страница"
+                labelRowsPerPage="Строк на странице"
+            />
         </Paper>
     );
 };
@@ -94,7 +130,8 @@ const mapStateToProps = state => {
     return {
         cableJournal: state.cable.cableJournal,
         cableJournalLoaded: state.cable.cableJournalLoaded,
+        deleteAllEnabled: state.del.deleteAllEnabled,
     };
 };
 
-export default connect(mapStateToProps, { getJournalByObjectBySystem })(EstimatesTable);
+export default connect(mapStateToProps, { cableDeleteAddAllItems, undoCableJournalRowsAddAll })(EstimatesTable);

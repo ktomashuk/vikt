@@ -30,6 +30,14 @@ export const cableDeleteAddAll = () => dispatch => {
     });
 };
 
+export const cableDeleteAddAllItems = (deleteType, data) => dispatch => {
+    dispatch({
+        type: actionTypes.DELETE_CABLE_JOURNAL_ADD_ALL_ITEMS,
+        data: data,
+        deleteType: deleteType,
+    });
+};
+
 export const cableDeleteSelected = (data) => async dispatch => {
     try {
         dispatch({

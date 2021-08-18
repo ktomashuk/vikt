@@ -102,6 +102,7 @@ const CablePanel = (props) => {
         device: null,
         startpoint: 0,
         length: 0,
+        cores: '2',
     });
 
     // Fetching objects
@@ -133,7 +134,7 @@ const CablePanel = (props) => {
             refreshJournal();
         };
     }, [refreshNeeded, cableJournalLoaded, refreshJournal]);
-    // Export to excel
+    // Export to word
     const exportClickHandler = () => {
         const sysAcronym = chosenObjectSystems.filter(sys => sys.acronym === system.name)[0].acronym;
         const sysCode = chosenObjectSystems.filter(sys => sys.acronym === system.name)[0].project_name;
@@ -215,6 +216,7 @@ const CablePanel = (props) => {
             cable: device.cable,
             cable_cut: device.cable_cut,
             length: journal.length,
+            cores: device.cores,
         };
         addCableRow(data);
     };
@@ -255,6 +257,7 @@ const CablePanel = (props) => {
                 cable: device.cable,
                 cable_cut: device.cable_cut,
                 length: journal.length,
+                cores: device.cores,
             };
             cableArray.push(data);
             startIndex++;
@@ -313,6 +316,7 @@ const CablePanel = (props) => {
                 cable: device.cable,
                 cable_cut: device.cable_cut,
                 length: journal.length,
+                cores: device.cores,
             };
             editCableRow(prevEntry[0].id, prevData);
         } else {
@@ -335,6 +339,7 @@ const CablePanel = (props) => {
             cable: device.cable,
             cable_cut: device.cable_cut,
             length: journal.length,
+            cores: device.cores,
         };
         startIndex++;
         cableArray.push(firstData);
@@ -365,6 +370,7 @@ const CablePanel = (props) => {
                 cable: device.cable,
                 cable_cut: device.cable_cut,
                 length: journal.length,
+                cores: device.cores,
             };
             cableArray.push(data);
             startIndex++;
