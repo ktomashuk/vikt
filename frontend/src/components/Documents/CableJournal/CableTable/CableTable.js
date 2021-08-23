@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -63,8 +63,9 @@ const EstimatesTable = props => {
     const [rowsPerPage, setRowsPerPage] = useState(100);
     const [deleteData, setDeleteData] = useState([]);
     // Setting table to the right amount of rows as chosen in pagination menu
-    let rows = cableJournalLoaded ? 
-    cableJournal.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : null;
+    let rows = useMemo(() => cableJournalLoaded ? 
+    cableJournal.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : null, 
+    [page, cableJournal, cableJournalLoaded, rowsPerPage]);
     // Changing page in a pagination menu
     const handleChangePage = (event, newPage) => {
       setPage(newPage);
@@ -87,7 +88,7 @@ const EstimatesTable = props => {
             setDeleteData([]);
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [deleteAllEnabled]);
+    }, [deleteAllEnabled, rows]);
     return(
         <Paper key="papertable" className={classes.root}>
             <TableContainer key="tablecontainer" className={classes.container}>

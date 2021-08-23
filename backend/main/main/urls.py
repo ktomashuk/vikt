@@ -33,6 +33,7 @@ urlpatterns = [
     path('inv/', include('invoices.urls')),
     path('core/', include('core.urls')),
     path('cable/', include('cable.urls')),
+    path('purchases/', include('purchases.urls')),
     path('__debug__/', include(debug_toolbar.urls)),
     path('update/<int:pk>/', api_views.UpdateProfileView.as_view(), name='update_profile'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),

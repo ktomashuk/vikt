@@ -1,15 +1,13 @@
-from django.shortcuts import render
 from .serializers import PurchaseSerializer, FullSerializer
 from .models import Purchase
 from estimates.models import Estimate
 from rest_framework import generics, permissions
+from rest_framework.views import APIView
 
 
 class PurchasesView(generics.ListAPIView):
-    serializer_class = FullSerializer
+    serializer_class = PurchaseSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        estimates = Estimate.objects.all()
-        purchases = Purchase.objects.all()
-        return estimates, purchases
+        return Purchase.objects.all().prefetch_related('ware_reference')
