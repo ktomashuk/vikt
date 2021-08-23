@@ -1,1 +1,3 @@
 /backend/venv
+/backend/main/venv
+.DS_Store
