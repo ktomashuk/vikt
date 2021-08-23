@@ -17,7 +17,6 @@ from cable import views as cable_views
 router = routers.DefaultRouter()
 router.register(r'users', api_views.UserViewSet)
 router.register(r'invoices', invoice_views.InvoiceViewSet)
-router.register(r'invoice_details', invoice_views.InvoiceDetailsViewSet)
 router.register(r'estimates', estimate_views.EstimateViewSet)
 router.register(r'objects', core_views.ObjectViewSet)
 router.register(r'contractors', core_views.ContractorViewSet)

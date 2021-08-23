@@ -3,6 +3,7 @@ from core.models import System, Object
 from estimates.models import Estimate
 from invoices.models import Invoice
 
+
 class Purchase(models.Model):
     ware_reference = models.ForeignKey(Estimate, null=True, blank=True, on_delete=models.SET_NULL)
     ware_name = models.CharField(max_length=150, null=True)
@@ -11,3 +12,6 @@ class Purchase(models.Model):
     invoice = models.ForeignKey(Invoice, null=True, blank=True, on_delete=models.SET_NULL)
     purchased_fact = models.IntegerField(default=0)
     purchased_doc = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.ware_name + ' (' + self.invoice.number + ')'

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Invoice, InvoiceDetails
+from .models import Invoice
 
 
 class InvoiceSerializer(serializers.ModelSerializer):
@@ -7,8 +7,3 @@ class InvoiceSerializer(serializers.ModelSerializer):
         model = Invoice
         fields = ['id', 'number', 'contractor', 'inv_date']
 
-
-class InvoiceDetailsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = InvoiceDetails
-        fields = '__all__'
