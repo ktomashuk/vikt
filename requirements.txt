@@ -16,7 +16,6 @@ Jinja2==3.0.1
 lxml==4.6.3
 MarkupPy==1.14
 MarkupSafe==2.0.1
-mod-wsgi==4.8.0
 numpy==1.20.3
 odfpy==1.4.1
 openpyxl==3.0.7

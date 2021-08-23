@@ -9,9 +9,6 @@ class PurchaseSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class FullSerializer(serializers.ModelSerializer):
-    purchase = PurchaseSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Estimate
-        fields = ('purchase', 'ware', 'system', 'object', 'quantity')
+class FullSerializer(serializers.Serializer):
+    ware = serializers.CharField()
+    quantity = serializers.FloatField()

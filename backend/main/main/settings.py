@@ -30,7 +30,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -104,7 +103,7 @@ DATABASES = {
 
         'PASSWORD': '7WEWX9Q6SA',
 
-        'HOST': 'localhost',
+        'HOST': '192.168.0.41',
 
         'PORT': '5432',
 
