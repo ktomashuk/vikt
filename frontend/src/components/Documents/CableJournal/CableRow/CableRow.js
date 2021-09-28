@@ -99,7 +99,7 @@ const CableRow = React.memo((props) => {
                     <React.Fragment key={`frag2${row.id}`}>
                         <EditIcon className={classes.icon}
                         key={`edit${row.id}`}
-                        color="primary"
+                        color="primary" fontSize="small"
                         onClick={() => editStart('cable_journal_row', row)}/>
                         <Checkbox size="small" checked={deletingCheck}
                         className={classes.checkbox}

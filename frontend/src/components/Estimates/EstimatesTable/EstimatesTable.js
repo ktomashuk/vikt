@@ -65,7 +65,7 @@ const EstimatesTable = React.memo(props => {
     chosenObjectSystems, chosenObjectSystemsLoaded, chosenObjectId, 
     estimateDeleteAddItem, estimateDeleteRemoveItem, estimateDeleteRemoveAll,
     deleteEstimateRow, editEstimateRow, undoDataSave, undoEstimateRowAdd, undoEstimateRowRemove, 
-    getEstimatesByObject, getEstimatesByObjectBySystem, 
+    getEstimatesByObject, getEstimatesByObjectBySystem,
     searchEstimatesByObject, searchEstimatesByObjectBySystem } = props;
     // Refresh estimates
     const refreshEstimates = useCallback(() => {
@@ -91,10 +91,11 @@ const EstimatesTable = React.memo(props => {
         };
     }, [estimatesRefreshNeeded, refreshEstimates])
     // Default table
-    let rows = <TableRow><TableCell>Выберите объект</TableCell></TableRow>
-    // Loaded table
+    let estimateRows = <TableRow><TableCell>Выберите объект</TableCell></TableRow>
+
+    // Loaded table of estimates
     if (estimatesLoaded && unitsLoaded && chosenObjectSystemsLoaded) {
-        rows = estimatesData.map((row) => {
+        estimateRows = estimatesData.map((row) => {
             return(
                 <EstimatesRow row={row} key={`row${row.id}`}
                 deleteClick={deleteEstimateRow}
@@ -113,7 +114,7 @@ const EstimatesTable = React.memo(props => {
     return(
         <Paper key="papertable" className={classes.root}>
             <TableContainer key="tablecontainer" className={classes.container}>
-                <Table key="tablemain" stickyHeader aria-label="table1" size="small">
+                <Table key="tablemain" stickyHeader aria-label="table1" size="small" padding="none">
                     <TableHead key="tablehead">
                         <TableRow key="header">
                             {columns.map((column) => {
@@ -126,7 +127,7 @@ const EstimatesTable = React.memo(props => {
                         </TableRow>
                     </TableHead>
                     <TableBody key="tablebody">
-                        {rows}
+                        {estimateRows}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -138,6 +139,8 @@ const mapStateToProps = state => {
     return {
         estimatesLoaded: state.est.estimatesLoaded,
         estimatesData: state.est.estimatesData,
+        nonEstimatesLoaded: state.est.nonEstimatesLoaded,
+        nonEstimatesData: state.est.nonEstimatesData,
         estimatesSystem: state.est.estimatesSystem,
         estimatesRefreshNeeded: state.est.estimatesRefreshNeeded,
         searchActive: state.srch.searchActive,

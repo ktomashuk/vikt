@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -6,7 +6,6 @@ import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 // Redux
 import { connect } from 'react-redux';
-import { loadPageName } from '../../store/actions/info';
 // Router
 import { withRouter } from 'react-router-dom';
 
@@ -15,19 +14,13 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         marginLeft: 10,
         marginBottom: 10,
-        alignItems: 'center',
         justifyContent: 'center',
     },
 }));
 
-const HomePage = props => {
+const HomeTop = props => {
     const classes = useStyles();
-    const { firstName, lastName, isAuthenticated, loadPageName } = props;
-    // Setting page name
-    useEffect(() => {
-        loadPageName('Главная');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    const { firstName, lastName, isAuthenticated } = props;
 
     let dashboard = (
         <React.Fragment>
@@ -51,12 +44,7 @@ const HomePage = props => {
             <React.Fragment>
             <Box className={classes.box}>
             <Typography variant="h4">
-            Здравствуйте, {fullName}
-            </Typography>
-            </Box>
-            <Box className={classes.box}>
-            <Typography variant="h5">
-            Это тестовая версия портала
+            Здравствуйте, {fullName}!
             </Typography>
             </Box>
                 <Box className={classes.box}>
@@ -83,4 +71,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, { loadPageName })(withRouter(HomePage));
+export default connect(mapStateToProps)(withRouter(HomeTop));

@@ -51,6 +51,8 @@ const SearchBar = (props) => {
                     return filter(searchValue, estimatesSystem);
                 case 'contractors':
                     return filter(searchValue);
+                case 'invoices':
+                    return filter(searchValue);
                 default:
                     return;
             }

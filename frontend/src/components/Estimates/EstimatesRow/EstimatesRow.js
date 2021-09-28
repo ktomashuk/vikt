@@ -24,6 +24,9 @@ const useStyles = makeStyles({
         maxWidth: 1500,
         fontSize: 30,
     },
+    checkbox: {
+        margin: 'auto',
+    },
 });
 
 const EstimatesRow = props => {
@@ -65,7 +68,9 @@ const EstimatesRow = props => {
             <React.Fragment key={`fragmentrow${row.id}`}>
             <TableRow key={`r${row.id}`} hover >
                 <TableCell padding="default" key={`number${row.id}`}>
-                {row.system_number}.{row.ware_number}
+                {row.system_number ?
+                row.system_number + "." + row.ware_number
+                : 'Б/Н'}
                 </TableCell>
                 <TableCell key={`ware${row.id}`}>
                 {row.ware}                    
@@ -77,29 +82,30 @@ const EstimatesRow = props => {
                 {row.quantity}
                 </TableCell>
                 <TableCell key={`price${row.id}`}>
-                {row.price}
+                {row.price ?
+                row.price :
+                '-'}
                 </TableCell>
                 <TableCell key={`system${row.id}`}>
-                {systems.find(sys => sys.id === row.system).acronym}
+                {systems ? systems.find(sys => sys.id === row.system).acronym : null}
                 </TableCell>
                 <TableCell key={`note${row.id}`}>
-                {row.note}
+                {row.system_number ? 
+                row.note :
+                'не по смете'}
                 </TableCell>
                 <TableCell key={`buttons${row.id}`}>
                     <React.Fragment key={`frag2${row.id}`}>
                         <EditIcon className={classes.icon}
                         key={`edit${row.id}`}
-                        color="primary"
-                        onClick={() => editStart('estimate_row', row)}/>
+                        color="primary" fontSize="small"
+                        onClick={row.system_number ?
+                        () => editStart('estimate_row', row) : () => editStart('nonestimate_row', row)}/>
                         <Checkbox size="small" checked={deletingCheck}
                         className={classes.checkbox}
                         onClick={() => checkboxClickHandler('estimates', row.id)}/>
                     </React.Fragment>
                 </TableCell>
-            </TableRow>
-            <TableRow key={`collapserow${row.id}`}>
-            <TableCell key={`c${row.id}`} style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={8}>
-            </TableCell>
             </TableRow>
             </React.Fragment>
         );

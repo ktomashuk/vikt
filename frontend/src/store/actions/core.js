@@ -116,6 +116,12 @@ export const unloadObjects = () => dispatch => {
     });
 };
 
+export const unloadObjectSystems = () => dispatch => {
+    dispatch({
+        type: actionTypes.OBJECTS_UNLOAD_SYSTEMS,
+    });
+};
+
 export const getSystemsByObject = (id) => async dispatch => {
 
     try {

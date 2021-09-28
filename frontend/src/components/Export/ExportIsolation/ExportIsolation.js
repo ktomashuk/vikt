@@ -103,9 +103,9 @@ const ExportIsolation = props => {
     // Executing an export
     const exportFinishClickHandler = () => {
         // Setting the date string in a format mm.yy
-        const dateMonth = fields.date.substr(5,2);
-        const dateYear = fields.date.substr(2,2);
-        const date = dateMonth + '.' + dateYear;
+        //const dateMonth = fields.date.substr(5,2);
+        //const dateYear = fields.date.substr(2,2);
+        //const date = dateMonth + '.' + dateYear;
         // Creating final data for export
         const exportData = {
             city: 'Москва',

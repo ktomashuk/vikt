@@ -97,8 +97,16 @@ const MainDrawer = React.memo(props => {
           condition: openInv,
           nestedItems: [
             {
-              text: 'Добавить платежку',
-              click: () => drawerClick('invoices'),
+              text: 'Создать заявку',
+              click: () => drawerClick('purchases-request'),
+            },
+            {
+              text: 'Счета',
+              click: () => drawerClick('purchases-bill'),
+            },
+            {
+              text: 'Посмотреть закупку',
+              click: () => drawerClick('purchases-overview'),
             },
           ],
         },
@@ -115,7 +123,8 @@ const MainDrawer = React.memo(props => {
             },
             {
               text: 'Добавить смету',
-              click: () => {window.open('http://127.0.0.1:8000/admin/estimates/estimate/import/', '_blank');
+              click: () => {
+              window.open('http://192.168.0.150:8000/admin/estimates/estimate/import/', '_blank');
               setState({ ...state, open: false })
             },
             },
@@ -139,7 +148,7 @@ const MainDrawer = React.memo(props => {
           ],
         },
         {
-          text: 'База знаний',
+          text: 'Реестры',
           icon: <MenuBookIcon />,
           collapsable: true,
           click: () => {setOpenCont(!openCont)},

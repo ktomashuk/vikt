@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
-from .models import Estimate
+from .models import Estimate, NonEstimate, KS, KSItem, KSQuantity
 from core.models import Object, System, Unit
 from import_export.admin import ImportExportModelAdmin
 
@@ -43,3 +43,7 @@ class ViewAdmin(ImportExportModelAdmin):
 
 admin.site.register(Estimate, ViewAdmin)
 admin.site.register(Unit)
+admin.site.register(NonEstimate, ViewAdmin)
+admin.site.register(KS)
+admin.site.register(KSItem)
+admin.site.register(KSQuantity)

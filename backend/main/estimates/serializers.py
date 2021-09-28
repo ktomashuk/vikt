@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Estimate
+from .models import Estimate, NonEstimate
 
 
 class EstimateSerializer(serializers.ModelSerializer):
@@ -18,3 +18,9 @@ class WareSerializer(serializers.ModelSerializer):
     class Meta:
         model = Estimate
         fields = ('ware', )
+
+
+class NonEstimateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NonEstimate
+        fields = '__all__'

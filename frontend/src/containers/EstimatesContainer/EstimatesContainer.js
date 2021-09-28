@@ -20,9 +20,11 @@ import DeleteBar from '../../components/UI/DeleteBar/DeleteBar';
 // Redux
 import { connect } from 'react-redux';
 import { getEstimatesByObject, getEstimatesByObjectBySystem,
-     searchEstimatesByObject, searchEstimatesByObjectBySystem } from '../../store/actions/estimates';
+    searchEstimatesByObject, searchEstimatesByObjectBySystem, unloadEstimates,
+    getNonEstimatesByObjectBySystem, getNonEstimatesByObject,
+    searchNonEstimatesByObject, searchNonEstimatesByObjectBySystem } from '../../store/actions/estimates';
 import { estimateDeleteRemoveAll, estimateDeleteAddAll } from '../../store/actions/delete';
-import { getObjects, getSystemsByObjectAndAddAll, getObjectById, getUnits } from '../../store/actions/core';
+import { getObjects, getSystemsByObjectAndAddAll, getObjectById, getUnits, unloadObjectSystems } from '../../store/actions/core';
 import { switchToDeleting } from '../../store/actions/selectors';
 import { loadPageName } from '../../store/actions/info';
 
@@ -31,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     paper: {
         display: 'flex',
         flex: 1,
-        padding: theme.spacing(1),
+        padding: theme.spacing(0),
         textAlign: 'left',
         color: theme.palette.text.secondary,
         alignItems: 'center',
@@ -53,11 +55,13 @@ const useStyles = makeStyles((theme) => ({
 const EstimatesContainer = React.memo(props => {
     const { estimatesObject, estimatesSystem, estimatesLoaded, estimatesData,
     chosenObjectId, chosenObjectSystems, chosenObjectSystemsLoaded,
-    objectsData, objectsLoaded, 
+    objectsData, objectsLoaded, unloadEstimates, unloadObjectSystems,
     getEstimatesByObject, getObjects, getObjectById, getUnits,
     getSystemsByObjectAndAddAll, getEstimatesByObjectBySystem, switchToDeleting,
     estimateDeleteRemoveAll, estimateDeleteAddAll, loadPageName,
-    searchEstimatesByObjectBySystem, searchEstimatesByObject } = props;
+    searchEstimatesByObjectBySystem, searchEstimatesByObject,
+    getNonEstimatesByObject, getNonEstimatesByObjectBySystem,
+    searchNonEstimatesByObject, searchNonEstimatesByObjectBySystem } = props;
     const classes = useStyles();
     const [object, setObject] = useState('');
     const [system, setSystem] = useState('');
@@ -65,12 +69,15 @@ const EstimatesContainer = React.memo(props => {
     const [addingEnabled, setAddingEnabled] = useState(false);
 
     // Loading data for a chosen object
-    const objChange = (event) => {
+    const objChange = async(event) => {
+        unloadEstimates();
+        unloadObjectSystems();
         setObject(event.target.value);
         const objName = event.target.value;
         const objFound = objectsData.filter(obj => obj.name === objName)[0];
         setSystem('');
         getEstimatesByObject(objFound.id);
+        getNonEstimatesByObject(objFound.id);
         getObjectById(objFound.id);
         getSystemsByObjectAndAddAll(objFound.id);
         setAddingEnabled(true);
@@ -82,8 +89,10 @@ const EstimatesContainer = React.memo(props => {
         setSystem(chosenSystem);
         if (chosenSystem === 'Все') {
         getEstimatesByObject(chosenObjectId);
+        getNonEstimatesByObject(chosenObjectId);
         } else {
         getEstimatesByObjectBySystem(chosenObjectId, sysFound);
+        getNonEstimatesByObjectBySystem(chosenObjectId, sysFound);
         }
     };
     // Searching estimates
@@ -94,9 +103,11 @@ const EstimatesContainer = React.memo(props => {
     switch(system) {
         case 'Все':
             searchEstimatesByObject(value, estimatesObject);
+            searchNonEstimatesByObject(value, estimatesObject);
             break;
         default:
-            searchEstimatesByObjectBySystem(value, estimatesObject, estimatesSystem)
+            searchEstimatesByObjectBySystem(value, estimatesObject, estimatesSystem);
+            searchNonEstimatesByObjectBySystem(value, estimatesObject, estimatesSystem);
             break;
         }
     };
@@ -193,6 +204,8 @@ const mapStateToProps = state => {
         estimatesData: state.est.estimatesData,
         estimatesObject: state.est.estimatesObject,
         estimatesSystem: state.est.estimatesSystem,
+        nonEstimatesLoaded: state.est.nonEstimatesLoaded,
+        nonEstimatesData: state.est.nonEstimatesData,
         objectsLoaded: state.core.objectsLoaded,
         objectsData: state.core.objectsData,
         chosenObjectId: state.core.chosenObjectId,
@@ -205,4 +218,7 @@ export default connect(mapStateToProps,
     { getEstimatesByObject, getObjects, getObjectById, getUnits,
         getSystemsByObjectAndAddAll, getEstimatesByObjectBySystem, switchToDeleting,
         estimateDeleteRemoveAll, estimateDeleteAddAll, loadPageName,
-        searchEstimatesByObjectBySystem, searchEstimatesByObject  })(EstimatesContainer);
+        searchEstimatesByObjectBySystem, searchEstimatesByObject,
+        searchNonEstimatesByObject, searchNonEstimatesByObjectBySystem,
+        getNonEstimatesByObjectBySystem, getNonEstimatesByObject,
+        unloadEstimates, unloadObjectSystems })(EstimatesContainer);

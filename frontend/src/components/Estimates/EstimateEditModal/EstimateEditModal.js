@@ -52,7 +52,6 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const EstimateEditModal = (props) => {
 const classes = useStyles();
-// Variables to control opening/closing
 const { editData, editType, editEnabled, units, chosenObjectSystems,
     editEstimateRow, editStop, undoDataSave } = props;
 const [open, setOpen] = useState(false);
@@ -70,13 +69,13 @@ const handleClose = () => {
 };
 // Opening the modal
 useEffect(() => {
-    if (editEnabled && editType === 'estimate_row')  {
+    if (editEnabled)  {
       setOpen(true);
       setOldData(editData);
       setNewData(editData);
       setDataLoaded(true);
     }
-  }, [editData, editEnabled, editType])
+  }, [editData, editEnabled])
   // Confirming edit
   const confirmEdit = () => {
       const equality = _.isEqual(oldData, newData);
@@ -84,14 +83,23 @@ useEffect(() => {
         const data = JSON.stringify(newData);
         const id = newData.id;
         undoDataSave('estimate_row_edit', oldData, id);
-        editEstimateRow(id, data);
+        switch(editType){
+          case 'estimate_row':
+            editEstimateRow(id, data);
+            break;
+          case 'nonestimate_row':
+            editEstimateRow(id, data);
+            break;
+          default:
+            break;
+        }
         handleClose();
       };
     };
   // Default data for text fields
   let textFields = null;
   // Loaded data for text fields
-  if (editEnabled && dataLoaded) {
+  if (editEnabled && dataLoaded && editType === 'estimate_row') {
     const unitsName = units.find(u => u.id === newData.units).name;
     const systemName = chosenObjectSystems.find(sys => sys.id === newData.system).acronym;
     textFields = (
@@ -149,7 +157,51 @@ useEffect(() => {
         </TableCell>
       </TableRow>
       </React.Fragment>
-    );
+    );  
+  }
+  if (editEnabled && dataLoaded && editType === 'nonestimate_row') {
+    const unitsName = units.find(u => u.id === newData.units).name;
+    const systemName = chosenObjectSystems.find(sys => sys.id === newData.system).acronym;
+    textFields = (
+      <React.Fragment>
+      <TableRow key={`cr`}>
+        <TableCell key={`tc`}>
+          <TextField label="Наименование" style={{width: '60%', marginRight: 10}}
+          onChange={(e) => setNewData({...newData, ware: e.target.value})}
+          value={newData.ware}/>
+          <TextField label="Кол-во" style={{width: '10%', marginRight: 10}}
+          onChange={(e) => setNewData({...newData, quantity: e.target.value})}
+          value={newData.quantity}/>
+          <FormControl key={`fc1`} style={{width: "10%"}}>
+          <InputLabel>Ед.изм</InputLabel>
+          <Select native style={{marginRight: 10, }}
+          onChange={(e) => {
+            const newUnitsId = units.find(u => u.name === e.target.value).id;
+            setNewData({...newData, units: newUnitsId})
+          }}
+          defaultValue={unitsName}>
+          {units.map(unit => {return(
+          <option key={`option_unit_${unit.id}`}>{unit.name}</option>
+          )})}
+          </Select>
+          </FormControl>
+          <FormControl key={`fc2`} style={{width: "15%"}}>
+          <InputLabel>Система</InputLabel>
+          <Select native style={{marginRight: 10, }}
+          onChange={(e) => {
+            const newSystemId = chosenObjectSystems.find(s => s.acronym === e.target.value).id;
+            setNewData({...newData, system: newSystemId})
+          }}
+          defaultValue={systemName}>
+          {chosenObjectSystems.map(sys => {return(
+          <option key={`option_sys_${sys.id}`}>{sys.acronym}</option>
+          )})}
+          </Select>
+          </FormControl>
+        </TableCell>
+      </TableRow>
+      </React.Fragment>
+    ); 
   }
   return (
     <div>
@@ -189,4 +241,5 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { editEstimateRow, editStop, undoDataSave })(EstimateEditModal);
+export default connect(mapStateToProps, 
+  { editEstimateRow, editStop, undoDataSave })(EstimateEditModal);

@@ -103,7 +103,7 @@ DATABASES = {
 
         'PASSWORD': '7WEWX9Q6SA',
 
-        'HOST': '192.168.0.41',
+        'HOST': '127.0.0.1',
 
         'PORT': '5432',
 
@@ -155,6 +155,7 @@ STATICFILES_DIRS = [
 
 INTERNAL_IPS = [
     '127.0.0.1',
+    '192.168.0.41',
 ]
 
 REST_FRAMEWORK = {

@@ -13,6 +13,7 @@ import deleteReducer from './reducers/delete';
 import selectorsReducer from './reducers/selectors';
 import editReducer from './reducers/edit';
 import exportReducer from './reducers/export';
+import purchasesReducer from './reducers/purchases';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
@@ -37,6 +38,7 @@ const rootReducer = combineReducers({
     sel: selectorsReducer,
     edit: editReducer,
     exp: exportReducer,
+    pur: purchasesReducer,
 });
 
 const store = createStore(

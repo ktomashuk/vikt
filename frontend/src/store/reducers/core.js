@@ -32,6 +32,11 @@ const reducer = (state = initialState, action) => {
                 chosenObjectSystems: action.data,
                 chosenObjectSystemsLoaded: true,
             };
+        case actionTypes.OBJECTS_UNLOAD_SYSTEMS:
+            return {...state,
+                chosenObjectSystems: null,
+                chosenObjectSystemsLoaded: false,
+            };
         case actionTypes.OBJECTS_UNLOAD:
             return {
                 objectsLoaded: false,

@@ -1,22 +1,39 @@
 import * as actionTypes from '../actions/actionTypes';
 
 const initialState = {
-    isLoaded: false,
-    data: null,
-    newInvoiceCreated: false,
+    invoicesLoaded: false,
+    invoicesData: null,
+    invoicesListSpinner: false,
+    invoicesListRefreshNeeded: false,
+    invoicesChosenData: [],
+    invoicesChosenId: 0,
+    invoicesChosenLoaded: false,
 };
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         case actionTypes.INVOICES_LOAD_SUCCESS:
             return {...state, 
-                isLoaded: true,
-                data: action.data,
+                invoicesLoaded: true,
+                invoicesData: action.data,
+                invoicesListRefreshNeeded: false,
             };
         case actionTypes.INVOICES_LOAD_FAIL:
-            return {...state, isLoaded: false};
-        case actionTypes.INVOICE_NEW_CREATE:
-            return {...state, newInvoiceCreated: true }
+            return {...state, invoicesLoaded: false};
+        case actionTypes.INVOICES_LIST_SPINNER_SHOW:
+            return {...state, invoicesListSpinner: true };
+        case actionTypes.INVOICES_LIST_SPINNER_HIDE:
+            return {...state, invoicesListSpinner: false };
+        case actionTypes.INVOICES_CHOOSE_INVOICE:
+            return {...state,
+                invoicesChosenId: action.chosenId,
+                invoicesChosenData: action.data,
+                invoicesChosenLoaded: true,
+            };
+        case actionTypes.INVOICES_EDIT_INVOICE:
+            return {...state,
+                invoicesListRefreshNeeded: true,
+            };
         default:
             return state;
     }

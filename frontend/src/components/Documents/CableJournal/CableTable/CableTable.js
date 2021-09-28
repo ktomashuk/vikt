@@ -15,14 +15,14 @@ import { cableDeleteAddAllItems } from '../../../../store/actions/delete';
 import { undoCableJournalRowsAddAll } from '../../../../store/actions/undo';
 
 const columns = [
-    { id: 'number', label: '№', minWidth: 50, maxWidth: 50 },
-    { id: 'name', label: 'Обозначение', minWidth: 100, maxWidth: 150  },
-    { id: 'start', label: 'Начало', minWidth: 150, maxWidth: 300  },
-    { id: 'end', label: 'Конец', minWidth: 150, maxWidth: 300  },
-    { id: 'cable', label: 'Марка', minWidth: 100, maxWidth: 300  },
-    { id: 'cable_cut', label: 'Сечение', minWidth: 100, maxWidth: 300  },
-    { id: 'length', label: 'Длина', minWidth: 100, maxWidth: 300  },
-    { id: 'actions', label: 'Действия', minWidth: 100, maxWidth: 300 },
+    { id: 'number', label: '№', minWidth: 50, maxWidth: 50, paddingLeft: 15 },
+    { id: 'name', label: 'Обозначение', minWidth: 100, maxWidth: 150, paddingLeft: 0 },
+    { id: 'start', label: 'Начало', minWidth: 150, maxWidth: 300, paddingLeft: 0 },
+    { id: 'end', label: 'Конец', minWidth: 150, maxWidth: 300, paddingLeft: 0 },
+    { id: 'cable', label: 'Марка', minWidth: 100, maxWidth: 300, paddingLeft: 0 },
+    { id: 'cable_cut', label: 'Сечение', minWidth: 100, maxWidth: 300, paddingLeft: 0 },
+    { id: 'length', label: 'Длина', minWidth: 70, maxWidth: 300, paddingLeft: 0 },
+    { id: 'actions', label: 'Действия', minWidth: 100, maxWidth: 300, paddingLeft: 0 },
 ]
 
 
@@ -32,10 +32,10 @@ const useStyles = makeStyles((theme) => ({
     },
     container: {
         [theme.breakpoints.down('lg')]:{
-        height: 400,
+        height: 390,
         },
         [theme.breakpoints.up('lg')]:{
-        height: 700,
+        height: 680,
         },
         [theme.breakpoints.up('xl')]:{
         height: 1000,
@@ -92,13 +92,15 @@ const EstimatesTable = props => {
     return(
         <Paper key="papertable" className={classes.root}>
             <TableContainer key="tablecontainer" className={classes.container}>
-                <Table key="tablemain" stickyHeader aria-label="table1" size="small">
+                <Table key="tablemain" stickyHeader aria-label="table1" size="small" padding="none">
                     <TableHead key="tablehead">
                         <TableRow key="header">
                             {columns.map((column) => {
                                     return(
                                     <TableCell key={column.id}
-                                    style={{ minWidth: column.minWidth, maxWidth: column.maxWidth}}>
+                                    style={{ minWidth: column.minWidth, 
+                                            maxWidth: column.maxWidth,
+                                            paddingLeft: column.paddingLeft, }}>
                                     {column.label}
                                     </TableCell>);
                             })}

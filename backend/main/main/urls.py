@@ -24,6 +24,7 @@ router.register(r'representatives', core_views.RepresentativeViewSet)
 router.register(r'cables', cable_views.CableJournalViewSet)
 router.register(r'systems', core_views.SystemsViewSet)
 router.register(r'units', core_views.UnitViewSet)
+router.register(r'nonestimates', estimate_views.NonEstimateViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
