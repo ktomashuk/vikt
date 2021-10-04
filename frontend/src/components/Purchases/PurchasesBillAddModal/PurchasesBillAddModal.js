@@ -139,8 +139,6 @@ const PurchasesBillAddModal = (props) => {
         <Button variant="contained" color="secondary" onClick={handleClose}>Отмена</Button>
         <Button variant="contained" color="primary" 
         onClick={() => confirmAddClickHandler()}>Добавить счёт</Button>
-        <Button variant="outlined" color="primary" 
-        onClick={() => console.log(billDetails)}>Click me</Button>
         </div>
       </Dialog>
     </React.Fragment>

@@ -16,6 +16,7 @@ import { connect } from 'react-redux';
 import { getInvoices, searchInvoices } from '../../../store/actions/invoices';
 import { getContractors } from '../../../store/actions/contractors';
 import { loadPageName } from '../../../store/actions/info';
+import { getUnits } from '../../../store/actions/core';
 
 const useStyles = makeStyles((theme) => ({
     box: {
@@ -37,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
 
 const PurchaseBillContainer = React.memo(props => {
     const classes = useStyles();
-    const { loadPageName, getInvoices, searchInvoices, getContractors,
+    const { loadPageName, getInvoices, getUnits, searchInvoices, getContractors,
          contractorsLoaded, invoicesListRefreshNeeded } = props;
     // State for opening the add invoice modal
     const [openModal, setOpenModal] = useState(false);
@@ -45,7 +46,8 @@ const PurchaseBillContainer = React.memo(props => {
     useEffect(() => {
         loadPageName('Счета');
         getContractors();
-    }, [loadPageName, getContractors]);
+        getUnits();
+    }, [loadPageName, getContractors, getUnits]);
 
     const addClickHandler = () => {
         setOpenModal(true);
@@ -61,7 +63,7 @@ const PurchaseBillContainer = React.memo(props => {
         if(invoicesListRefreshNeeded) {
             getInvoices();
         }
-    },[invoicesListRefreshNeeded])
+    },[invoicesListRefreshNeeded, getInvoices])
 
     return(
         <React.Fragment>
@@ -96,4 +98,4 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, { 
-    loadPageName, getInvoices, searchInvoices, getContractors })(PurchaseBillContainer);
+    loadPageName, getInvoices, searchInvoices, getContractors, getUnits })(PurchaseBillContainer);

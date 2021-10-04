@@ -12,6 +12,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import Typography from '@material-ui/core/Typography';
 // Custom components
 import PurchasesInvoiceTable from '../PurchasesInvoice/PurchasesInvoiceTable/PurchasesInvoiceTable';
 // Redux
@@ -43,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 
 const PurchasesBill = (props) => {
     const classes = useStyles();
-    const clickable = true;
+    const [clickable, setClickable] = useState(false);
     const { invoicesChosenId, invoicesChosenData, invoicesChosenLoaded,
          editInvoice, contractorsList, showInfo } = props;
     // State for controlling accordion
@@ -77,7 +78,10 @@ const PurchasesBill = (props) => {
             const conName = contractorsList.find(con => con.id === invoicesChosenData.contractor).name;
             setContractorName(conName);
             setDataLoaded(true);
+            setClickable(true);
+            setAccordion({...accordion, details: true, items: false});
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[invoicesChosenData, invoicesChosenLoaded]);
     // Clicking edit button
     const editClickHandler = () => {
@@ -170,9 +174,6 @@ const PurchasesBill = (props) => {
             </Box>    
             <Box className={classes.box}>
             {editing ? buttonsEditOn : buttonsDefault}
-            <Button vatiant="outlined" onClick={() => {
-                console.log(billDetails);
-            }}>Click me</Button>
             </Box>
             </React.Fragment>
         );
@@ -187,7 +188,9 @@ const PurchasesBill = (props) => {
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1bh-content"
           id="panel1bh-header">
+        <Typography>
         Данные счёта
+        </Typography>
         </AccordionSummary>
         <AccordionDetails>
         <Paper className={classes.paperBottom}>
@@ -202,7 +205,19 @@ const PurchasesBill = (props) => {
     expandIcon={<ExpandMoreIcon />}
     aria-controls="panel1bh-content"
     id="panel1bh-header">
-    Позиции в счёте
+        <Typography style={{marginRight: 5}}>
+        Позиции в счёте 
+        </Typography>
+        <Typography style={{color: "red", marginRight: 5}}>
+        {invoicesChosenData.not_assigned > 0 ?
+        '(Не распределено: ' + invoicesChosenData.not_assigned + ')' 
+        : null}
+        </Typography>
+        <Typography style={{color: "brown"}}>
+        {invoicesChosenData.not_received > 0 ?
+        '(Не отгружено: ' + invoicesChosenData.not_received + ')' 
+        : null}
+        </Typography>
     </AccordionSummary>
     <AccordionDetails>
     <Paper className={classes.paperBottom}>

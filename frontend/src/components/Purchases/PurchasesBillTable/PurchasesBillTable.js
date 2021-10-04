@@ -13,6 +13,7 @@ import PurchasesBillRow from '../PurchasesBillRow/PurchasesBillRow';
 // Redux
 import { connect } from 'react-redux';
 import { chooseInvoice } from '../../../store/actions/invoices';
+import { getPurchasesByInvoice } from '../../../store/actions/purchases';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -40,18 +41,20 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const columns = [
-    { id: 'date', label: 'Дата', minWidth: 50, maxWidth: 50  },
-    { id: 'number', label: 'Номер', minWidth: 50, maxWidth: 50 },
-    { id: 'contractor', label: 'Поставщик', minWidth: 150, maxWidth: 150  },
+    { id: 'date', label: 'Дата', minWidth: '20%', maxWidth: '20%'  },
+    { id: 'number', label: 'Номер', minWidth: '30%', maxWidth: '30%' },
+    { id: 'contractor', label: 'Поставщик', minWidth: '40%', maxWidth: '40%'  },
+    { id: 'not', label: 'Инфо', minWidth: "10%", maxWidth: '10%'  },
 ]
 
 const PurchasesBillTable = (props) => {
     const classes = useStyles();
-    const { invoicesLoaded, invoicesData, invoicesListSpinner, chooseInvoice } = props;
+    const { invoicesLoaded, invoicesData, invoicesListSpinner, chooseInvoice, getPurchasesByInvoice } = props;
     
     // Fetching invoice data after clicking table row
     const rowClickHandler = (id) => {
         chooseInvoice(id);
+        getPurchasesByInvoice(id);
     };
     // Default table
     let rows = <TableRow><TableCell>
@@ -74,15 +77,15 @@ const PurchasesBillTable = (props) => {
     return(
         <Paper key="papertable" className={classes.root}>
             <TableContainer key="tablecontainer" className={classes.container}>
-                <Table key="tablemain" stickyHeader aria-label="table1" size="medium">
+                <Table key="tablemain" stickyHeader aria-label="table1" size="small">
                     <TableHead key="tablehead">
                         <TableRow key="header">
                         {columns.map((column) => {
-                                return(
-                                    <TableCell key={column.id}
-                                    style={{minWidth: column.minWidth, maxWidth: column.maxWidth}}>
-                                    {column.label}
-                                    </TableCell>);
+                            return(
+                                <TableCell key={column.id}
+                                style={{minWidth: column.minWidth, maxWidth: column.maxWidth}}>
+                                {column.label}
+                                </TableCell>);
                             })}
                         </TableRow>
                     </TableHead>
@@ -103,4 +106,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, { chooseInvoice } )(PurchasesBillTable);
+export default connect(mapStateToProps, { chooseInvoice, getPurchasesByInvoice } )(PurchasesBillTable);

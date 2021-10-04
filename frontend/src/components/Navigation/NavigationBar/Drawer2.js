@@ -259,7 +259,7 @@ const MainDrawer = React.memo(props => {
       {isAuthenticated && drawerItems.map((item) => {
         if (item.collapsable) {
           return(
-            <React.Fragment key={`fr${item.text}`}>
+            <React.Fragment >
             <ListItem key={`m${item.text}`} button onClick={item.click}>
             <ListItemIcon key={`icon${item.text}`}>{item.icon}</ListItemIcon>
             <ListItemText key={`text${item.text}`}>{item.text} </ListItemText>
@@ -280,7 +280,7 @@ const MainDrawer = React.memo(props => {
           );
         } else {
           return(
-            <React.Fragment key={`fr${item.text}`}>
+            <React.Fragment>
             <ListItem key={`f${item.text}`} button onClick={item.click}>
             <ListItemIcon key={`icon2${item.text}`}>{item.icon}</ListItemIcon>
             <ListItemText key={`text2${item.text}`}>{item.text}</ListItemText>

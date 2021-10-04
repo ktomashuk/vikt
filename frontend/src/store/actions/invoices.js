@@ -102,6 +102,9 @@ export const addInvoice = (data) => async dispatch => {
     try {
         await axiosInstance.post(`router/invoices/`, data);
         dispatch({
+            type: actionTypes.INVOICES_REFRESH,
+        });
+        dispatch({
             type: actionTypes.SNACK_SHOW,
             snackSeverity: 'success',
             snackMessage: 'Счёт добавлен!',

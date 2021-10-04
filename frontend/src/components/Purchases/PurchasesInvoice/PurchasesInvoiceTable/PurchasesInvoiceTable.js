@@ -8,8 +8,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from '@material-ui/core/Button';
 // Custom components
-import PurchasesBillRow from '../../PurchasesBillRow/PurchasesBillRow';
+import PurchasesInvoiceRow from '../PurchasesInvoiceRow/PurchasesInvoiceRow';
 // Redux
 import { connect } from 'react-redux';
 
@@ -39,25 +40,31 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const columns = [
-    { id: 'ware', label: 'Наименование', minWidth: 100, maxWidth: 200  },
-    { id: 'quantity', label: 'Кол-во', minWidth: 50, maxWidth: 50 },
-    { id: 'units', label: 'Ед.изм.', minWidth: 50, maxWidth: 50  },
-    { id: 'price', label: 'Цена', minWidth: 50, maxWidth: 50  },
+    { id: 'ware', label: 'Наименование', minWidth: '45%', maxWidth: '45%'  },
+    { id: 'quantity_doc', label: 'Док', minWidth: '10%', maxWidth: '10%' },
+    { id: 'quantity_fact', label: 'Факт', minWidth: '10%', maxWidth: '10:' },
+    { id: 'units', label: 'Ед.изм.', minWidth: '10%', maxWidth: '10%'  },
+    { id: 'price', label: 'Цена', minWidth: '10%', maxWidth: '10%'  },
+    { id: 'received', label: 'Отгруз.', minWidth: '5%', maxWidth: '5%'  },
+    { id: 'info', label: 'Инфо', minWidth: '10%', maxWidth: '10%'  },
 ]
 
 const PurchasesInvoiceTable = (props) => {
     const classes = useStyles();
-    const { invoicesLoaded, invoicesData, invoicesListSpinner } = props;
-    
+    const { invoicesListSpinner, units, unitsLoaded, 
+        purchasesByInvoice, purchasesByInvoiceLoaded } = props;
     // Default table
     let rows = <TableRow><TableCell>
         <p className={classes.loadingText}>Загрузка</p>
         </TableCell></TableRow>
     // Loaded table
-    if (invoicesLoaded) {
-        rows = invoicesData.map((row) => {
+    if (purchasesByInvoiceLoaded && unitsLoaded) {
+        rows = purchasesByInvoice.map((row) => {
             return(
-                <PurchasesBillRow row={row} key={`cr${row.id}`}/>
+                <PurchasesInvoiceRow 
+                row={row}
+                key={`cr${row.id}`}
+                units={units}/>
             );
         })
     };
@@ -70,19 +77,27 @@ const PurchasesInvoiceTable = (props) => {
     return(
         <Paper key="papertable" className={classes.root}>
             <TableContainer key="tablecontainer" className={classes.container}>
-                <Table key="tablemain" stickyHeader aria-label="table1" size="medium">
+                <Table key="tablemain" stickyHeader aria-label="table1" size="small">
                     <TableHead key="tablehead">
                         <TableRow key="header">
                         {columns.map((column) => {
                                 return(
                                     <TableCell key={column.id}
-                                    style={{minWidth: column.minWidth, maxWidth: column.maxWidth}}>
+                                    style={{width: column.minWidth}}>
                                     {column.label}
                                     </TableCell>);
                             })}
                         </TableRow>
                     </TableHead>
                     <TableBody key="tablebody">
+                    {rows}
+                    <TableRow>
+                    <TableCell colSpan={7}>
+                        <Button variant="contained" color="primary" fullWidth>
+                        Добавить позицию
+                        </Button>
+                    </TableCell>
+                    </TableRow>
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -95,6 +110,10 @@ const mapStateToProps = state => {
         invoicesLoaded: state.inv.invoicesLoaded,
         invoicesData: state.inv.invoicesData,
         invoicesListSpinner: state.inv.invoicesListSpinner,
+        units: state.core.units,
+        unitsLoaded: state.core.unitsLoaded,
+        purchasesByInvoice: state.pur.purchasesByInvoice,
+        purchasesByInvoiceLoaded: state.pur.purchasesByInvoiceLoaded
     };
 };
 

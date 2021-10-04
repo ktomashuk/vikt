@@ -1,11 +1,11 @@
 from django.db import models
-from core.models import System, Object
+from core.models import System, Object, Unit
 from estimates.models import Estimate, NonEstimate
 from invoices.models import Invoice
 
 
 class Purchase(models.Model):
-    estimate_bool = models.BooleanField(default=True)
+    assigned = models.BooleanField(default=False)
     estimate_reference = models.ForeignKey(Estimate, null=True, blank=True, on_delete=models.SET_NULL)
     non_estimate_reference = models.ForeignKey(NonEstimate, null=True, blank=True, on_delete=models.SET_NULL)
     ware_name = models.CharField(max_length=150, null=True)
@@ -14,6 +14,7 @@ class Purchase(models.Model):
     invoice = models.ForeignKey(Invoice, null=True, blank=True, on_delete=models.SET_NULL)
     purchased_fact = models.FloatField(default=0)
     purchased_doc = models.FloatField(default=0)
+    units = models.ForeignKey(Unit, default=1, on_delete=models.CASCADE)
     price = models.FloatField(default=0)
     received = models.BooleanField(default=False)
 
