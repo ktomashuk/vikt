@@ -40,15 +40,15 @@ const PurchasesBillRow = (props) => {
     // Icons to determine if invoice has any unassigned positions
     const notAssignedIcon = (
         <Tooltip title={
+        <React.Fragment>
         <Typography>
-            Инфо:
-            <div>
             {notAssigned ? 'Не распределено: ' + row.not_assigned: null}
-            </div>
-            <div>
-            {notReceived ? 'Не отгружено: ' + row.not_received: null}
-            </div>
-        </Typography>}>
+        </Typography>
+        <Typography>
+            {notReceived ? 'Не получено: ' + row.not_received: null}
+        </Typography>
+        </React.Fragment>
+        }>
             <PriorityHighIcon />
         </Tooltip>
     );

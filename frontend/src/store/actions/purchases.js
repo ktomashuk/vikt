@@ -38,7 +38,7 @@ export const getNonEstimatePurchasesByObject = (object) => async dispatch => {
 export const getPurchasesByInvoice = (invoiceId) => async dispatch => {
 
     try {
-        const res = await axiosInstance.get(`purchases/purchases-by-invoice/${invoiceId}/`);
+        const res = await axiosInstance.get(`purchases/purchases-by-invoice/${invoiceId}/?ordering=id`);
         const data = res.data
         dispatch({
             type: actionTypes.PURCHASES_GET_PURCHASES_BY_INVOICE,
@@ -106,9 +106,7 @@ export const getPurchasesNotAssignedAndReceivedCount = () => async dispatch => {
 export const purchaseCheckReceived = (id) => async dispatch => {
 
     try {
-        const res = await axiosInstance.post(`purchases/purchases-check-received/${id}/`);
-        const data = res.data;
-        console.log(data);
+        await axiosInstance.post(`purchases/purchases-check-received/${id}/`);
     } catch(err) {
         dispatch({
             type: actionTypes.ERROR_SHOW,
@@ -120,9 +118,76 @@ export const purchaseCheckReceived = (id) => async dispatch => {
 export const purchaseUncheckReceived = (id) => async dispatch => {
 
     try {
-        const res = await axiosInstance.post(`purchases/purchases-uncheck-received/${id}/`);
+        await axiosInstance.post(`purchases/purchases-uncheck-received/${id}/`);
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно отменить отгрузку товара!'
+        });
+    }
+};
+
+export const addPurchase = (data) => async dispatch => {
+
+    try {
+        await axiosInstance.post(`router/purchases/`, data);
+        dispatch({
+            type: actionTypes.PURCHASES_REFRESH,
+        });
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно добавить позицию в счёт!'
+        });
+    }
+};
+
+export const deletePurchase = (id) => async dispatch => {
+
+    try {
+        await axiosInstance.delete(`router/purchases/${id}/`);
+        dispatch({
+            type: actionTypes.PURCHASES_REFRESH,
+        });
+        dispatch({
+            type: actionTypes.SNACK_SHOW,
+            snackSeverity: 'warning',
+            snackMessage: 'Данные удалены!',
+        });
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно удалить позицию из счёта!'
+        });
+    }
+};
+
+export const getPurchaseById = (id) => async dispatch => {
+
+    try {
+        const res = await axiosInstance.get(`router/purchases/${id}/`);
         const data = res.data;
-        console.log(data);
+        dispatch({
+            type: actionTypes.PURCHASES_GET_PURCHASE_DATA_BY_ID,
+            data: data,
+        });
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно редактировать позицию!'
+        });
+    }
+};
+
+export const deletePurchasesByInvoice = (id) => async dispatch => {
+
+    try {
+        await axiosInstance.post(`purchases/purchases-delete-by-invoice/${id}/`);
+        dispatch({
+            type: actionTypes.SNACK_SHOW,
+            snackSeverity: 'warning',
+            snackMessage: 'Счет удален!',
+        });
     } catch(err) {
         dispatch({
             type: actionTypes.ERROR_SHOW,

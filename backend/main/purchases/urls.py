@@ -22,4 +22,6 @@ urlpatterns = [
          purchase_views.PurchaseCheckReceived.as_view(), name='purchases-check-received'),
     path('purchases-uncheck-received/<int:id>/',
          purchase_views.PurchaseUncheckReceived.as_view(), name='purchases-uncheck-received'),
+    path('purchases-delete-by-invoice/<int:id>/',
+         purchase_views.DeletePurchasesByInvoiceView.as_view(), name='purchases-delete-by-invoice'),
 ]

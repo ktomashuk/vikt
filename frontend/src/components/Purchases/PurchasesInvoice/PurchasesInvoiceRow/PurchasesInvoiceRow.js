@@ -1,17 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 // Material UI
 import { makeStyles } from '@material-ui/core/styles';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
-import PriorityHighIcon from '@material-ui/icons/PriorityHigh';
-import CheckIcon from '@material-ui/icons/Check';
 import EditIcon from '@material-ui/icons/Edit';
 import Checkbox from '@material-ui/core/Checkbox'
-import Tooltip from '@material-ui/core/Tooltip';
 // Redux
 import { connect } from 'react-redux';
-import { purchaseCheckReceived, purchaseUncheckReceived } from '../../../../store/actions/purchases';
+import { purchaseCheckReceived, purchaseUncheckReceived, 
+    getPurchaseById, getPurchasesByInvoice } from '../../../../store/actions/purchases';
+import { recountInvoice } from '../../../../store/actions/invoices';
 
 const useStyles = makeStyles({
     root: {
@@ -31,29 +29,38 @@ const useStyles = makeStyles({
 
 const PurchasesInvoiceRow = (props) => {
     const classes = useStyles();
-    const { row, contractorsList, contractorsLoaded, clicked, units,
-        purchaseCheckReceived, purchaseUncheckReceived } = props;
-    const red = true;
-    // Icons to determine if invoice has any unassigned positions
-    const notAssignedIcon = (
-        <Tooltip title={<Typography>Не распределено</Typography>}>
-            <PriorityHighIcon style={{ color: 'red'}} fontSize="default"/>
-        </Tooltip>
-    );
-    const assignedIcon = (
-        <Tooltip title={<Typography>Распределено</Typography>}>
-            <CheckIcon fontSize="default" style={{color: 'green'}}/>
-        </Tooltip>
-    );
-    // Clicking the checkbox
-    const checkboxClickhandler = (id) => {
+    const { row, units, clicked, 
+        purchaseCheckReceived, purchaseUncheckReceived, getPurchaseById, 
+        recountInvoice, invoicesChosenId, getPurchasesByInvoice } = props;
+    // State for a checbox
+    const [checkedReceived, setCheckedReceived] = useState(false);
+    const [checkedAssigned, setCheckedAssigned] = useState(false);
+    // Checking the checkbox if ware is received
+    useEffect(() => {
         if (row.received) {
-            purchaseUncheckReceived(id);
+            setCheckedReceived(true);
         } else {
-            purchaseCheckReceived(id);
+            setCheckedReceived(false);
         }
+        if(row.assigned){
+            setCheckedAssigned(true);
+        } else {
+            setCheckedAssigned(false);
+        }
+    },[row.received, row.assigned])
+    // Clicking the checkbox
+    const checkboxReceivedClickhandler = async (id) => {
+        if (checkedReceived) {
+            await purchaseUncheckReceived(id);
+            setCheckedReceived(false);
+        } else {
+            await purchaseCheckReceived(id);
+            setCheckedReceived(true);
+        }
+        recountInvoice(invoicesChosenId);
+        getPurchasesByInvoice(invoicesChosenId);
     };
-
+    
     return(
         <React.Fragment key={`fr${row.id}`}>
             <TableRow key={`row${row.id}`} hover>
@@ -73,12 +80,17 @@ const PurchasesInvoiceRow = (props) => {
                     {row.price}
                 </TableCell>
                 <TableCell key={`not_received${row.id}`} padding="default" className={classes.row}>
-                    <Checkbox checked={row.received}
-                    onChange={() => checkboxClickhandler(row.id)}/>
+                    <Checkbox checked={checkedReceived}
+                    onChange={() => checkboxReceivedClickhandler(row.id)}/>
                 </TableCell>
                 <TableCell key={`not_assigned${row.id}`} padding="default" className={classes.row}>
-                    {row.assigned ? assignedIcon : notAssignedIcon}
-                    <EditIcon fontSize="small" style={{color: 'blue'}}/>
+                    <Checkbox checked={checkedAssigned} color="primary"/>
+                </TableCell>
+                <TableCell key={`info${row.id}`} padding="default" className={classes.row}>
+                    <EditIcon fontSize="default" style={{color: 'blue'}} 
+                    onClick={() => {
+                    getPurchaseById(row.id);
+                    clicked();}}/>
                 </TableCell>
             </TableRow>
         </React.Fragment>
@@ -89,7 +101,10 @@ const mapStateToProps = state => {
     return {
         contractorsLoaded: state.contr.contractorsLoaded,
         contractorsList: state.contr.contractorsList,
+        invoicesChosenId: state.inv.invoicesChosenId,
     };
 };
 
-export default connect(mapStateToProps, { purchaseCheckReceived, purchaseUncheckReceived })(PurchasesInvoiceRow);
+export default connect(mapStateToProps, 
+    { purchaseCheckReceived, purchaseUncheckReceived, recountInvoice,
+         getPurchaseById, getPurchasesByInvoice })(PurchasesInvoiceRow);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -13,6 +13,7 @@ import Button from '@material-ui/core/Button';
 import PurchasesInvoiceRow from '../PurchasesInvoiceRow/PurchasesInvoiceRow';
 // Redux
 import { connect } from 'react-redux';
+import { getPurchasesByInvoice } from '../../../../store/actions/purchases';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -40,19 +41,21 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const columns = [
-    { id: 'ware', label: 'Наименование', minWidth: '45%', maxWidth: '45%'  },
+    { id: 'ware', label: 'Наименование', minWidth: '40%', maxWidth: '40%'  },
     { id: 'quantity_doc', label: 'Док', minWidth: '10%', maxWidth: '10%' },
     { id: 'quantity_fact', label: 'Факт', minWidth: '10%', maxWidth: '10:' },
     { id: 'units', label: 'Ед.изм.', minWidth: '10%', maxWidth: '10%'  },
     { id: 'price', label: 'Цена', minWidth: '10%', maxWidth: '10%'  },
-    { id: 'received', label: 'Отгруз.', minWidth: '5%', maxWidth: '5%'  },
+    { id: 'received', label: 'Получено', minWidth: '5%', maxWidth: '5%'  },
+    { id: 'assigned', label: 'Распред.', minWidth: '5%', maxWidth: '5%'  },
     { id: 'info', label: 'Инфо', minWidth: '10%', maxWidth: '10%'  },
 ]
 
 const PurchasesInvoiceTable = (props) => {
     const classes = useStyles();
-    const { invoicesListSpinner, units, unitsLoaded, 
-        purchasesByInvoice, purchasesByInvoiceLoaded } = props;
+    const { invoicesListSpinner, units, unitsLoaded,
+        invoicesChosenId, getPurchasesByInvoice, purchasesByInvoiceRefreshNeeded,
+        purchasesByInvoice, purchasesByInvoiceLoaded, clickedAdd, clickedEdit } = props;
     // Default table
     let rows = <TableRow><TableCell>
         <p className={classes.loadingText}>Загрузка</p>
@@ -64,7 +67,8 @@ const PurchasesInvoiceTable = (props) => {
                 <PurchasesInvoiceRow 
                 row={row}
                 key={`cr${row.id}`}
-                units={units}/>
+                units={units}
+                clicked={clickedEdit}/>
             );
         })
     };
@@ -74,6 +78,12 @@ const PurchasesInvoiceTable = (props) => {
         <CircularProgress className={classes.loading} />
         </TableCell></TableRow>
     };
+    // Refreshing the list
+    useEffect(() => {
+        if (purchasesByInvoiceRefreshNeeded) {
+            getPurchasesByInvoice(invoicesChosenId);
+        }
+    }, [purchasesByInvoiceRefreshNeeded, getPurchasesByInvoice, invoicesChosenId])
     return(
         <Paper key="papertable" className={classes.root}>
             <TableContainer key="tablecontainer" className={classes.container}>
@@ -92,8 +102,9 @@ const PurchasesInvoiceTable = (props) => {
                     <TableBody key="tablebody">
                     {rows}
                     <TableRow>
-                    <TableCell colSpan={7}>
-                        <Button variant="contained" color="primary" fullWidth>
+                    <TableCell colSpan={8}>
+                        <Button variant="contained" color="primary" fullWidth
+                        onClick={clickedAdd}>
                         Добавить позицию
                         </Button>
                     </TableCell>
@@ -110,11 +121,13 @@ const mapStateToProps = state => {
         invoicesLoaded: state.inv.invoicesLoaded,
         invoicesData: state.inv.invoicesData,
         invoicesListSpinner: state.inv.invoicesListSpinner,
+        invoicesChosenId: state.inv.invoicesChosenId,
         units: state.core.units,
         unitsLoaded: state.core.unitsLoaded,
         purchasesByInvoice: state.pur.purchasesByInvoice,
-        purchasesByInvoiceLoaded: state.pur.purchasesByInvoiceLoaded
+        purchasesByInvoiceLoaded: state.pur.purchasesByInvoiceLoaded,
+        purchasesByInvoiceRefreshNeeded: state.pur.purchasesByInvoiceRefreshNeeded,
     };
 };
 
-export default connect(mapStateToProps )(PurchasesInvoiceTable);
+export default connect(mapStateToProps, { getPurchasesByInvoice } )(PurchasesInvoiceTable);

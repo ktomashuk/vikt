@@ -36,6 +36,10 @@ const reducer = (state = initialState, action) => {
             };
         case actionTypes.INVOICES_REFRESH:
             return {...state, invoicesListRefreshNeeded: true };
+        case actionTypes.INVOICES_INVOICE_RECOUNT:
+            return {...state, 
+            invoicesChosenData: action.data,
+            };
         default:
             return state;
     }

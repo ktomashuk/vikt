@@ -17,8 +17,9 @@ import Typography from '@material-ui/core/Typography';
 import PurchasesInvoiceTable from '../PurchasesInvoice/PurchasesInvoiceTable/PurchasesInvoiceTable';
 // Redux
 import { connect } from 'react-redux';
-import { editInvoice } from '../../../store/actions/invoices';
+import { editInvoice, deleteInvoice } from '../../../store/actions/invoices';
 import { showInfo } from '../../../store/actions/info';
+import { deletePurchasesByInvoice } from '../../../store/actions/purchases';
 // Comparing objects
 const _ = require('lodash');
 
@@ -46,7 +47,8 @@ const PurchasesBill = (props) => {
     const classes = useStyles();
     const [clickable, setClickable] = useState(false);
     const { invoicesChosenId, invoicesChosenData, invoicesChosenLoaded,
-         editInvoice, contractorsList, showInfo } = props;
+         editInvoice, contractorsList, showInfo, clickedEdit, clickedAdd, 
+         deletePurchasesByInvoice, deleteInvoice } = props;
     // State for controlling accordion
     const [accordion, setAccordion] = useState({
         details: true,
@@ -58,23 +60,27 @@ const PurchasesBill = (props) => {
         inv_date: '2020-01-01',
         contractor: 0,
     });
+    // State for bill id
+    const [billId, setBillId] = useState(0);
     // State for loading contractor data
     const [dataLoaded, setDataLoaded] = useState(false);
     // State for displaying contractor name when we know its ID
     const [contractorName, setContractorName] = useState('');
     // State for saving original data when editing
     const [billTemp, setBillTemp] = useState(null);
-    // State for editing bill details
+    // State for editing and deleting bill details
     const [editing, setEditing] = useState(false);
+    const [deleting, setDeleting] = useState(false);
     // Getting data from redux after invoice is chosen
     useEffect(() => {
-        if(invoicesChosenLoaded) {
+        if(invoicesChosenLoaded && billId !== invoicesChosenData.id) {
             setBillDetails({
                 ...billDetails,
                 number: invoicesChosenData.number,
                 inv_date: invoicesChosenData.inv_date,
                 contractor: invoicesChosenData.contractor,
             });
+            setBillId(invoicesChosenId);
             const conName = contractorsList.find(con => con.id === invoicesChosenData.contractor).name;
             setContractorName(conName);
             setDataLoaded(true);
@@ -89,6 +95,13 @@ const PurchasesBill = (props) => {
         setBillTemp({...billDetails});
         // Enabling editing
         setEditing(true);
+    };
+    // Clicking delete finish button 
+    const deleteConfirmClickHandler = async () => {
+        await deletePurchasesByInvoice(invoicesChosenId);
+        await deleteInvoice(invoicesChosenId);
+        setDataLoaded(false);
+        setClickable(false);
     };
     // Saving editing of bill details
     const saveClickHandler = () => {
@@ -123,6 +136,10 @@ const PurchasesBill = (props) => {
         className={classes.button} onClick={() => editClickHandler()}>
         Редактировать
         </Button>
+        <Button variant="outlined" color="secondary" 
+        className={classes.button} onClick={() => setDeleting(true)}>
+        Удалить
+        </Button>
         </React.Fragment>
         );
     // Save and cancel buttons when editing is enabled
@@ -132,6 +149,15 @@ const PurchasesBill = (props) => {
         className={classes.button} onClick={() => saveClickHandler()}>Сохранить</Button>
         <Button variant="contained" color="secondary" 
         className={classes.button} onClick={() => cancelClickHandler()}>Отменить</Button>
+        </React.Fragment>
+        );  
+    // Delete and cancel buttons when deleting is enabled
+    const buttonsDeleteOn = (
+        <React.Fragment>
+        <Button variant="contained" color="primary" 
+        className={classes.button} onClick={() => deleteConfirmClickHandler()}>Удалить</Button>
+        <Button variant="contained" color="secondary" 
+        className={classes.button} onClick={() => setDeleting(false)}>Отменить</Button>
         </React.Fragment>
         );  
     // Default contractor list
@@ -173,7 +199,9 @@ const PurchasesBill = (props) => {
                 }} />
             </Box>    
             <Box className={classes.box}>
-            {editing ? buttonsEditOn : buttonsDefault}
+            {!editing && !deleting ? buttonsDefault : null}
+            {editing ? buttonsEditOn : null}
+            {deleting ? buttonsDeleteOn : null}
             </Box>
             </React.Fragment>
         );
@@ -189,12 +217,12 @@ const PurchasesBill = (props) => {
           aria-controls="panel1bh-content"
           id="panel1bh-header">
         <Typography>
-        Данные счёта
+        Данные счёта {accordion.items ? '№' + billDetails.number : null}
         </Typography>
         </AccordionSummary>
         <AccordionDetails>
         <Paper className={classes.paperBottom}>
-            {!dataLoaded ? "Выберите счёт" : null}
+            {!dataLoaded ? <Typography variant="h3">Выберите счёт</Typography> : null}
             {conList}
         </Paper>
     </AccordionDetails>
@@ -208,20 +236,10 @@ const PurchasesBill = (props) => {
         <Typography style={{marginRight: 5}}>
         Позиции в счёте 
         </Typography>
-        <Typography style={{color: "red", marginRight: 5}}>
-        {invoicesChosenData.not_assigned > 0 ?
-        '(Не распределено: ' + invoicesChosenData.not_assigned + ')' 
-        : null}
-        </Typography>
-        <Typography style={{color: "brown"}}>
-        {invoicesChosenData.not_received > 0 ?
-        '(Не отгружено: ' + invoicesChosenData.not_received + ')' 
-        : null}
-        </Typography>
     </AccordionSummary>
     <AccordionDetails>
     <Paper className={classes.paperBottom}>
-    <PurchasesInvoiceTable />
+    <PurchasesInvoiceTable clickedEdit={clickedEdit} clickedAdd={clickedAdd}/>
     </Paper>
     </AccordionDetails>
     </Accordion>
@@ -241,4 +259,4 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, 
-    { editInvoice, showInfo })(PurchasesBill);
+    { editInvoice, showInfo, deletePurchasesByInvoice, deleteInvoice })(PurchasesBill);

@@ -10,6 +10,8 @@ export const getEstimates = () => async dispatch => {
         dispatch({
             type: actionTypes.ESTIMATES_LOAD_SUCCESS,
             data: data,
+            objId: 0,
+            system: 0,
         });
     } catch(err) {
         dispatch({
@@ -238,6 +240,28 @@ export const unloadEstimates = () => async dispatch => {
 };
 
 // Non estimates
+
+export const getNonEstimates = () => async dispatch => {
+
+    try {
+        const res = await axiosInstance.get('router/nonestimates/');
+        const data = res.data
+        dispatch({
+            type: actionTypes.ESTIMATES_NON_LOAD_SUCCESS,
+            data: data,
+            objId: 0,
+            system: 0,
+        });
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ESTIMATES_LOAD_FAIL,
+        });
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно загрузить данные!'
+        });
+    }
+};
 
 export const getNonEstimatesByObject = (object) => async dispatch => {
 

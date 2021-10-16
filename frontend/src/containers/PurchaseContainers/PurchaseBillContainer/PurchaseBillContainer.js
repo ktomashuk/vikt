@@ -7,6 +7,7 @@ import Box from '@material-ui/core/Box';
 import PurchasesBillTable from '../../../components/Purchases/PurchasesBillTable/PurchasesBillTable';
 import PurchasesBill from '../../../components/Purchases/PurchasesBill/PurchasesBill';
 import PurchasesBillAddModal from '../../../components/Purchases/PurchasesBillAddModal/PurchasesBillAddModal';
+import PurchasesInvoiceModal from '../../../components/Purchases/PurchasesInvoice/PurchasesInvoiceModal/PurchasesInvoiceModal';
 import SearchBar from '../../../components/SearchBar/SearchBar';
 import AddButton from '../../../components/Buttons/AddButton/AddButton';
 import RefreshButton from '../../../components/Buttons/RefreshButton/RefreshButton';
@@ -16,7 +17,8 @@ import { connect } from 'react-redux';
 import { getInvoices, searchInvoices } from '../../../store/actions/invoices';
 import { getContractors } from '../../../store/actions/contractors';
 import { loadPageName } from '../../../store/actions/info';
-import { getUnits } from '../../../store/actions/core';
+import { getUnits, getObjects } from '../../../store/actions/core';
+import { getEstimates, getNonEstimates } from '../../../store/actions/estimates';
 
 const useStyles = makeStyles((theme) => ({
     box: {
@@ -39,25 +41,40 @@ const useStyles = makeStyles((theme) => ({
 const PurchaseBillContainer = React.memo(props => {
     const classes = useStyles();
     const { loadPageName, getInvoices, getUnits, searchInvoices, getContractors,
-         contractorsLoaded, invoicesListRefreshNeeded } = props;
+         contractorsLoaded, invoicesListRefreshNeeded, getObjects, getEstimates, getNonEstimates } = props;
     // State for opening the add invoice modal
     const [openModal, setOpenModal] = useState(false);
-
+    // State for opening the add purchase modal
+    const [openPurchaseModal, setOpenPurchaseModal] = useState(false);
+    const [openEditModal, setOpenEditModal] = useState(false);
+    // Loading base redux data needed for modules
     useEffect(() => {
         loadPageName('Счета');
         getContractors();
         getUnits();
-    }, [loadPageName, getContractors, getUnits]);
-
+        getObjects();
+        getEstimates();
+        getNonEstimates();
+    }, [loadPageName, getContractors, getUnits, getObjects, getEstimates, getNonEstimates]);
+    // Clicking the 'add new invoice' button
     const addClickHandler = () => {
         setOpenModal(true);
         setTimeout(() => setOpenModal(false), 500);
     };
-
+    // Clicking the refresh invoices button
     const refreshClickHandler = () => {
         getInvoices();
     };
-
+    // Clicking the add a new purchase to invoice button inside the table component
+    const addPurchaseModalHandler = () => {
+        setOpenPurchaseModal(true);
+        setTimeout(() => setOpenPurchaseModal(false), 500);
+    };
+    // Clicking the edit a purchase button inside the row component
+    const editPurchaseModalHandler = () => {
+        setOpenEditModal(true);
+        setTimeout(() => setOpenEditModal(false), 500);
+    };
     // Refreshing invoices after editing
     useEffect(() => {
         if(invoicesListRefreshNeeded) {
@@ -68,6 +85,7 @@ const PurchaseBillContainer = React.memo(props => {
     return(
         <React.Fragment>
             <PurchasesBillAddModal addingEnabled={openModal}/>
+            <PurchasesInvoiceModal addingEnabled={openPurchaseModal} editingEnabled={openEditModal}/>
             <Grid container spacing={0}>
                     <Grid item md={4}>
                     <Box className={classes.box}>
@@ -80,7 +98,10 @@ const PurchaseBillContainer = React.memo(props => {
                     <PurchasesBillTable />
                     </Grid>
                     <Grid item md={8}>
-                    {contractorsLoaded ? <PurchasesBill /> : null}
+                    {contractorsLoaded ?
+                    <PurchasesBill clickedAdd={() => addPurchaseModalHandler()}
+                    clickedEdit={() => editPurchaseModalHandler()}/> 
+                    : null}
                     </Grid>
             </Grid>
         </React.Fragment>
@@ -98,4 +119,5 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, { 
-    loadPageName, getInvoices, searchInvoices, getContractors, getUnits })(PurchaseBillContainer);
+    loadPageName, getInvoices, searchInvoices, 
+    getContractors, getUnits, getObjects, getEstimates, getNonEstimates })(PurchaseBillContainer);

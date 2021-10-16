@@ -5,8 +5,6 @@ from purchases.models import Purchase
 from rest_framework.filters import OrderingFilter
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.http import HttpResponse
-from django.db.models import Count
 
 
 class InvoiceViewSet(viewsets.ModelViewSet):
@@ -72,4 +70,6 @@ class InvoiceRecountAssignedAndReceived(APIView):
         chosen_invoice.not_assigned = not_assigned_count
         chosen_invoice.not_received = not_received_count
         chosen_invoice.save()
-        return HttpResponse('done')
+        serializer = InvoiceSerializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
+

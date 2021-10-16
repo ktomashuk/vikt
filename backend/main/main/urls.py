@@ -13,6 +13,7 @@ from invoices import views as invoice_views
 from estimates import views as estimate_views
 from core import views as core_views
 from cable import views as cable_views
+from purchases import views as purchases_views
 
 router = routers.DefaultRouter()
 router.register(r'users', api_views.UserViewSet)
@@ -25,6 +26,7 @@ router.register(r'cables', cable_views.CableJournalViewSet)
 router.register(r'systems', core_views.SystemsViewSet)
 router.register(r'units', core_views.UnitViewSet)
 router.register(r'nonestimates', estimate_views.NonEstimateViewSet)
+router.register(r'purchases', purchases_views.PurchasesViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

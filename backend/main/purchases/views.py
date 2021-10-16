@@ -1,14 +1,19 @@
 from .serializers import PurchaseSerializer, EstimatePurchaseQuantitySerializer, NonEstimatePurchaseQuantitySerializer
 from .models import Purchase, EstimatePurchaseQuantity, NonEstimatePurchaseQuantity
-from estimates.models import Estimate, NonEstimate
-from core.models import Object
-from rest_framework import generics, permissions
+from estimates.models import Estimate
+from rest_framework import generics, permissions, viewsets
 from rest_framework.views import APIView
+from rest_framework.filters import OrderingFilter
 from django.http import HttpResponse
 from django.http import JsonResponse
-from django.db.models import Count
 from django.db import connection
-from django.core import serializers
+
+
+class PurchasesViewSet(viewsets.ModelViewSet):
+    queryset = Purchase.objects.all()
+    serializer_class = PurchaseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
 
 class PurchasesView(APIView):
     serializer_class = PurchaseSerializer
@@ -65,6 +70,7 @@ class PurchasesByNonEstimateItemView(generics.ListAPIView):
 class PurchasesByInvoiceView(generics.ListAPIView):
     serializer_class = PurchaseSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [OrderingFilter]
     ordering = '__all__'
 
     def get_queryset(self):
@@ -123,4 +129,18 @@ class PurchaseUncheckReceived(APIView):
         chosen_purchase = self.get_queryset()[0]
         chosen_purchase.received = False
         chosen_purchase.save()
+        return HttpResponse('done')
+
+
+class DeletePurchasesByInvoiceView(APIView):
+    serializer_class = PurchaseSerializer
+
+    def get_queryset(self):
+        invoice_id = self.kwargs['id']
+        return Purchase.objects.filter(invoice=invoice_id)
+
+    def post(self, request, *args, **kwargs):
+        data = self.get_queryset()
+        for item in data:
+            item.delete()
         return HttpResponse('done')
