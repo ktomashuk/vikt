@@ -31,8 +31,8 @@ const useStyles = makeStyles({
 
 const EstimatesRow = props => {
     const classes = useStyles();
-    const { row, units, systems } = props;
-    
+    const { row, units, systems, clicked } = props;
+    const isEstimate = row.system_number ? true : false;
     let mainRow = (
             <React.Fragment key={`fragmentrow${row.id}`}>
             <TableRow key={`r${row.id}`} hover >
@@ -60,7 +60,8 @@ const EstimatesRow = props => {
                             Привязать
                         </Typography>
                     }>
-                    <LinkIcon className={classes.icon}/>
+                    <LinkIcon className={classes.icon} style={{color: "green"}}
+                    onClick={() => clicked(row.id, row.ware, row.object, row.system, isEstimate)}/>
                     </Tooltip>
                     </React.Fragment>
                 </TableCell>

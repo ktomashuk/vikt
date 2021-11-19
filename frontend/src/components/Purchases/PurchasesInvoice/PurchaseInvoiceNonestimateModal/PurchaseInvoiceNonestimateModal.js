@@ -16,8 +16,6 @@ import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
-// Custom components
-import InfoModal from '../../UI/InfoModal/InfoModal';
 // Redux
 import { connect } from 'react-redux';
 import { addInvoice } from '../../../store/actions/invoices';
@@ -49,14 +47,11 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const PurchasesBillAddModal = (props) => {
+const PurchaseInvoiceNonestimateModal = (props) => {
     const classes = useStyles();
     const { contractorsList, contractorsLoaded, addingEnabled, addInvoice, showInfo } = props;
     // State for opening/closing the modal
     const [open, setOpen] = useState(false);
-    // State to manage editing
-    const [editing, setEditing] = useState(false);
-    const [confirmModal, setConfirmModal] = useState(false);
     // State for displaying contractor name when we know its ID
     const [contractorName, setContractorName] = useState('');
     // State for bill details
@@ -65,46 +60,16 @@ const PurchasesBillAddModal = (props) => {
         inv_date: '2020-01-01',
         contractor: 0,
     });
+    // Closing the modal
+    const handleClose = () => {
+        setOpen(false);
+    };
     // Opening the modal
     useEffect(() => {
         if (addingEnabled)  {
         setOpen(true);
-        const date = new Date();
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        const currentDate = year + '-' + month + '-' + day
-        console.log(currentDate);
-        setBillDetails({
-          number: '',
-          inv_date: currentDate,
-          contractor: 0,
-        });
         }
     }, [addingEnabled]);
-    // Clicking close modal and checking if data was changed
-    const checkClose = () => {
-      if (editing) {
-        setConfirmModal(true);
-      } else {
-        handleClose();
-      }
-    }; 
-    // Clicking cancel button on a modal
-    const cancelClose = () => {
-      setConfirmModal(false);
-    };
-    // Closing the modal
-    const handleClose = () => {
-        setOpen(false);
-        setEditing(false);
-        setConfirmModal(false);
-        setBillDetails({
-          number: '',
-          inv_date: '2020-01-01',
-          contractor: 0,
-        });
-    };
     // Clicking add invoice button
     const confirmAddClickHandler = () => {
         // Check form validity
@@ -126,7 +91,6 @@ const PurchasesBillAddModal = (props) => {
                 const newContractorId = contractorsList.find(con => con.name === e.target.value).id;
                 setBillDetails({...billDetails, contractor: newContractorId})
                 setContractorName(e.target.value);
-                setEditing(true);
                 }}
                 value={contractorName}>
                 {contractorsList.map(con => {return(
@@ -138,9 +102,7 @@ const PurchasesBillAddModal = (props) => {
     }
     return(
     <React.Fragment>
-      <InfoModal show={confirmModal} message="У вас есть не сохраненные данные! Закрыть окно?"
-      clickedCancel={cancelClose} clickedOk={handleClose}/>
-      <Dialog open={open} onClose={checkClose} TransitionComponent={Transition} fullWidth maxWidth="lg" >
+      <Dialog open={open} onClose={handleClose} TransitionComponent={Transition} fullWidth maxWidth="lg" >
         <AppBar className={classes.appBar}>
           <Toolbar>
             <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
@@ -157,10 +119,7 @@ const PurchasesBillAddModal = (props) => {
         <TableCell key={`tc`}>
         <TextField style={{width: '40%', marginLeft: 10, marginRight: 10 }} label="Номер платежки"
                 value={billDetails.number} 
-                onChange={(e) => {
-                setBillDetails({...billDetails, number: e.target.value});
-                setEditing(true);
-                }}/>
+                onChange={(e) => setBillDetails({...billDetails, number: e.target.value})}/>
         {conList}
         <TextField
                 style={{marginLeft: 10}}
@@ -168,10 +127,7 @@ const PurchasesBillAddModal = (props) => {
                 label="Дата"
                 type="date"
                 value={billDetails.inv_date}
-                onChange={(e) => {
-                setBillDetails({...billDetails, inv_date: e.target.value});
-                setEditing(true);
-                }}
+                onChange={(e) => setBillDetails({...billDetails, inv_date: e.target.value})}
                 className={classes.textField}
                 InputLabelProps={{
                 shrink: true,}}/>
@@ -180,8 +136,8 @@ const PurchasesBillAddModal = (props) => {
         </TableBody>
         </Table>
         <div className={classes.root}>
-        <Button variant="contained" color="primary" disabled={!editing}
-        style={{width: '40%', marginBottom: 10}}
+        <Button variant="contained" color="secondary" onClick={handleClose}>Отмена</Button>
+        <Button variant="contained" color="primary" 
         onClick={() => confirmAddClickHandler()}>Добавить счёт</Button>
         </div>
       </Dialog>
@@ -196,4 +152,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, { addInvoice, showInfo })(PurchasesBillAddModal);
+export default connect(mapStateToProps, { addInvoice, showInfo })(PurchaseInvoiceNonestimateModal);

@@ -23,14 +23,16 @@ import MenuItem from '@material-ui/core/MenuItem';
 import PurchasesInvoiceEstimateTable from '../PurchasesInvoiceEstimateTable/PurchasesInvoiceEstimateTable';
 import SearchBar from '../../../SearchBar/SearchBar';
 import Loading from '../../../UI/Loading/Loading';
+import InfoModal from '../../../UI/InfoModal/InfoModal';
 // Redux
 import { connect } from 'react-redux';
-import { addPurchase, deletePurchase } from '../../../../store/actions/purchases';
+import { addPurchase, getPurchaseReferenceById, 
+  unloadPurchaseReference, changePurchaseQuantity, editPurchase } from '../../../../store/actions/purchases';
 import { getEstimatesByObject, getEstimatesByObjectBySystem,
         getNonEstimatesByObject, getNonEstimatesByObjectBySystem,
         searchEstimatesByObject, searchEstimatesByObjectBySystem,
         searchNonEstimatesByObject, searchNonEstimatesByObjectBySystem,
-        unloadEstimates, } from '../../../../store/actions/estimates';
+        unloadEstimates, addNonEstimateRow } from '../../../../store/actions/estimates';
 import { getSystemsByObjectAndAddAll, getObjectById, unloadObjectSystems } from '../../../../store/actions/core';
 import { recountInvoice } from '../../../../store/actions/invoices';
 import { showInfo } from '../../../../store/actions/info';
@@ -78,22 +80,27 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const PurchasesInvoiceModal = (props) => {
     const classes = useStyles();
     const { addingEnabled, editingEnabled, units, unitsLoaded, showInfo,
-        addPurchase, deletePurchase, purchaseById, purchaseByIdLoaded,
-        recountInvoice, invoicesChosenId,
-        estimatesObject, estimatesSystem, 
-        estimatesData, estimatesLoaded, nonEstimatesData, nonEstimatesLoaded,
+        addPurchase, purchaseById, purchaseByIdLoaded,
+        recountInvoice, invoicesChosenId, loadingSpinner,
+        estimatesObject, estimatesSystem, estimatesLoaded, unloadEstimates, addNonEstimateRow, 
         chosenObjectId, chosenObjectSystems, chosenObjectSystemsLoaded,
-        objectsData, objectsLoaded, getObjectById,
+        objectsData, objectsLoaded, getObjectById, estimatesRefreshNeeded,
         getSystemsByObjectAndAddAll, unloadObjectSystems,
         getEstimatesByObject, getEstimatesByObjectBySystem,
         getNonEstimatesByObject, getNonEstimatesByObjectBySystem,
         searchEstimatesByObject, searchEstimatesByObjectBySystem,
         searchNonEstimatesByObject, searchNonEstimatesByObjectBySystem,
-        unloadEstimates, loadingSpinner } = props;
+        getPurchaseReferenceById, purchaseReference, purchaseReferenceLoaded, 
+        unloadPurchaseReference, changePurchaseQuantity, editPurchase} = props;
     // State for opening/closing the modal
     const [open, setOpen] = useState(false);
-    // State for deleting the position
-    const [deleting, setDeleting] = useState(false);
+    // State for handling closing after data was changed
+    const [editing, setEditing] = useState(false);
+    const [confirmModal, setConfirmModal] = useState(false);
+    // State for saving old and new info when editing
+    const [dataOld, setDataOld] = useState(null);
+    // State for choosing objects and systems in estimate panel
+    const [estPanel, setEstPanel] = useState({object: '', system: ''});
     // State to determine if we need to add a new position or edit an existing one
     const [modalType, setModalType] = useState({
         editing: false,
@@ -110,18 +117,34 @@ const PurchasesInvoiceModal = (props) => {
     // State for binding purchase to the estimates
     const [bind, setBind] = useState({
       active: false,
-      object: '',
-      system: '',
+      object: 0,
+      system: 0,
       bindId: 0,
-      bindName: '',
+      bindName: 'Нет',
       bindType: '',
     });
-    const [bindType, setBindType] = useState('');
+    // Clicking close modal and checking if data was changed
+    const checkClose = () => {
+      if (editing) {
+        setConfirmModal(true);
+      } else {
+        handleClose();
+      }
+    }; 
+    // Clicking cancel button on a modal
+    const cancelClose = () => {
+      setConfirmModal(false);
+    };
     // Closing the modal
     const handleClose = () => {
         setOpen(false);
-        setModalType({...modalType, editing: false, adding: false,})
-        setBind({...bind, active: false, object: '', system: '', bindId: 0})
+        setModalType({...modalType, editing: false, adding: false,});
+        setBind({...bind, active: false, object: '', system: '', bindId: 0});
+        setEstPanel({object: '', system: ''});
+        setEditing(false);
+        setConfirmModal(false);
+        unloadEstimates(); 
+        unloadPurchaseReference();
     };
     // Opening the modal
     useEffect(() => {
@@ -139,83 +162,232 @@ const PurchasesInvoiceModal = (props) => {
         if (editingEnabled) {
         setModalType({...modalType, editing: true, adding: false,})
         setOpen(true);
-        }
+        setDataOld({...purchaseById});
+        if (purchaseByIdLoaded && purchaseById.estimate_reference) {
+          setBind({...bind,
+          active: true,
+          bindName: purchaseReference,
+          bindId: purchaseById.estimate_reference,
+          bindType: 'estimate',
+          object: purchaseById.object_reference,
+          system: purchaseById.system_reference,
+          });
+        };
+        if (purchaseByIdLoaded && purchaseById.non_estimate_reference) {
+          setBind({...bind,
+            active: true,
+            bindName: purchaseReference,
+            bindId: purchaseById.non_estimate_reference,
+            bindType: 'nonestimate',
+            object: purchaseById.object_reference,
+            system: purchaseById.system_reference,
+            });
+        };
+      }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [addingEnabled, editingEnabled, modalType]);
     // Filling the fields for editing
     useEffect(() => {
         if(purchaseByIdLoaded) {
-            setPurchaseDetails({...purchaseDetails, ...purchaseById});              
-            // If estimate reference exists set bind info
-            if (purchaseById.estimate_reference) {
-              setBind({...bind, bindId: purchaseById.estimate_reference});
-              setBindType('estimate');
-            };
-            // If non-estimate reference exists set bind info
-            if (purchaseById.non_estimate_reference) {
-              setBind({...bind, bindId: purchaseById.non_estimate_reference});
-              setBindType('nonestimate');
-            } 
-            // Set bind to 0 (doesn't exist) if references were not found
-            if (!purchaseById.non_estimate_reference && !purchaseById.estimate_reference) {
-              setBind({...bind, bindId: 0});
-              setBindType('');
-            };
+            setPurchaseDetails({...purchaseDetails, ...purchaseById});
+            getPurchaseReferenceById(purchaseById.id);              
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[purchaseById, purchaseByIdLoaded]);
+    // Refreshing estimates
     useEffect(() => {
-      if(bindType === 'estimate') {
-        const estName = estimatesData.find(est => est.id === purchaseById.estimate_reference).ware;
-        setBind({...bind, bindName: estName});
+      if (estimatesRefreshNeeded) {
+        getEstimatesByObjectBySystem(chosenObjectId, estimatesSystem);
+        getNonEstimatesByObjectBySystem(chosenObjectId, estimatesSystem);
+      }
+    },[estimatesRefreshNeeded, chosenObjectId, estimatesSystem,
+      getEstimatesByObjectBySystem, getNonEstimatesByObjectBySystem]);
+    // Clicking save edit invoice button
+    const confirmEditClickHandler = async () => {
+      let editData = {
+        ...purchaseDetails,
       };
-      if(bindType === 'nonestimate') {
-        const nonEstName = nonEstimatesData.find(est => est.id === purchaseById.non_estimate_reference).ware;
-        setBind({...bind, bindName: nonEstName});
+      if (bind.active) {
+        editData = {...editData, 
+          assigned: true,
+          estimate_reference: bind.bindType === 'estimate' ? bind.bindId : null,
+          non_estimate_reference: bind.bindType === 'nonestimate' ? bind.bindId : null,
+        };
       };
-    }, [bindType]);
+      await editPurchase(purchaseById.id, editData);
+      // Subtracting old value from purchase quantity
+      if (dataOld.assigned && dataOld.estimate_reference) {
+        const estimateSubtract = {
+          bind_type: 'estimate',
+          bind: dataOld.estimate_reference,
+          object: dataOld.object_reference,
+          fact: 0 - dataOld.purchased_fact,
+          doc: 0 - dataOld.purchased_doc,
+        };
+        console.log('SUBTRACTING ESTIMATE');
+        console.log(estimateSubtract);
+        await changePurchaseQuantity(estimateSubtract);
+      };
+      if (dataOld.assigned && dataOld.non_estimate_reference) {
+        const nonestimateSubtract = {
+          bind_type: 'nonestimate',
+          bind: dataOld.non_estimate_reference,
+          object: dataOld.object_reference,
+          fact: 0 - dataOld.purchased_fact,
+          doc: 0 - dataOld.purchased_doc,
+        };
+        console.log('SUBTRACTING NONESTIMATE');
+        console.log(nonestimateSubtract);
+        await changePurchaseQuantity(nonestimateSubtract);
+      };
+      // Adding new purchase quantity
+      if (bind.active) {
+        const quantityData = {
+          bind_type: bind.bindType,
+          bind: bind.bindId,
+          fact: purchaseDetails.purchased_fact,
+          doc: purchaseDetails.purchased_doc,
+          object: bind.object,
+         };
+         await changePurchaseQuantity(quantityData);
+        };
+      setBind({
+          ...bind,
+          active: false,
+          object: 0,
+          system: 0,
+          bindId: 0,
+          bindName: 'Нет',
+          bindType: '',
+         });
+      await recountInvoice(invoicesChosenId);
+      setEditing(false);
+      setOpen(false);
+    };
     // Clicking add invoice button
     const confirmAddClickHandler = async () => {
-        // Check form validity
+      // Check form validity
        if (purchaseDetails.ware_name === '') {
            return showInfo('Заполните все поля!');
        }
-       const data = {...purchaseDetails,
-        invoice: invoicesChosenId
+       const purchaseData = {...purchaseDetails,
+        invoice: invoicesChosenId,
+        assigned: bind.active,
+        received: false,
+        estimate_reference: bind.active && bind.bindType === 'estimate' ? bind.bindId : null,
+        non_estimate_reference: bind.active && bind.bindType === 'nonestimate' ? bind.bindId : null,
+        object_reference: bind.object !== 0 ? bind.object : null,
+        system_reference: bind.system !== 0 ? bind.system : null,
         };
-       await addPurchase(data);
+       await addPurchase(purchaseData);
+       if (bind.active) {
+        const quantityData = {
+          bind_type: bind.bindType,
+          bind: bind.bindId,
+          object: chosenObjectId,
+          fact: purchaseDetails.purchased_fact,
+          doc: purchaseDetails.purchased_doc,
+         };
+         await changePurchaseQuantity(quantityData);
+       };
        await recountInvoice(invoicesChosenId);
+       setPurchaseDetails({
+        ...purchaseDetails,
+        ware_name: '',
+        purchased_fact: 0,
+        purchased_doc: 0,
+        units: 1,
+        price: 0,
+       });
+       setBind({
+        ...bind,
+        active: false,
+        object: '',
+        system: '',
+        bindId: 0,
+        bindName: 'Нет',
+        bindType: '',
+       });
+       setEditing(false);
     };
-    // Clicking a confirm delete button
-    const deleteConfirmClickHandler = () => {
-        deletePurchase(purchaseById.id);
-        setDeleting(false);
-        setOpen(false);
+    // Clicking the bind button if a new item is being added
+    const addingBindClickHandler = (id, name, object, system, isEstimate) => {
+      if (isEstimate) {
+        setBind({...bind, 
+          bindType: 'estimate', 
+          bindId: id, 
+          bindName: name, 
+          active: true, 
+          object: object,
+          system: system,
+        });
+      } else {
+        setBind({...bind, 
+          bindType: 'nonestimate', 
+          bindId: id, 
+          bindName: name, 
+          active: true, 
+          object: object,
+          system: system,
+        });
+      };
     };
-     // Loading data for a chosen object
-     const objChange = (event) => {
+    // Clicking the bind button if an existing item is being edited
+    const editingBindClickHandler = (id, name, object, system, isEstimate) => {
+      if (isEstimate) {
+        setBind({...bind, 
+          bindType: 'estimate', 
+          bindId: id, 
+          bindName: name, 
+          active: true, 
+          object: object,
+          system: system,
+        });
+      } else {
+        setBind({...bind, 
+          bindType: 'nonestimate', 
+          bindId: id, 
+          bindName: name, 
+          active: true, 
+          object: object,
+          system: system,
+        });
+      };
+      setEditing(true);
+    };
+    // Clicking the button to add a new nonestimate
+    const addNonestimateClickHandler = () => {
+      const nonEstimateNew = {
+        ware: purchaseDetails.ware_name,
+        quantity: 0,
+        object: chosenObjectId,
+        units: purchaseDetails.units,
+        system: estimatesSystem,
+      };
+      // Check for validity
+      if (nonEstimateNew.ware === '') {
+        return showInfo('Введите название товара');
+      } else {
+        addNonEstimateRow(nonEstimateNew);
+      }
+    };
+    // Loading data for a chosen object
+    const objChange = (event) => {
       unloadEstimates();
       unloadObjectSystems();
       const objName = event.target.value;
       const objFound = objectsData.filter(obj => obj.name === objName)[0];
-      setBind({
-        ...bind,
-        system: '',
-        object: objName,
-      });
+      setEstPanel({...estPanel, object: objName});
       getEstimatesByObject(objFound.id);
       getNonEstimatesByObject(objFound.id);
       getObjectById(objFound.id);
       getSystemsByObjectAndAddAll(objFound.id);
-  };
+    };
   // Loading data for a chosen system
   const systemChange = event => {
       const chosenSystem = event.target.value;
       const sysFound = chosenObjectSystems.filter(sys => sys.acronym === chosenSystem)[0]['id'];
-      setBind({
-        ...bind,
-        system: chosenSystem,
-      });
+      setEstPanel({...estPanel, system: chosenSystem});
       if (chosenSystem === 'Все') {
       getEstimatesByObject(chosenObjectId);
       getNonEstimatesByObject(chosenObjectId);
@@ -240,90 +412,81 @@ const PurchasesInvoiceModal = (props) => {
             break;
         }
   };
-    // Form control with a list of units of measure
-    let unitList = null;
-    if (unitsLoaded) { 
-    unitList = (
-    <FormControl key={`fc`} style={{width: "10%"}}>
-    <InputLabel>Ед.изм</InputLabel>
-    <Select native style={{marginRight: 10, }}
-    onChange={(e) => {
-    const newUnitsId = units.find(u => u.name === e.target.value).id;
-    setPurchaseDetails({...purchaseDetails, units: newUnitsId})
-    }}
-    defaultValue='шт.'>
-    {units.map(unit => {return(
-    <option key={`option_unit_${unit.id}`}>{unit.name}</option>
-    )})}
-    </Select>
-    </FormControl>
-    ); 
-    }
-    // Buttons for redacting and deleting by default
-    const mainEditButtons = (
-    <div className={classes.root}>
-        <Button variant="contained" color="secondary" onClick={handleClose}>Отмена</Button>
-        <Button variant="contained" color="primary" 
-        onClick={() => confirmAddClickHandler()}>Сохранить</Button>
-        <Button variant="outlined" color="secondary" 
-        onClick={() => setDeleting(true)}>Удалить</Button>
-        <Button variant="outlined" color="primary" 
-        onClick={() => {
-          console.log(bind);
-          console.log(bindType);
-        }}>Призяка</Button>
-    </div>
+  // Form control with a list of units of measure
+  let unitList = null;
+  if (unitsLoaded) { 
+  unitList = (
+  <FormControl key={`fc`} style={{width: "10%"}}>
+  <InputLabel>Ед.изм</InputLabel>
+  <Select native style={{marginRight: 10, }}
+  onChange={(e) => {
+  const newUnitsId = units.find(u => u.name === e.target.value).id;
+  setPurchaseDetails({...purchaseDetails, units: newUnitsId})
+  }}
+  defaultValue='шт.'>
+  {units.map(unit => {return(
+  <option key={`option_unit_${unit.id}`}>{unit.name}</option>
+  )})}
+  </Select>
+  </FormControl>
+  ); 
+  }
+  // Buttons for redacting and deleting by default
+  const mainEditButtons = (
+  <div className={classes.root}>
+  <Button variant="contained" color="primary" disabled={!editing}
+    style={{width: 300}} 
+    onClick={() => confirmEditClickHandler()}>Сохранить</Button>
+  <Button variant="contained" color="primary"
+    style={{width: 300}} 
+    onClick={() => console.log(dataOld)}>Test</Button>
+  <Button variant="contained" color="primary"
+    style={{width: 300}} 
+    onClick={() => console.log(bind)}>Bind</Button>
+  </div>
+  );
+  // Buttons for adding by default
+  const mainAddButtons = (
+  <div className={classes.root}>
+  <Button variant="contained" color="primary"
+    style={{width: 300}} 
+    onClick={() => confirmAddClickHandler()}>Добавить</Button>
+  </div>
+  );
+  // Objects list by default
+  let objectsList = <MenuItem>Загрузка</MenuItem>;
+  // Objects list after it is loaded
+  if (objectsLoaded) {
+    objectsList = objectsData.map(item => {
+    return(
+    <MenuItem value={item.name} key={item.name}>
+      {item.name}
+    </MenuItem>
     );
-    // Buttons for adding by default
-    const mainAddButtons = (
-    <div className={classes.root}>
-        <Button variant="contained" color="secondary" onClick={handleClose}>Отмена</Button>
-        <Button variant="contained" color="primary" 
-        onClick={() => confirmAddClickHandler()}>Добавить</Button>
-    </div>
+    });
+  };
+  // Systems list by default
+  let systemsList = <MenuItem>Загрузка</MenuItem>;
+  // Systems list after it is loaded
+  if (chosenObjectSystemsLoaded) {
+    systemsList = chosenObjectSystems.map(sys => {
+    return(
+    <MenuItem value={sys.acronym} key={sys.acronym}>
+      {sys.acronym}
+    </MenuItem>
     );
-    // Buttons for deleting an item
-    const deleteButtons = (
-    <div className={classes.root}>
-        <Button variant="contained" color="secondary" onClick={() => setDeleting(false)}>Отмена</Button>
-        <Button variant="contained" color="primary" 
-        onClick={() => deleteConfirmClickHandler()}>Удалить</Button>
-    </div>
-    );
-    // Objects list by default
-    let objectsList = <MenuItem>Загрузка</MenuItem>;
-    // Objects list after it is loaded
-    if (objectsLoaded) {
-        objectsList = objectsData.map(item => {
-            return(
-                <MenuItem value={item.name} key={item.name}>
-                    {item.name}
-                </MenuItem>
-            );
-        });
-    };
-    // Systems list by default
-    let systemsList = <MenuItem>Загрузка</MenuItem>;
-    // Systems list after it is loaded
-    if (chosenObjectSystemsLoaded) {
-        systemsList = chosenObjectSystems.map(sys => {
-            return(
-                <MenuItem value={sys.acronym} key={sys.acronym}>
-                    {sys.acronym}
-                </MenuItem>
-            );
-        });
-    };
-    // Panel for choosing object and system and searching for estimates
-    let estimatesPanel = (
-      <Paper className={classes.paper}>
+    });
+  };
+  // Panel for choosing object and system and searching for estimates
+  let estimatesPanel = (
+  <Paper className={classes.paper}>
         <FormControl className={classes.formControl}>
         <InputLabel id="object-select-label">Выбор объекта</InputLabel>
           <Select
           labelId="object-select-label"
           id="object-select"
           onChange={objChange}
-          value={bind.object}>
+          value={estPanel.object}>
           {objectsList}
           </Select>
         </FormControl>
@@ -333,24 +496,35 @@ const PurchasesInvoiceModal = (props) => {
           labelId="system-select-label"
           id="system-select"
           onChange={systemChange}
-          value={bind.system}>
+          value={estPanel.system}>
           {systemsList}
           </Select>
         </FormControl>
         <Box component="span">
           <SearchBar type="estimates" filter={searchEstimatesFilter}/>
         </Box>
-        <Box style={{marginLeft: 5}}>
-        Текущая привязка:
-        </Box>
-        <Box style={{marginLeft: 5}}>
-        {bind.bindId === 0 ? 'Нет' : bind.bindName}
-        </Box>
+        {purchaseReferenceLoaded && modalType.editing && !bind.active ?
+        <Typography style={{marginLeft: 10, color: 'black'}} variant="subtitle1">
+        Текущая привязка: {purchaseReference}
+        </Typography>
+        : null}
+        {purchaseReferenceLoaded && modalType.editing && bind.active ?
+        <Typography style={{marginLeft: 10, color: 'black'}} variant="subtitle1">
+        Текущая привязка: {bind.bindName}
+        </Typography>
+        : null}
+        {modalType.adding ?
+        <Typography style={{marginLeft: 10, color: 'black'}} variant="subtitle1">
+        Текущая привязка: {bind.bindName}
+        </Typography>
+        : null}
       </Paper>
     );
     return(
     <React.Fragment>
-      <Dialog open={open} onClose={handleClose} TransitionComponent={Transition} fullWidth maxWidth="lg" >
+      <InfoModal show={confirmModal} message="У вас есть не сохраненные данные! Закрыть окно?"
+      clickedCancel={cancelClose} clickedOk={handleClose}/>
+      <Dialog open={open} onClose={checkClose} TransitionComponent={Transition} fullWidth maxWidth="lg" >
         <AppBar className={classes.appBar}>
           <Toolbar>
             <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
@@ -368,30 +542,44 @@ const PurchasesInvoiceModal = (props) => {
         <TableCell key={`tc`}>
         <TextField style={{width: '99%', marginLeft: 10, marginRight: 10 }} label="Наименование товара"
                 value={purchaseDetails.ware_name} 
-                onChange={(e) => setPurchaseDetails({...purchaseDetails, ware_name: e.target.value})}/>
+                onChange={(e) => {
+                  setPurchaseDetails({...purchaseDetails, ware_name: e.target.value});
+                  setEditing(true);
+                  }}/>
         </TableCell>
         </TableRow>
         <TableRow key={`cr2`}>
         <TableCell key={`tc2`}>
         <TextField style={{width: '29%', marginLeft: 10, marginRight: 10 }} label="Количество по документам"
                 value={purchaseDetails.purchased_doc} 
-                onChange={(e) => setPurchaseDetails({...purchaseDetails, purchased_doc: e.target.value})}/>
+                onChange={(e) => {
+                setPurchaseDetails({...purchaseDetails, purchased_doc: e.target.value});
+                setEditing(true);
+                }}/>
         <TextField style={{width: '29%', marginLeft: 10, marginRight: 10 }} label="Количество по факту"
                 value={purchaseDetails.purchased_fact} 
-                onChange={(e) => setPurchaseDetails({...purchaseDetails, purchased_fact: e.target.value})}/>
+                onChange={(e) => {
+                setPurchaseDetails({...purchaseDetails, purchased_fact: e.target.value});
+                setEditing(true);
+                }}/>
         {unitList}
         <TextField style={{width: '28%', marginLeft: 10}} label="Цена"
                 value={purchaseDetails.price} 
-                onChange={(e) => setPurchaseDetails({...purchaseDetails, price: e.target.value})}/>
+                onChange={(e) => {
+                setPurchaseDetails({...purchaseDetails, price: e.target.value});
+                setEditing(true);
+                }}/>
         </TableCell>
         </TableRow>
         </TableBody>
         </Table>
-        {modalType.editing && !deleting ? mainEditButtons : null}
+        {modalType.editing ? mainEditButtons : null}
         {modalType.adding ? mainAddButtons : null}
-        {deleting ? deleteButtons : null}
         {estimatesPanel}
-        <PurchasesInvoiceEstimateTable />
+        {estimatesLoaded ?
+        <PurchasesInvoiceEstimateTable clicked={modalType.adding ? addingBindClickHandler : editingBindClickHandler}
+        newNonestimateClick={addNonestimateClickHandler}/>
+        : null}
       </Dialog>
     </React.Fragment>
     );
@@ -404,10 +592,13 @@ const mapStateToProps = state => {
         invoicesChosenId: state.inv.invoicesChosenId,
         purchaseById: state.pur.purchaseById,
         purchaseByIdLoaded: state.pur.purchaseByIdLoaded,
+        purchaseReference: state.pur.purchaseReference,
+        purchaseReferenceLoaded: state.pur.purchaseReferenceLoaded,
         estimatesObject: state.est.estimatesObject,
         estimatesSystem: state.est.estimatesSystem,
         estimatesLoaded: state.est.estimatesLoaded,
         estimatesData: state.est.estimatesData,
+        estimatesRefreshNeeded: state.est.estimatesRefreshNeeded,
         nonEstimatesLoaded: state.est.nonEstimatesLoaded,
         nonEstimatesData: state.est.nonEstimatesData,
         objectsLoaded: state.core.objectsLoaded,
@@ -420,10 +611,11 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, 
-    { showInfo, addPurchase, deletePurchase, recountInvoice,
+    { showInfo, addPurchase, recountInvoice,
       getEstimatesByObject, getEstimatesByObjectBySystem,
       getNonEstimatesByObject, getNonEstimatesByObjectBySystem,
       searchEstimatesByObject, searchEstimatesByObjectBySystem,
       searchNonEstimatesByObject, searchNonEstimatesByObjectBySystem,
       getSystemsByObjectAndAddAll, getObjectById, unloadObjectSystems,
-      unloadEstimates })(PurchasesInvoiceModal);
+      unloadEstimates, getPurchaseReferenceById, unloadPurchaseReference, 
+      addNonEstimateRow, changePurchaseQuantity, editPurchase })(PurchasesInvoiceModal);

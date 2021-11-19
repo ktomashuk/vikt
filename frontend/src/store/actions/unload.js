@@ -13,4 +13,10 @@ export const unloadEverything = () => async dispatch => {
     dispatch({
         type: actionTypes.OBJECTS_UNLOAD,
     });
+    dispatch({
+        type: actionTypes.PURCHASES_UNLOAD_EVERYTHING,
+    });
+    dispatch({
+        type: actionTypes.INVOICES_UNLOAD,
+    });
 };

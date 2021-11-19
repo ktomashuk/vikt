@@ -7,14 +7,11 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Button from '@material-ui/core/Button';
 // Custom components
 import PurchasesInvoiceEstimateRow from '../PurchasesInvoiceEstimateRow/PurchasesInvoiceEstimateRow';
 // Redux
 import { connect } from 'react-redux';
-import { getEstimatesByObject, getEstimatesByObjectBySystem, 
-    searchEstimatesByObject, searchEstimatesByObjectBySystem,
-    getNonEstimatesByObject, getNonEstimatesByObjectBySystem,
-    searchNonEstimatesByObject, searchNonEstimatesByObjectBySystem } from '../../../../store/actions/estimates';
 
 const columns = [
     { id: 'number', label: 'Номер', minWidth: '10%', maxWidth: 300 },
@@ -37,10 +34,10 @@ const useStyles = makeStyles((theme) => ({
         height: 300,
         },
         [theme.breakpoints.up('lg')]:{
-        height: 750,
+        height: 500,
         },
         [theme.breakpoints.up('xl')]:{
-        height: 1100,
+        height: 750,
         },
     },
     icon: {
@@ -59,21 +56,49 @@ const useStyles = makeStyles((theme) => ({
 
 const PurchasesInvoiceEstimateTable = React.memo(props => {
     const classes = useStyles();
-    const { estimatesData, estimatesLoaded, units, unitsLoaded,
-    chosenObjectSystems, chosenObjectSystemsLoaded } = props;
-    // Default table
+    const { estimatesData, estimatesLoaded, nonEstimatesData, nonEstimatesLoaded, estimatesSystem,
+    units, unitsLoaded, chosenObjectSystems, chosenObjectSystemsLoaded, 
+    clicked, newNonestimateClick } = props;
+    // Default table rows
     let estimateRows = <TableRow><TableCell>Выберите объект</TableCell></TableRow>
+    let nonEstimateRows = null;
     // Loaded table of estimates
     if (estimatesLoaded && unitsLoaded && chosenObjectSystemsLoaded) {
         estimateRows = estimatesData.map((row) => {
             return(
-                <PurchasesInvoiceEstimateRow row={row} key={`row${row.id}`}
+                <PurchasesInvoiceEstimateRow row={row} key={`rowE${row.id}`}
                 units={units}
-                systems={chosenObjectSystems}/>
+                systems={chosenObjectSystems}
+                clicked={clicked}/>
             );
         });
     };
-
+    // Loaded table of nonestimates
+    if (nonEstimatesLoaded && unitsLoaded && chosenObjectSystemsLoaded) {
+        nonEstimateRows = nonEstimatesData.map((row) => {
+            return(
+                <PurchasesInvoiceEstimateRow row={row} key={`rowNE${row.id}`}
+                units={units}
+                systems={chosenObjectSystems}
+                clicked={clicked}/>
+            );
+        });
+    };
+    // Default button to add new nonestimate
+    let nonEstimateAddButton = null;
+    // Rendering a button if an object and system are chosen
+    if (chosenObjectSystemsLoaded && estimatesSystem !== '' && estimatesSystem !== 'Все') {
+        nonEstimateAddButton = (
+        <TableRow>
+        <TableCell colSpan={6}>
+            <Button variant="contained" color="primary" fullWidth
+            onClick={() => newNonestimateClick()}>
+                Добавить позицию
+            </Button>
+        </TableCell>
+        </TableRow>
+        )
+    };
     return(
         <Paper key="papertable" className={classes.root}>
             <TableContainer key="tablecontainer" className={classes.container}>
@@ -91,6 +116,8 @@ const PurchasesInvoiceEstimateTable = React.memo(props => {
                     </TableHead>
                     <TableBody key="tablebody">
                         {estimateRows}
+                        {nonEstimateRows}
+                        {nonEstimateAddButton}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -102,9 +129,9 @@ const mapStateToProps = state => {
     return {
         estimatesLoaded: state.est.estimatesLoaded,
         estimatesData: state.est.estimatesData,
+        estimatesSystem: state.est.estimatesSystem,
         nonEstimatesLoaded: state.est.nonEstimatesLoaded,
         nonEstimatesData: state.est.nonEstimatesData,
-        estimatesSystem: state.est.estimatesSystem,
         searchActive: state.srch.searchActive,
         searchResult: state.srch.searchResult,
         units: state.core.units,
@@ -115,8 +142,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, 
-    { getEstimatesByObject, getEstimatesByObjectBySystem, 
-    searchEstimatesByObject, searchEstimatesByObjectBySystem,
-    getNonEstimatesByObject, getNonEstimatesByObjectBySystem,
-    searchNonEstimatesByObject, searchNonEstimatesByObjectBySystem })(PurchasesInvoiceEstimateTable);
+export default connect(mapStateToProps, { })(PurchasesInvoiceEstimateTable);

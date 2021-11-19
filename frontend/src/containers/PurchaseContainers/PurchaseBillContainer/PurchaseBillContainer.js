@@ -18,7 +18,6 @@ import { getInvoices, searchInvoices } from '../../../store/actions/invoices';
 import { getContractors } from '../../../store/actions/contractors';
 import { loadPageName } from '../../../store/actions/info';
 import { getUnits, getObjects } from '../../../store/actions/core';
-import { getEstimates, getNonEstimates } from '../../../store/actions/estimates';
 
 const useStyles = makeStyles((theme) => ({
     box: {
@@ -41,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 const PurchaseBillContainer = React.memo(props => {
     const classes = useStyles();
     const { loadPageName, getInvoices, getUnits, searchInvoices, getContractors,
-         contractorsLoaded, invoicesListRefreshNeeded, getObjects, getEstimates, getNonEstimates } = props;
+         contractorsLoaded, invoicesListRefreshNeeded, getObjects } = props;
     // State for opening the add invoice modal
     const [openModal, setOpenModal] = useState(false);
     // State for opening the add purchase modal
@@ -53,9 +52,7 @@ const PurchaseBillContainer = React.memo(props => {
         getContractors();
         getUnits();
         getObjects();
-        getEstimates();
-        getNonEstimates();
-    }, [loadPageName, getContractors, getUnits, getObjects, getEstimates, getNonEstimates]);
+    }, [loadPageName, getContractors, getUnits, getObjects]);
     // Clicking the 'add new invoice' button
     const addClickHandler = () => {
         setOpenModal(true);
@@ -87,7 +84,7 @@ const PurchaseBillContainer = React.memo(props => {
             <PurchasesBillAddModal addingEnabled={openModal}/>
             <PurchasesInvoiceModal addingEnabled={openPurchaseModal} editingEnabled={openEditModal}/>
             <Grid container spacing={0}>
-                    <Grid item md={4}>
+                    <Grid item lg={4} md={5}>
                     <Box className={classes.box}>
                     <SearchBar type="invoices" filter={searchInvoices}/>
                     <AddButton addingEnabled={true} clicked={() => addClickHandler()}
@@ -97,7 +94,7 @@ const PurchaseBillContainer = React.memo(props => {
                     </Box>
                     <PurchasesBillTable />
                     </Grid>
-                    <Grid item md={8}>
+                    <Grid item lg={8} md={7}>
                     {contractorsLoaded ?
                     <PurchasesBill clickedAdd={() => addPurchaseModalHandler()}
                     clickedEdit={() => editPurchaseModalHandler()}/> 
@@ -120,4 +117,4 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, { 
     loadPageName, getInvoices, searchInvoices, 
-    getContractors, getUnits, getObjects, getEstimates, getNonEstimates })(PurchaseBillContainer);
+    getContractors, getUnits, getObjects })(PurchaseBillContainer);

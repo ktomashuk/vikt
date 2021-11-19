@@ -130,7 +130,7 @@ const MainDrawer = React.memo(props => {
                 <React.Fragment>
                 <div key="cc1">
                 <Typography>
-                  {"Не распределено: " + purchaseNumber.notAssigned}
+                  {"Без привязки: " + purchaseNumber.notAssigned}
                 </Typography>
                 </div>
                 <div key="cc2">

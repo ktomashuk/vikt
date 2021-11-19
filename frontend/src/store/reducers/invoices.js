@@ -40,6 +40,16 @@ const reducer = (state = initialState, action) => {
             return {...state, 
             invoicesChosenData: action.data,
             };
+        case actionTypes.INVOICES_UNLOAD:
+            return {...state,
+                invoicesLoaded: false,
+                invoicesData: null,
+                invoicesListSpinner: false,
+                invoicesListRefreshNeeded: false,
+                invoicesChosenData: [],
+                invoicesChosenId: 0,
+                invoicesChosenLoaded: false,
+            };
         default:
             return state;
     }

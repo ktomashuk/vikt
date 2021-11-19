@@ -378,3 +378,23 @@ export const searchNonEstimatesByObjectBySystem = (ware, objId, system) => async
         });
     }
 };
+
+export const addNonEstimateRow = (data) => async dispatch => {
+
+    try {
+        await axiosInstance.post(`router/nonestimates/`, data);
+        dispatch({
+            type: actionTypes.SNACK_SHOW,
+            snackSeverity: 'success',
+            snackMessage: 'Запись добавлена!',
+        });
+        dispatch({
+            type: actionTypes.ESTIMATES_REFRESH_NEEDED,
+        });
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно добавить запись!',
+        });   
+    }
+};

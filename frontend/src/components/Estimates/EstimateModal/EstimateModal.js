@@ -85,8 +85,8 @@ const EstimateModal = React.memo(props => {
   }, [show]);
   // Add row and prepare for another
   const addRowAndContinue = () => {
-    const data = JSON.stringify(newRow);
-    addEstimateRow(data);
+    //const data = JSON.stringify(newRow);
+    addEstimateRow(newRow);
     setNewRow({
         system_number: 0,
         ware_number: 0,
@@ -100,8 +100,8 @@ const EstimateModal = React.memo(props => {
   };
   // Add row and close modal
   const addRowAndClose = () => {
-    const data = JSON.stringify(newRow);
-    addEstimateRow(data);
+    //const data = JSON.stringify(newRow);
+    addEstimateRow(newRow);
     handleClose();
   };
   

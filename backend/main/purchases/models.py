@@ -19,13 +19,14 @@ class Purchase(models.Model):
     received = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.ware_name + ' (' + self.invoice.number + ')'
+        return self.ware_name
 
 
 class EstimatePurchaseQuantity(models.Model):
     estimate_reference = models.ForeignKey(Estimate, on_delete=models.PROTECT, default=1,
                                            related_name='estimate_purchased')
     object = models.ForeignKey(Object, on_delete=models.SET_NULL, null=True, blank=True)
+    system = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True)
     purchases_fact = models.FloatField(default=0)
     purchases_doc = models.FloatField(default=0)
     shipped = models.FloatField(default=0)
@@ -35,6 +36,7 @@ class NonEstimatePurchaseQuantity(models.Model):
     non_estimate_reference = models.ForeignKey(NonEstimate, on_delete=models.PROTECT, default=1,
                                                related_name='nonestimate_purchased')
     object = models.ForeignKey(Object, on_delete=models.SET_NULL, null=True, blank=True)
+    system = models.ForeignKey(System, on_delete=models.SET_NULL, null=True, blank=True)
     purchases_fact = models.FloatField(default=0)
     purchases_doc = models.FloatField(default=0)
     shipped = models.FloatField(default=0)

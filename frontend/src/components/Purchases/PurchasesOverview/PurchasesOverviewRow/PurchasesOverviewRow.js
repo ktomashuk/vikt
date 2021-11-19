@@ -39,7 +39,7 @@ const useStyles = makeStyles({
 
 const IsolationRow = (props) => {
     const classes = useStyles();
-    const { row, percent, finished, systems, units, purchasedDoc, purchasedFact, infoClick, shipped } = props;
+    const { row, percent, finished, systems, units, purchasedDoc, purchasedFact, infoClick } = props;
 
     const mainRow = (
         <React.Fragment key={`fragmentrow${row.id}`}>
@@ -61,9 +61,6 @@ const IsolationRow = (props) => {
             </TableCell>
             <TableCell key={`doc${row.id}`}>
             {purchasedDoc}
-            </TableCell>
-            <TableCell key={`doc${row.id}`}>
-            {shipped}
             </TableCell>
             <TableCell key={`percent${row.id}`}>
             <LinearProgress size="1rem" variant="determinate" value={percent}

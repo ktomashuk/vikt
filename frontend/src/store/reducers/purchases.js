@@ -5,6 +5,7 @@ const initialState = {
     nonEstimatePurchases: [],
     estimatePurchasesLoaded: false,
     nonEstimatePurchasesLoaded: false,
+    chosenInvoice: 0,
     purchasesByInvoice: [],
     purchasesByInvoiceLoaded: false,
     purchasesByInvoiceRefreshNeeded: false,
@@ -15,6 +16,8 @@ const initialState = {
     purchasesTotalNotCount: 0,
     purchaseById: null,
     purchaseByIdLoaded: false,
+    purchaseReference: '',
+    purchaseReferenceLoaded: false,
 };
 
 const reducer = (state = initialState, action) => {
@@ -63,6 +66,36 @@ const reducer = (state = initialState, action) => {
             return {...state,
                 purchaseById: action.data,
                 purchaseByIdLoaded: true,
+            };
+        case actionTypes.PURCHASES_GET_REFERENCES:
+            return {...state,
+                purchaseReference: action.data,
+                purchaseReferenceLoaded: true,
+            };
+        case actionTypes.PURCHASES_UNLOAD_REFERENCES:
+            return {...state,
+                purchaseReference: '',
+                purchaseReferenceLoaded: false,
+            };
+        case actionTypes.PURCHASES_UNLOAD_EVERYTHING:
+            return {...state,
+                estimatePurchases: [],
+                nonEstimatePurchases: [],
+                estimatePurchasesLoaded: false,
+                nonEstimatePurchasesLoaded: false,
+                chosenInvoice: 0,
+                purchasesByInvoice: [],
+                purchasesByInvoiceLoaded: false,
+                purchasesByInvoiceRefreshNeeded: false,
+                purchasesByItem: [],
+                purchasesByItemLoaded: false,
+                purchasesNotAssignedCount: 0,
+                purchasesNotReceivedCount: 0,
+                purchasesTotalNotCount: 0,
+                purchaseById: null,
+                purchaseByIdLoaded: false,
+                purchaseReference: '',
+                purchaseReferenceLoaded: false,
             };
         default:
             return state;

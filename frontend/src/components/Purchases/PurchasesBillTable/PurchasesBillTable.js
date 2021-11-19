@@ -41,10 +41,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const columns = [
-    { id: 'date', label: 'Дата', minWidth: '20%', maxWidth: '20%'  },
+    { id: 'date', label: 'Дата', minWidth: '10%', maxWidth: '20%'  },
     { id: 'number', label: 'Номер', minWidth: '30%', maxWidth: '30%' },
     { id: 'contractor', label: 'Поставщик', minWidth: '40%', maxWidth: '40%'  },
-    { id: 'not', label: 'Инфо', minWidth: "10%", maxWidth: '10%'  },
+    { id: 'info', label: 'Инфо', minWidth: "10%", maxWidth: '10%'  },
+    { id: 'actions', label: 'Действия', minWidth: "10%", maxWidth: '10%'  },
 ]
 
 const PurchasesBillTable = (props) => {

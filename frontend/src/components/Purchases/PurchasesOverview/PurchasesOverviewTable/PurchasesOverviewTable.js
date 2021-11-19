@@ -11,8 +11,10 @@ import TablePagination from '@material-ui/core/TablePagination';
 import Divider from '@material-ui/core/Divider';
 // Custom components
 import PurchasesOverviewRow from '../PurchasesOverviewRow/PurchasesOverviewRow';
+import PurchaseOverviewModal from '../PurchaseOverviewModal/PurchaseOverviewModal';
 // Redux
 import { connect } from 'react-redux';
+import { getPurchasesByEstimateItem, getPurchasesByNonEstimateItem } from '../../../../store/actions/purchases';
 
 const columns = [
     { id: 'number', label: 'Номер', minWidth: 50, maxWidth: 300 },
@@ -21,7 +23,6 @@ const columns = [
     { id: 'quantity', label: 'Кол-во', minWidth: 50, maxWidth: 300  },
     { id: 'purchased_fact', label: 'Факт', minWidth: 50, maxWidth: 300  },
     { id: 'purchased_doc', label: 'Док', minWidth: 50, maxWidth: 300  },
-    { id: 'shipped', label: 'Отгрузка', minWidth: 50, maxWidth: 300  },
     { id: 'percent', label: 'в %', minWidth: 70, maxWidth: 300  },
     { id: 'system', label: 'Система', minWidth: 50, maxWidth: 300  },
     { id: 'buttons', label: 'Инфо', minWidth: 40, maxWidth: 300  },
@@ -59,11 +60,13 @@ const useStyles = makeStyles((theme) => ({
 
 const PurhaseOverviewTable = props => {
     const classes = useStyles();
-    const { estimatesData, estimatesLoaded,
+    const { estimatesData, estimatesLoaded, getPurchasesByEstimateItem, getPurchasesByNonEstimateItem,
         units, unitsLoaded, chosenObjectSystems, chosenObjectSystemsLoaded,
         estimatePurchases, estimatePurchasesLoaded, nonEstimatePurchasesLoaded } = props;
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(100);
+    // State for opening the modal
+    const [modal, setModal] = useState(false);
     // Checking if everything is fetched from the server
     let dataLoaded = estimatesLoaded && unitsLoaded && chosenObjectSystemsLoaded &&
     estimatePurchasesLoaded && nonEstimatePurchasesLoaded ? true : false;
@@ -82,10 +85,14 @@ const PurhaseOverviewTable = props => {
     };
     // Clicking the info button
     const infoClickHanlder = (id) => {
-        console.log('CLICKED ' + String(id));
+        getPurchasesByEstimateItem(id);
+        setModal(true);
+        setTimeout(() => setModal(false), 500);
     };
+
     return(
         <Paper key="papertable" className={classes.root}>
+            <PurchaseOverviewModal show={modal}/>
             <TableContainer key="tablecontainer" className={classes.container}>
                 <Table key="tablemain" stickyHeader aria-label="table1" size="small">
                     <TableHead key="tablehead">
@@ -106,9 +113,8 @@ const PurhaseOverviewTable = props => {
                     // If purchases exist show them, otherwise show 0
                     const fact = purchase ? purchase.purchases_fact : 0;
                     const doc = purchase ? purchase.purchases_doc : 0;
-                    const shipped = purchase ? purchase.shipped : 0;
                     // If purchases exist count the percentage of shipped wares
-                    let percent = purchase ? ((shipped / row.quantity)* 100) : 0;
+                    let percent = purchase ? ((doc / row.quantity)* 100) : 0;
                     let finished = false;
                     if (percent >= 100) {
                         percent = 100;
@@ -118,7 +124,6 @@ const PurhaseOverviewTable = props => {
                         <PurchasesOverviewRow row={row} key={`row${row.id}`}
                         purchasedFact={fact}
                         purchasedDoc={doc}
-                        shipped={shipped}
                         percent={percent}
                         finished={finished}
                         units={units}
@@ -163,4 +168,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, { })(PurhaseOverviewTable);
+export default connect(mapStateToProps, { getPurchasesByEstimateItem, getPurchasesByNonEstimateItem })(PurhaseOverviewTable);

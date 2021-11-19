@@ -20,14 +20,18 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
     },
     container: {
+        width: '99%',
+        [theme.breakpoints.down('md')]:{
+        height: 300,
+        },
         [theme.breakpoints.down('lg')]:{
-        height: 495,
+        height: 600,
         },
         [theme.breakpoints.up('lg')]:{
-        height: 710,
+        height: 815,
         },
         [theme.breakpoints.up('xl')]:{
-        height: 1050,
+        height: 1155,
         },
     },
     loading: {
@@ -43,19 +47,19 @@ const useStyles = makeStyles(theme => ({
 const columns = [
     { id: 'ware', label: 'Наименование', minWidth: '40%', maxWidth: '40%'  },
     { id: 'quantity_doc', label: 'Док', minWidth: '10%', maxWidth: '10%' },
-    { id: 'quantity_fact', label: 'Факт', minWidth: '10%', maxWidth: '10:' },
-    { id: 'units', label: 'Ед.изм.', minWidth: '10%', maxWidth: '10%'  },
-    { id: 'price', label: 'Цена', minWidth: '10%', maxWidth: '10%'  },
+    { id: 'quantity_fact', label: 'Факт', minWidth: '10%', maxWidth: '10%' },
+    { id: 'units', label: 'Ед.изм.', minWidth: '10%', maxWidth: '10%' },
+    { id: 'price', label: 'Цена', minWidth: '10%', maxWidth: '10%' },
     { id: 'received', label: 'Получено', minWidth: '5%', maxWidth: '5%'  },
-    { id: 'assigned', label: 'Распред.', minWidth: '5%', maxWidth: '5%'  },
-    { id: 'info', label: 'Инфо', minWidth: '10%', maxWidth: '10%'  },
+    { id: 'assigned', label: 'Привяз.', minWidth: '5%', maxWidth: '5%'  },
+    { id: 'info', label: 'Действия', minWidth: '10%', maxWidth: '10%'  },
 ]
 
 const PurchasesInvoiceTable = (props) => {
     const classes = useStyles();
     const { invoicesListSpinner, units, unitsLoaded,
         invoicesChosenId, getPurchasesByInvoice, purchasesByInvoiceRefreshNeeded,
-        purchasesByInvoice, purchasesByInvoiceLoaded, clickedAdd, clickedEdit } = props;
+        purchasesByInvoice, purchasesByInvoiceLoaded, clickedAdd, clickedEdit, clickedDelete } = props;
     // Default table
     let rows = <TableRow><TableCell>
         <p className={classes.loadingText}>Загрузка</p>
@@ -68,7 +72,8 @@ const PurchasesInvoiceTable = (props) => {
                 row={row}
                 key={`cr${row.id}`}
                 units={units}
-                clicked={clickedEdit}/>
+                clicked={clickedEdit}
+                clickedDelete={clickedDelete}/>
             );
         })
     };
@@ -93,7 +98,7 @@ const PurchasesInvoiceTable = (props) => {
                         {columns.map((column) => {
                                 return(
                                     <TableCell key={column.id}
-                                    style={{width: column.minWidth}}>
+                                    style={{width: column.minWidth }}>
                                     {column.label}
                                     </TableCell>);
                             })}

@@ -72,4 +72,3 @@ class InvoiceRecountAssignedAndReceived(APIView):
         chosen_invoice.save()
         serializer = InvoiceSerializer(self.get_queryset(), many=True)
         return Response(serializer.data)
-

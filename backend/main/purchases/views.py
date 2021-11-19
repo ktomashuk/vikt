@@ -1,12 +1,14 @@
 from .serializers import PurchaseSerializer, EstimatePurchaseQuantitySerializer, NonEstimatePurchaseQuantitySerializer
 from .models import Purchase, EstimatePurchaseQuantity, NonEstimatePurchaseQuantity
-from estimates.models import Estimate
+from estimates.models import Estimate, NonEstimate
+from core.models import Object
 from rest_framework import generics, permissions, viewsets
 from rest_framework.views import APIView
 from rest_framework.filters import OrderingFilter
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.db import connection
+from django.core import serializers
 
 
 class PurchasesViewSet(viewsets.ModelViewSet):
@@ -134,6 +136,7 @@ class PurchaseUncheckReceived(APIView):
 
 class DeletePurchasesByInvoiceView(APIView):
     serializer_class = PurchaseSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         invoice_id = self.kwargs['id']
@@ -142,5 +145,143 @@ class DeletePurchasesByInvoiceView(APIView):
     def post(self, request, *args, **kwargs):
         data = self.get_queryset()
         for item in data:
+            quantity_doc = item.purchased_doc
+            quantity_fact = item.purchased_fact
+            # Find a purchase quantity and decrease it if it exists
+            if item.estimate_reference:
+                item_id = item.estimate_reference.id
+                purchase = EstimatePurchaseQuantity.objects.filter(estimate_reference=item_id)[0]
+                purchase.purchases_doc = purchase.purchases_doc - quantity_doc
+                purchase.purchases_fact = purchase.purchases_fact - quantity_fact
+                purchase.save()
+            if item.non_estimate_reference:
+                item_id = item.non_estimate_reference.id
+                purchase = NonEstimatePurchaseQuantity.objects.filter(non_estimate_reference=item_id)[0]
+                purchase.purchases_doc = purchase.purchases_doc - quantity_doc
+                purchase.purchases_fact = purchase.purchases_fact - quantity_fact
+                purchase.save()
             item.delete()
         return HttpResponse('done')
+
+
+class EstimatePurchaseQuantityChange(APIView):
+    serializer_class = EstimatePurchaseQuantitySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        request_data = request.data
+        purchase_type = request_data['bind_type']
+        est_id = request_data['bind']
+        obj_id = request_data['object']
+        pur_fact = float(request_data['fact'])
+        pur_doc = float(request_data['doc'])
+        # Changing estimate purchase quantity
+        if purchase_type == 'estimate':
+            quantity = EstimatePurchaseQuantity.objects.filter(estimate_reference=est_id)
+            if not quantity:
+                est_reference = Estimate.objects.filter(id=est_id)[0]
+                obj_reference = Object.objects.filter(id=obj_id)[0]
+                new_quantity = EstimatePurchaseQuantity(estimate_reference=est_reference, object=obj_reference,
+                                                        purchases_fact=pur_fact, purchases_doc=pur_doc)
+                new_quantity.save()
+            else:
+                changed_quantity = quantity[0]
+                changed_quantity.purchases_fact = changed_quantity.purchases_fact + pur_fact
+                changed_quantity.purchases_doc = changed_quantity.purchases_doc + pur_doc
+                changed_quantity.save()
+        # Changing non estimate purchase quantity
+        if purchase_type == 'nonestimate':
+            quantity = NonEstimatePurchaseQuantity.objects.filter(non_estimate_reference=est_id)
+            if not quantity:
+                est_reference = NonEstimate.objects.filter(id=est_id)[0]
+                obj_reference = Object.objects.filter(id=obj_id)[0]
+                new_quantity = NonEstimatePurchaseQuantity(non_estimate_reference=est_reference, object=obj_reference,
+                                                           purchases_fact=pur_fact, purchases_doc=pur_doc)
+                new_quantity.save()
+            else:
+                changed_quantity = quantity[0]
+                changed_quantity.purchases_fact = changed_quantity.purchases_fact + pur_fact
+                changed_quantity.purchases_doc = changed_quantity.purchases_doc + pur_doc
+                changed_quantity.save()
+
+        return HttpResponse('done')
+
+
+class GetPurchaseReferenceById(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        purchase_id = self.kwargs['id']
+        return Purchase.objects.filter(id=purchase_id)
+
+    def get(self, request, *args, **kwargs):
+        purchase = self.get_queryset()[0]
+        purchase_estimate = purchase.estimate_reference
+        purchase_nonestimate = purchase.non_estimate_reference
+        reference_name = ''
+        if not purchase_estimate and not purchase_nonestimate:
+            reference_name = 'Нет'
+        elif purchase_estimate:
+            reference_name = purchase_estimate.ware +\
+                             ' (' + purchase_estimate.system.acronym + ' ' + purchase_estimate.object.name + ')'
+        elif purchase_nonestimate:
+            reference_name = purchase_nonestimate.ware + \
+                             ' (' + purchase_nonestimate.system.acronym + ' ' + purchase_nonestimate.object.name + ')'
+        return HttpResponse(reference_name)
+
+
+class PurchaseShippedChange(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        request_data = request.data
+        purchase_type = request_data['type']
+        est_id = request_data['id']
+        quantity = request_data['quantity']
+        if purchase_type == 'estimate':
+            purchases = EstimatePurchaseQuantity.objects.filter(estimate_reference=est_id)
+            chosen_purchase = purchases[0]
+            chosen_purchase.shipped = chosen_purchase.shipped + quantity
+            chosen_purchase.save()
+        if purchase_type == 'nonestimate':
+            purchases = NonEstimatePurchaseQuantity.objects.filter(non_estimate_reference=est_id)
+            chosen_purchase = purchases[0]
+            chosen_purchase.shipped = chosen_purchase.shipped + quantity
+            chosen_purchase.save()
+        return HttpResponse('done')
+
+
+class DeletePurchase(APIView):
+    serializer_class = PurchaseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        purchase_id = self.kwargs['id']
+        return Purchase.objects.filter(id=purchase_id)
+
+    def post(self, request, *args, **kwargs):
+        purchase = self.get_queryset()[0]
+        quantity_doc = purchase.purchased_doc
+        quantity_fact = purchase.purchased_fact
+        # Find a purchase quantity and decrease it if it exists
+        if purchase.estimate_reference:
+            item_id = purchase.estimate_reference.id
+            to_delete = EstimatePurchaseQuantity.objects.filter(estimate_reference=item_id)[0]
+            to_delete.purchases_doc = to_delete.purchases_doc - quantity_doc
+            to_delete.purchases_fact = to_delete.purchases_fact - quantity_fact
+            to_delete.save()
+        if purchase.non_estimate_reference:
+            item_id = purchase.non_estimate_reference.id
+            to_delete = NonEstimatePurchaseQuantity.objects.filter(non_estimate_reference=item_id)[0]
+            to_delete.purchases_doc = to_delete.purchases_doc - quantity_doc
+            to_delete.purchases_fact = to_delete.purchases_fact - quantity_fact
+            to_delete.save()
+        purchase.delete()
+        return HttpResponse('done')
+
+
+class PurchasesByEstimateItemViewNew(APIView):
+
+    def get_queryset(self):
+        estimate_item = self.kwargs['id']
+        return Purchase.objects.filter(estimate_reference=estimate_item).select_related('')

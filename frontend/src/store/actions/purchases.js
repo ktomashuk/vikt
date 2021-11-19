@@ -134,6 +134,11 @@ export const addPurchase = (data) => async dispatch => {
         dispatch({
             type: actionTypes.PURCHASES_REFRESH,
         });
+        dispatch({
+            type: actionTypes.SNACK_SHOW,
+            snackSeverity: 'success',
+            snackMessage: 'Позиция добавлена!',
+        }); 
     } catch(err) {
         dispatch({
             type: actionTypes.ERROR_SHOW,
@@ -142,10 +147,30 @@ export const addPurchase = (data) => async dispatch => {
     }
 };
 
+export const editPurchase = (id, data) => async dispatch => {
+
+    try {
+        await axiosInstance.put(`router/purchases/${id}/`, data);
+        dispatch({
+            type: actionTypes.PURCHASES_REFRESH,
+        });
+        dispatch({
+            type: actionTypes.SNACK_SHOW,
+            snackSeverity: 'success',
+            snackMessage: 'Позиция изменена!',
+        }); 
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно изменить позицию в счете!'
+        });
+    }
+};
+
 export const deletePurchase = (id) => async dispatch => {
 
     try {
-        await axiosInstance.delete(`router/purchases/${id}/`);
+        await axiosInstance.post(`purchases/delete-purchase/${id}/`);
         dispatch({
             type: actionTypes.PURCHASES_REFRESH,
         });
@@ -179,6 +204,23 @@ export const getPurchaseById = (id) => async dispatch => {
     }
 };
 
+export const getPurchaseReferenceById = (id) => async dispatch => {
+
+    try {
+        const res = await axiosInstance.get(`purchases/purchase-reference-by-id/${id}/`);
+        const data = res.data;
+        dispatch({
+            type: actionTypes.PURCHASES_GET_REFERENCES,
+            data: data,
+        });
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно получить привязку!'
+        });
+    }
+};
+
 export const deletePurchasesByInvoice = (id) => async dispatch => {
 
     try {
@@ -192,6 +234,37 @@ export const deletePurchasesByInvoice = (id) => async dispatch => {
         dispatch({
             type: actionTypes.ERROR_SHOW,
             errorMessage: 'Невозможно отменить отгрузку товара!'
+        });
+    }
+};
+
+export const unloadPurchaseReference = () => dispatch => {
+    
+    dispatch({
+        type: actionTypes.PURCHASES_UNLOAD_REFERENCES,
+    });
+};
+
+export const changePurchaseQuantity = (data) => async dispatch => {
+
+    try {
+        await axiosInstance.post(`purchases/est-purchase-change-quantity/`, data);
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно изменить кол-во в закупке!'
+        });
+    }
+};
+
+export const changeShippedQuantity = (data) => async dispatch => {
+
+    try {
+        await axiosInstance.post(`purchases/purchase-shipped-change/`, data);
+    } catch(err) {
+        dispatch({
+            type: actionTypes.ERROR_SHOW,
+            errorMessage: 'Невозможно изменить кол-во в закупке!'
         });
     }
 };

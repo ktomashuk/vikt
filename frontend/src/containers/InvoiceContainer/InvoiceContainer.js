@@ -113,7 +113,6 @@ const EstimatesContainer = React.memo(props => {
                     <SearchBar type="invoices"/>
                     </Box>
                     </Paper>
-                    
                     </Grid>
                 </Grid>
                 </div>
