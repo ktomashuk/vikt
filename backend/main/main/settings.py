@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     # Simple JWT
     'rest_framework_simplejwt.token_blacklist',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -97,7 +98,7 @@ DATABASES = {
 
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
 
-        'NAME': 'Django',
+        'NAME': 'django',
 
         'USER': 'postgres',
 
@@ -156,15 +157,15 @@ STATICFILES_DIRS = [
 INTERNAL_IPS = [
     '127.0.0.1',
     '192.168.0.41',
+    '192.168.0.222',
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTTokenUserAuthentication',
     ],
 }
+
 CORS_ALLOW_ALL_ORIGINS = True
 
 SIMPLE_JWT = {
