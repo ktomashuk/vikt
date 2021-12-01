@@ -58,6 +58,29 @@ class PurchasesByEstimateItemView(generics.ListAPIView):
         estimate_item = self.kwargs['id']
         return Purchase.objects.filter(estimate_reference=estimate_item)
 
+    def get(self, request, *args, **kwargs):
+        purchases = self.get_queryset().select_related('invoice')
+        final_json = []
+        for item in purchases:
+            contractor_name = item.invoice.contractor.name
+            invoice_date = item.invoice.inv_date
+            purchase_id = item.id
+            purchased_doc = item.purchased_doc
+            units = item.units.name
+            price = item.price
+            name = item.ware_name
+            invoice_id = item.invoice.id
+            json_chunk = {'purchase_id': purchase_id,
+                          'contractor_name': contractor_name,
+                          'inv_date': invoice_date,
+                          'purchased_doc': purchased_doc,
+                          "units": units,
+                          "name": name,
+                          "price": price,
+                          "invoice_id": invoice_id}
+            final_json.append(json_chunk)
+        return JsonResponse(final_json, safe=False)
+
 
 class PurchasesByNonEstimateItemView(generics.ListAPIView):
     serializer_class = PurchaseSerializer
@@ -228,6 +251,34 @@ class GetPurchaseReferenceById(APIView):
             reference_name = purchase_nonestimate.ware + \
                              ' (' + purchase_nonestimate.system.acronym + ' ' + purchase_nonestimate.object.name + ')'
         return HttpResponse(reference_name)
+
+
+class GetInvoicesDetailsByEstimateReference(APIView):
+
+    def get_queryset(self):
+        estimate_reference = self.kwargs['id']
+        return Purchase.objects.filter(estimate_reference=estimate_reference)
+
+    def get(self, request, *args, **kwargs):
+        purchases = self.get_queryset().select_related('invoice')
+        final_json = []
+        for item in purchases:
+            contractor_name = item.invoice.contractor.name
+            invoice_date = item.invoice.inv_date
+            purchase_id = item.id
+            purchased_doc = item.purchased_doc
+            units = item.units.name
+            price = item.price
+            name = item.ware_name
+            json_chunk = {'purchase_id': purchase_id,
+                          'contractor_name': contractor_name,
+                          'inv_date': invoice_date,
+                          'purchased_doc': purchased_doc,
+                          "units": units,
+                          "name": name,
+                          "price": price}
+            final_json.append(json_chunk)
+        return JsonResponse(final_json, safe=False)
 
 
 class PurchaseShippedChange(APIView):

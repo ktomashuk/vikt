@@ -233,7 +233,7 @@ export const deletePurchasesByInvoice = (id) => async dispatch => {
     } catch(err) {
         dispatch({
             type: actionTypes.ERROR_SHOW,
-            errorMessage: 'Невозможно отменить отгрузку товара!'
+            errorMessage: 'Невозможно удалить счёт!'
         });
     }
 };
@@ -242,6 +242,13 @@ export const unloadPurchaseReference = () => dispatch => {
     
     dispatch({
         type: actionTypes.PURCHASES_UNLOAD_REFERENCES,
+    });
+};
+
+export const unloadPurchases = () => dispatch => {
+    
+    dispatch({
+        type: actionTypes.PURCHASES_UNLOAD_EVERYTHING,
     });
 };
 

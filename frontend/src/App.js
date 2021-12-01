@@ -15,6 +15,7 @@ import HomeContainer from './containers/HomeContainer/HomeContainer';
 import PurchaseOverviewContainer from './containers/PurchaseContainers/PurchaseOverviewContainer/PurchaseOverviewContainer';
 import PurchaseRequestContainer from './containers/PurchaseContainers/PurchaseRequestContainer/PurchaseRequestContainer';
 import PurchaseBillContainer from './containers/PurchaseContainers/PurchaseBillContainer/PurchaseBillContainer';
+import RequestContainer from './containers/RequestContainer/RequestContainer';
 // Redux
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -37,6 +38,7 @@ const App = (props) => {
       <Route exact path="/purchases-overview" component={PurchaseOverviewContainer} />
       <Route exact path="/purchases-request" component={PurchaseRequestContainer}/>
       <Route exact path="/purchases-bill" component={PurchaseBillContainer} />
+      <Route exact path="/requests" component={RequestContainer} />
       </React.Fragment>
   );
 }

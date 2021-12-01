@@ -32,4 +32,6 @@ urlpatterns = [
          purchase_views.PurchaseShippedChange.as_view(), name='purchase-shipped-change'),
     path('delete-purchase/<int:id>/',
          purchase_views.DeletePurchase.as_view(), name='delete-purchase'),
+    path('invoices-by-estimate/<int:id>/',
+         purchase_views.GetInvoicesDetailsByEstimateReference.as_view(), name='invoices-by-estimate')
 ]

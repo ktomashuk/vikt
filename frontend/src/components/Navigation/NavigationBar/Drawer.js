@@ -14,6 +14,8 @@ import IconButton from '@material-ui/core/IconButton';
 import PriorityHighIcon from '@material-ui/icons/PriorityHigh';
 import Badge from '@material-ui/core/Badge';
 import Tooltip from '@material-ui/core/Tooltip';
+// Custom elements
+import BackButton from '../../Buttons/BackButton/BackButton';
 // Icons
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -106,7 +108,7 @@ const MainDrawer = React.memo(props => {
           nestedItems: [
             {
               text: 'Создать заявку',
-              click: () => drawerClick('placeholder'),
+              click: () => drawerClick('requests'),
             }
           ],
         },
@@ -248,6 +250,7 @@ const MainDrawer = React.memo(props => {
     <Typography variant="h6" className={classes.title}>
       {pageName}
     </Typography>
+    <BackButton />
     </Toolbar>
     </AppBar>
     <Drawer anchor={'left'} open={state['open']} onClose={toggleDrawer(false)}>

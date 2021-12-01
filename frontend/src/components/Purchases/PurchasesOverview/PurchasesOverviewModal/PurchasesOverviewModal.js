@@ -8,9 +8,10 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 // Custom components
-import PurchaseOverviewModalTable from '../PurchaseOverviewModalTable/PurchaseOverviewModalTable';
+import PurchasesOverviewModalTable from '../PurchasesOverviewModalTable/PurchasesOverviewModalTable';
 // Redux
 import { connect } from 'react-redux';
+import { backDeactivate } from '../../../../store/actions/back';
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -38,13 +39,11 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const PurchaseOverviewModal = (props) => {
+const PurchasesOverviewModal = (props) => {
     const classes = useStyles();
-    const {  show } = props;
+    const { show, backClicked, backType, backDeactivate } = props;
     // State for opening/closing the modal
     const [open, setOpen] = useState(false);
-    // State for displaying contractor name when we know its ID
-    const [contractorName, setContractorName] = useState('');
     // Closing the modal
     const handleClose = () => {
         setOpen(false);
@@ -53,8 +52,12 @@ const PurchaseOverviewModal = (props) => {
     useEffect(() => {
         if (show)  {
         setOpen(true);
-        }
-    }, [show]);
+        };
+        if (backClicked && backType === 'purchase-overview-modal') {
+          setOpen(true);
+          backDeactivate();
+        };
+    }, [show, backClicked, backType, backDeactivate]);
 
     return(
     <React.Fragment>
@@ -69,7 +72,7 @@ const PurchaseOverviewModal = (props) => {
             </Typography>
           </Toolbar>
         </AppBar>
-        <PurchaseOverviewModalTable />
+        <PurchasesOverviewModalTable />
       </Dialog>
     </React.Fragment>
     );
@@ -77,9 +80,9 @@ const PurchaseOverviewModal = (props) => {
 
 const mapStateToProps = state => {
     return {
-        contractorsList: state.contr.contractorsList,
-        contractorsLoaded: state.contr.contractorsLoaded,
+        backClicked: state.back.backClicked,
+        backType: state.back.backType,
     };
 };
 
-export default connect(mapStateToProps, { })(PurchaseOverviewModal);
+export default connect(mapStateToProps, { backDeactivate })(PurchasesOverviewModal);

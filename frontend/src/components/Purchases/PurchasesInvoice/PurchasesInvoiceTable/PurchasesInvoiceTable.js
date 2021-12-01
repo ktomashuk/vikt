@@ -59,7 +59,8 @@ const PurchasesInvoiceTable = (props) => {
     const classes = useStyles();
     const { invoicesListSpinner, units, unitsLoaded,
         invoicesChosenId, getPurchasesByInvoice, purchasesByInvoiceRefreshNeeded,
-        purchasesByInvoice, purchasesByInvoiceLoaded, clickedAdd, clickedEdit, clickedDelete } = props;
+        purchasesByInvoice, purchasesByInvoiceLoaded, 
+        clickedAdd, clickedEdit, clickedDelete, clickedCopy } = props;
     // Default table
     let rows = <TableRow><TableCell>
         <p className={classes.loadingText}>Загрузка</p>
@@ -73,7 +74,8 @@ const PurchasesInvoiceTable = (props) => {
                 key={`cr${row.id}`}
                 units={units}
                 clicked={clickedEdit}
-                clickedDelete={clickedDelete}/>
+                clickedDelete={clickedDelete}
+                clickedCopy={clickedCopy}/>
             );
         })
     };

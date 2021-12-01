@@ -50,7 +50,8 @@ const columns = [
 
 const PurchasesBillTable = (props) => {
     const classes = useStyles();
-    const { invoicesLoaded, invoicesData, invoicesListSpinner, chooseInvoice, getPurchasesByInvoice } = props;
+    const { invoicesLoaded, invoicesData, invoicesListSpinner, chooseInvoice, getPurchasesByInvoice, 
+        clickedEdit, clickedDelete } = props;
     
     // Fetching invoice data after clicking table row
     const rowClickHandler = (id) => {
@@ -65,7 +66,8 @@ const PurchasesBillTable = (props) => {
     if (invoicesLoaded) {
         rows = invoicesData.map((row) => {
             return(
-                <PurchasesBillRow row={row} key={`cr${row.id}`} clicked={rowClickHandler}/>
+                <PurchasesBillRow row={row} key={`cr${row.id}`} clicked={rowClickHandler}
+                clickedEdit={clickedEdit} clickedDelete={clickedDelete}/>
             );
         })
     };

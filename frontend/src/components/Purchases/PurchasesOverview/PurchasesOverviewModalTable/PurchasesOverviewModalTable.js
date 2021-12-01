@@ -9,17 +9,18 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Divider from '@material-ui/core/Divider';
 // Custom components
-import PurchaseOverviewModalRow from '../PurchaseOverviewModalRow/PurchaseOverviewModalRow';
+import PurchasesOverviewModalRow from '../PurchasesOverviewModalRow/PurchasesOverviewModalRow';
 // Redux
 import { connect } from 'react-redux';
 
 const columns = [
-    { id: 'date', label: 'Дата', width: '5%' },
+    { id: 'date', label: 'Дата', width: '10%' },
     { id: 'contractor', label: 'Поставщик', width: '20%' },
-    { id: 'name', label: 'Наименование по счёту', width: '50%' },
+    { id: 'name', label: 'Наименование по счёту', width: '35%' },
     { id: 'quantity', label: 'Кол-во', width: '10%' },
     { id: 'units', label: 'Ед.изм.', width: '5%' },
     { id: 'price', label: 'Цена', width: '10%' },
+    { id: 'actions', label: 'Действия', width: '10%' },
 ]
 
 
@@ -52,10 +53,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const PurhaseOverviewTable = props => {
+const PurhasesOverviewModalTable = props => {
     const classes = useStyles();
-    const { } = props;
-    
+    const { purchasesByItem, purchasesByItemLoaded } = props;
+    // Default rows list
+    let rows = (
+    <TableRow>
+        <TableCell colSpan={7}>Загрузка...</TableCell>
+    </TableRow>);
+    if (purchasesByItemLoaded) {
+        rows = purchasesByItem.map((row) => {
+            return <PurchasesOverviewModalRow key={`ovmodrow${row.purchase_id}`} row={row}/>;
+        });
+    };
     return(
         <Paper key="papertable" className={classes.root}>
             <TableContainer key="tablecontainer" className={classes.container}>
@@ -72,7 +82,7 @@ const PurhaseOverviewTable = props => {
                         </TableRow>
                     </TableHead>
                     <TableBody key="tablebody">
-                    
+                        {rows}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -85,7 +95,9 @@ const mapStateToProps = state => {
     return {
         estimatesLoaded: state.est.estimatesLoaded,
         estimatesData: state.est.estimatesData,
+        purchasesByItem: state.pur.purchasesByItem,
+        purchasesByItemLoaded: state.pur.purchasesByItemLoaded,
     };
 };
 
-export default connect(mapStateToProps, { })(PurhaseOverviewTable);
+export default connect(mapStateToProps, { })(PurhasesOverviewModalTable);

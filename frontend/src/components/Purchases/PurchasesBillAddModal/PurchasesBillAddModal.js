@@ -20,7 +20,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InfoModal from '../../UI/InfoModal/InfoModal';
 // Redux
 import { connect } from 'react-redux';
-import { addInvoice } from '../../../store/actions/invoices';
+import { addInvoice, editInvoice } from '../../../store/actions/invoices';
 import { showInfo } from '../../../store/actions/info';
 
 const useStyles = makeStyles((theme) => ({
@@ -51,11 +51,13 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const PurchasesBillAddModal = (props) => {
     const classes = useStyles();
-    const { contractorsList, contractorsLoaded, addingEnabled, addInvoice, showInfo } = props;
+    const { contractorsList, contractorsLoaded, addingEnabled, editingEnabled, editData,
+       addInvoice, editInvoice, showInfo } = props;
     // State for opening/closing the modal
     const [open, setOpen] = useState(false);
     // State to manage editing
     const [editing, setEditing] = useState(false);
+    // State for managing modal that confirms exit without changes
     const [confirmModal, setConfirmModal] = useState(false);
     // State for displaying contractor name when we know its ID
     const [contractorName, setContractorName] = useState('');
@@ -64,6 +66,11 @@ const PurchasesBillAddModal = (props) => {
         number: '',
         inv_date: '2020-01-01',
         contractor: 0,
+    });
+    // State for showing add or edit buttons
+    const [buttons, setButtons] = useState({
+      editing: false,
+      adding: false,
     });
     // Opening the modal
     useEffect(() => {
@@ -74,14 +81,27 @@ const PurchasesBillAddModal = (props) => {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         const currentDate = year + '-' + month + '-' + day
-        console.log(currentDate);
         setBillDetails({
+          ...billDetails,
           number: '',
           inv_date: currentDate,
           contractor: 0,
         });
-        }
-    }, [addingEnabled]);
+        setButtons({...buttons, adding: true, editing: false });
+        };
+        if (editingEnabled) {
+          setOpen(true);
+          setBillDetails({
+            ...billDetails,
+            number: editData.number,
+            inv_date: editData.inv_date,
+            contractor: editData.contractor,
+          });
+          const newContractorName = contractorsList.find(con => con.id === editData.contractor).name;
+          setContractorName(newContractorName);
+          setButtons({...buttons, adding: false, editing: true });
+        };
+    }, [addingEnabled, editingEnabled, editData, billDetails, buttons, contractorsList]);
     // Clicking close modal and checking if data was changed
     const checkClose = () => {
       if (editing) {
@@ -111,11 +131,23 @@ const PurchasesBillAddModal = (props) => {
         if (billDetails.number === '' || billDetails.contractor === 0) {
             showInfo('Заполните все поля!');
             return;
-        }
+        };
         addInvoice(billDetails);
         setBillDetails({...billDetails, number: '', inv_date: '2020-01-01', contractor: 0});
         setOpen(false);
     };
+    // Clicking confirm edit button
+    const confirmEditClickHandler = () => {
+      // Check form validity
+      if (billDetails.number === '' || billDetails.contractor === 0) {
+        showInfo('Заполните все поля!');
+        return;
+      };
+      editInvoice(editData.id, billDetails);
+      setEditing(false);
+      setOpen(false);
+    };
+    // List of contractors
     let conList = null;
     if (contractorsLoaded) {
         conList = (
@@ -135,7 +167,8 @@ const PurchasesBillAddModal = (props) => {
                 </Select>
             </FormControl>
         );
-    }
+    };
+
     return(
     <React.Fragment>
       <InfoModal show={confirmModal} message="У вас есть не сохраненные данные! Закрыть окно?"
@@ -180,9 +213,14 @@ const PurchasesBillAddModal = (props) => {
         </TableBody>
         </Table>
         <div className={classes.root}>
+        {buttons.adding &&
         <Button variant="contained" color="primary" disabled={!editing}
         style={{width: '40%', marginBottom: 10}}
-        onClick={() => confirmAddClickHandler()}>Добавить счёт</Button>
+        onClick={() => confirmAddClickHandler()}>Добавить счёт</Button>}
+        {buttons.editing &&
+        <Button variant="contained" color="primary" disabled={!editing}
+        style={{width: '40%', marginBottom: 10}}
+        onClick={() => confirmEditClickHandler()}>Сохранить счёт</Button>}
         </div>
       </Dialog>
     </React.Fragment>
@@ -196,4 +234,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, { addInvoice, showInfo })(PurchasesBillAddModal);
+export default connect(mapStateToProps, { addInvoice, editInvoice, showInfo })(PurchasesBillAddModal);

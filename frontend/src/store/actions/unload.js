@@ -19,4 +19,7 @@ export const unloadEverything = () => async dispatch => {
     dispatch({
         type: actionTypes.INVOICES_UNLOAD,
     });
+    dispatch({
+        type: actionTypes.BACK_DEACTIVATE,
+    });
 };

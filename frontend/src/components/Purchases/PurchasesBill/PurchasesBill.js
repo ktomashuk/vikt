@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
 // Material UI
-import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
 // Custom components
 import PurchasesInvoiceTable from '../PurchasesInvoice/PurchasesInvoiceTable/PurchasesInvoiceTable';
 import PurchasesDeleteModal from '../PurchasesInvoice/PurchasesDeleteModal/PurchasesDeleteModal';
@@ -12,30 +10,10 @@ import { recountInvoice } from '../../../store/actions/invoices';
 import { showInfo } from '../../../store/actions/info';
 import { deletePurchasesByInvoice, deletePurchase } from '../../../store/actions/purchases';
 
-const useStyles = makeStyles((theme) => ({
-    box: {
-        marginLeft: 10,
-        marginBottom: 10,
-        paddingTop: 10,
-        display: 'flex',
-        justifyContent: 'start',
-    },
-    paperBottom: {
-        width: '100%',
-        height: '100%',
-    },
-    button: {
-        marginTop: 20,
-        marginBottom: 20,
-        marginRight: 10,
-        justifySelf: 'center',
-    },
-  }));
 
 const PurchasesBill = (props) => {
-    const classes = useStyles();
     const { invoicesChosenId, invoicesChosenData, invoicesChosenLoaded,
-        clickedEdit, clickedAdd, deletePurchase, recountInvoice } = props;
+        clickedEdit, clickedAdd, clickedCopy, deletePurchase, recountInvoice, refresh } = props;
     // State for bill details
     const [billDetails, setBillDetails] = useState({
         number: '',
@@ -63,6 +41,12 @@ const PurchasesBill = (props) => {
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[invoicesChosenData, invoicesChosenLoaded]);
+    // Unloading data when an invoice was deleted
+    useEffect(() => {
+        if(refresh) {
+            setDataLoaded(false);
+        };
+    }, [refresh]);
     // Clicking a confirm delete purchase button in the modal
     const deletePurchaseConfirmClickHandler = async () => {
         await deletePurchase(deleteData.id);
@@ -89,7 +73,7 @@ const PurchasesBill = (props) => {
 
     return (
     <React.Fragment>
-    <PurchasesDeleteModal show={deleteModal} 
+    <PurchasesDeleteModal show={deleteModal}
     clickedCancel={deletePurchaseCancelClickHandler}
     clickedOk={deletePurchaseConfirmClickHandler}
     message={"Вы действительно хотите удалить позицию \"" + deleteData.name + "\"?"}/>
@@ -101,7 +85,9 @@ const PurchasesBill = (props) => {
         <Typography variant="h6" style={{marginLeft: 15, marginBottom: 5, marginTop: 10}}>
             Счёт №{invoicesChosenData.number} от {date}
         </Typography>
-        <PurchasesInvoiceTable clickedEdit={clickedEdit} clickedAdd={clickedAdd} clickedDelete={openDeleteModal}/>
+        <PurchasesInvoiceTable 
+        clickedEdit={clickedEdit} clickedAdd={clickedAdd}
+        clickedDelete={openDeleteModal} clickedCopy={clickedCopy}/>
         </React.Fragment>
         : null}
     </React.Fragment>

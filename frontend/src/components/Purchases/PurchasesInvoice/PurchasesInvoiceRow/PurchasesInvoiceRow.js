@@ -8,6 +8,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Checkbox from '@material-ui/core/Checkbox'
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 // Redux
 import { connect } from 'react-redux';
 import { purchaseCheckReceived, purchaseUncheckReceived, 
@@ -34,7 +35,7 @@ const PurchasesInvoiceRow = (props) => {
     const classes = useStyles();
     const { row, units, clicked, 
         purchaseCheckReceived, purchaseUncheckReceived, getPurchaseById, 
-        recountInvoice, invoicesChosenId, getPurchasesByInvoice, clickedDelete } = props;
+        recountInvoice, invoicesChosenId, getPurchasesByInvoice, clickedDelete, clickedCopy } = props;
     // State for a checbox
     const [checkedReceived, setCheckedReceived] = useState(false);
     const [checkedAssigned, setCheckedAssigned] = useState(false);
@@ -71,7 +72,6 @@ const PurchasesInvoiceRow = (props) => {
                 <TableCell key={`ware${row.id}`} padding="default" className={classes.row}>
                     <span>
                     {row.ware_name} 
-
                     </span>
                 </TableCell>
                 <TableCell key={`quant_doc${row.id}`} padding="default" className={classes.row}>
@@ -99,19 +99,29 @@ const PurchasesInvoiceRow = (props) => {
                         Редактировать
                         </Typography>
                         } arrow>
-                        <EditIcon fontSize="default" style={{color: 'blue'}} 
+                        <EditIcon fontSize="small" style={{color: 'blue', cursor: 'pointer'}} 
                         onClick={() => {
                         getPurchaseById(row.id);
                         clicked();}}/>
                     </Tooltip>
                     <Tooltip title={
                         <Typography>
+                        Копировать
+                        </Typography>
+                        } arrow>
+                        <FileCopyIcon fontSize="small" style={{color: 'orange', cursor: 'pointer'}} 
+                        onClick={() => {
+                        getPurchaseById(row.id);
+                        clickedCopy();}}/>
+                    </Tooltip>
+                    <Tooltip title={
+                        <Typography>
                         Удалить
                         </Typography>
                         } arrow>
-                        <DeleteIcon 
+                        <DeleteIcon style={{cursor: 'pointer'}}
                         key={`delete${row.id}`}
-                        color="action"
+                        color="action" fontSize="small"
                         onClick={() => clickedDelete(row.ware_name, row.id)}/>
                     </Tooltip>
                 </TableCell>

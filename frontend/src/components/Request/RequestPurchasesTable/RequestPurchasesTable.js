@@ -10,22 +10,18 @@ import TableRow from '@material-ui/core/TableRow';
 import TablePagination from '@material-ui/core/TablePagination';
 import Divider from '@material-ui/core/Divider';
 // Custom components
-import PurchasesOverviewRow from '../PurchasesOverviewRow/PurchasesOverviewRow';
-import PurchasesOverviewModal from '../PurchasesOverviewModal/PurchasesOverviewModal';
+import RequestPurchasesRow from '../RequestPurchasesRow/RequestPurchasesRow';
 // Redux
 import { connect } from 'react-redux';
-import { getPurchasesByEstimateItem, getPurchasesByNonEstimateItem } from '../../../../store/actions/purchases';
 
 const columns = [
+    { id: 'checkbox', label: 'Выбор', minWidth: 40, maxWidth: 300  },
     { id: 'number', label: 'Номер', minWidth: 50, maxWidth: 300 },
     { id: 'ware', label: 'Наименование', minWidth: 200, maxWidth: 1500  },
     { id: 'units', label: 'Ед.изм', minWidth: 50, maxWidth: 300  },
     { id: 'quantity', label: 'Кол-во', minWidth: 50, maxWidth: 300  },
-    { id: 'purchased_fact', label: 'Факт', minWidth: 50, maxWidth: 300  },
-    { id: 'purchased_doc', label: 'Док', minWidth: 50, maxWidth: 300  },
-    { id: 'percent', label: 'в %', minWidth: 70, maxWidth: 300  },
+    { id: 'purchased_doc', label: 'Куплено', minWidth: 50, maxWidth: 300  },
     { id: 'system', label: 'Система', minWidth: 50, maxWidth: 300  },
-    { id: 'buttons', label: 'Инфо', minWidth: 40, maxWidth: 300  },
 ]
 
 
@@ -83,16 +79,9 @@ const PurhaseOverviewTable = props => {
       setRowsPerPage(+event.target.value);
       setPage(0);
     };
-    // Clicking the info button
-    const infoClickHanlder = (id) => {
-        getPurchasesByEstimateItem(id);
-        setModal(true);
-        setTimeout(() => setModal(false), 500);
-    };
 
     return(
         <Paper key="papertable" className={classes.root}>
-            <PurchasesOverviewModal show={modal}/>
             <TableContainer key="tablecontainer" className={classes.container}>
                 <Table key="tablemain" stickyHeader aria-label="table1" size="small">
                     <TableHead key="tablehead">
@@ -111,24 +100,13 @@ const PurhaseOverviewTable = props => {
                     // Finding corresponding purchases in redux
                     const purchase = estimatePurchases.find(purchase => Number(purchase.estimate_reference) === row.id);
                     // If purchases exist show them, otherwise show 0
-                    const fact = purchase ? purchase.purchases_fact : 0;
                     const doc = purchase ? purchase.purchases_doc : 0;
-                    // If purchases exist count the percentage of shipped wares
-                    let percent = purchase ? ((doc / row.quantity)* 100) : 0;
-                    let finished = false;
-                    if (percent >= 100) {
-                        percent = 100;
-                        finished = true;
-                    };
                     return(
-                        <PurchasesOverviewRow row={row} key={`row${row.id}`}
-                        purchasedFact={fact}
+                        <RequestPurchasesRow row={row} key={`row${row.id}`}
                         purchasedDoc={doc}
-                        percent={percent}
-                        finished={finished}
                         units={units}
                         systems={chosenObjectSystems}
-                        infoClick={infoClickHanlder}/>
+                        />
                     )}) : null}
                     </TableBody>
                 </Table>
@@ -168,4 +146,4 @@ const mapStateToProps = state => {
     };
 };
 
-export default connect(mapStateToProps, { getPurchasesByEstimateItem, getPurchasesByNonEstimateItem })(PurhaseOverviewTable);
+export default connect(mapStateToProps, { })(PurhaseOverviewTable);

@@ -19,7 +19,9 @@ const Layout = React.memo(props => {
     hideSnack, loadingSpinner } = props;
     // Getting user names when he is authenticated
     useEffect(() => {
-        checkAuthentication();
+        if (!isAuthenticated) {
+            checkAuthentication();
+        };
     }, [isAuthenticated, checkAuthentication]);
     
       return (

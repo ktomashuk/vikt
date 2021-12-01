@@ -79,7 +79,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const PurchasesInvoiceModal = (props) => {
     const classes = useStyles();
-    const { addingEnabled, editingEnabled, units, unitsLoaded, showInfo,
+    const { addingEnabled, editingEnabled, copyEnabled, units, unitsLoaded, showInfo,
         addPurchase, purchaseById, purchaseByIdLoaded,
         recountInvoice, invoicesChosenId, loadingSpinner,
         estimatesObject, estimatesSystem, estimatesLoaded, unloadEstimates, addNonEstimateRow, 
@@ -101,7 +101,9 @@ const PurchasesInvoiceModal = (props) => {
     const [dataOld, setDataOld] = useState(null);
     // State for choosing objects and systems in estimate panel
     const [estPanel, setEstPanel] = useState({object: '', system: ''});
-    // State to determine if we need to add a new position or edit an existing one
+    // State for currently selected unit name
+    const [unitName, setUnitName] = useState('шт.');
+    // State for determining if we need to add a new position or edit an existing one
     const [modalType, setModalType] = useState({
         editing: false,
         adding: false,
@@ -163,6 +165,10 @@ const PurchasesInvoiceModal = (props) => {
         setModalType({...modalType, editing: true, adding: false,})
         setOpen(true);
         setDataOld({...purchaseById});
+        if(purchaseByIdLoaded) {
+          const newUnitsName = units.find(u => u.id === purchaseById.units).name;
+          setUnitName(newUnitsName);
+        };
         if (purchaseByIdLoaded && purchaseById.estimate_reference) {
           setBind({...bind,
           active: true,
@@ -183,9 +189,18 @@ const PurchasesInvoiceModal = (props) => {
             system: purchaseById.system_reference,
             });
         };
-      }
+      };
+      if (copyEnabled) {
+        if(purchaseByIdLoaded) {
+          const newUnitsName = units.find(u => u.id === purchaseById.units).name;
+          setUnitName(newUnitsName);
+        };
+        setModalType({...modalType, editing: false, adding: true});
+        setOpen(true);
+        setDataOld({...purchaseById});
+      };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [addingEnabled, editingEnabled, modalType]);
+    }, [addingEnabled, editingEnabled, modalType, bind, copyEnabled]);
     // Filling the fields for editing
     useEffect(() => {
         if(purchaseByIdLoaded) {
@@ -421,9 +436,11 @@ const PurchasesInvoiceModal = (props) => {
   <Select native style={{marginRight: 10, }}
   onChange={(e) => {
   const newUnitsId = units.find(u => u.name === e.target.value).id;
-  setPurchaseDetails({...purchaseDetails, units: newUnitsId})
+  setPurchaseDetails({...purchaseDetails, units: newUnitsId});
+  setUnitName(e.target.value);
+  setEditing(true);
   }}
-  defaultValue='шт.'>
+  value={unitName}>
   {units.map(unit => {return(
   <option key={`option_unit_${unit.id}`}>{unit.name}</option>
   )})}
@@ -437,12 +454,6 @@ const PurchasesInvoiceModal = (props) => {
   <Button variant="contained" color="primary" disabled={!editing}
     style={{width: 300}} 
     onClick={() => confirmEditClickHandler()}>Сохранить</Button>
-  <Button variant="contained" color="primary"
-    style={{width: 300}} 
-    onClick={() => console.log(dataOld)}>Test</Button>
-  <Button variant="contained" color="primary"
-    style={{width: 300}} 
-    onClick={() => console.log(bind)}>Bind</Button>
   </div>
   );
   // Buttons for adding by default
@@ -503,14 +514,9 @@ const PurchasesInvoiceModal = (props) => {
         <Box component="span">
           <SearchBar type="estimates" filter={searchEstimatesFilter}/>
         </Box>
-        {purchaseReferenceLoaded && modalType.editing && !bind.active ?
+        {purchaseReferenceLoaded && modalType.editing ?
         <Typography style={{marginLeft: 10, color: 'black'}} variant="subtitle1">
         Текущая привязка: {purchaseReference}
-        </Typography>
-        : null}
-        {purchaseReferenceLoaded && modalType.editing && bind.active ?
-        <Typography style={{marginLeft: 10, color: 'black'}} variant="subtitle1">
-        Текущая привязка: {bind.bindName}
         </Typography>
         : null}
         {modalType.adding ?

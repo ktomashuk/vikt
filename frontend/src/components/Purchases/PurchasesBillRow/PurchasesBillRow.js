@@ -30,7 +30,8 @@ const useStyles = makeStyles({
 
 const PurchasesBillRow = (props) => {
     const classes = useStyles();
-    const { row, contractorsList, contractorsLoaded, invoicesChosenData, clicked } = props;
+    const { row, contractorsList, contractorsLoaded, invoicesChosenData, clicked, 
+        clickedDelete, clickedEdit } = props;
     // Converting date yyyy-mm-dd format to dd.mm.yyyy
     const [year, month, day] = row.inv_date.split('-');
     const date = `${day}.${month}.${year}`;
@@ -89,7 +90,15 @@ const PurchasesBillRow = (props) => {
                         </Typography>
                         } arrow>
                         <EditIcon fontSize="small" style={{color: 'blue'}} 
-                        onClick={(event) => event.preventDefault}/>
+                        onClick={(event) => {
+                            event.preventDefault();
+                            const data = {
+                                number: row.number,
+                                inv_date: row.inv_date,
+                                contractor: row.contractor,
+                            };
+                            clickedEdit(row.id, data);
+                            }}/>
                     </Tooltip>
                     <Tooltip title={
                         <Typography>
@@ -99,7 +108,10 @@ const PurchasesBillRow = (props) => {
                         <DeleteIcon 
                         key={`delete${row.id}`}
                         color="action" fontSize="small"
-                        onClick={() => console.log('CLICKED!!')}/>
+                        onClick={(event) => {
+                            event.preventDefault();
+                            clickedDelete(row.number, row.id);
+                            }}/>
                     </Tooltip>
                 </TableCell>
             </TableRow>
